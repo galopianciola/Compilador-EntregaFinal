@@ -2,9 +2,7 @@ public class Main{
 
 
    public static void main(String[]args) {
-       char character = '{';
-       int ascii = (int) character;
+       Lexico l1 = new Lexico();
 
-       System.out.println(ascii);
     }
 }
