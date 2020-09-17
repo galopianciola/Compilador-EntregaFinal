@@ -1,6 +1,8 @@
+package main;
+
 public class Lexico {
     private int transiciones[][] = new int[19][20];
-    private AccionSemantica acciones[][] = new int[19][20];
+    private int acciones[][] = new int[19][20];
 
     public Lexico(){
         cargarMatrizTrancisiones();
