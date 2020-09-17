@@ -230,8 +230,6 @@ public class Lexico {
         transiciones[10][17] = 100;
         transiciones[10][18] = 100;
 
-        //aca es todo nuevo
-
         transiciones[11][0] = 11;
         transiciones[11][1] = 11;
         transiciones[11][2] = 11;
@@ -593,8 +591,6 @@ public class Lexico {
         acciones[10][16] = 100;
         acciones[10][17] = 100;
         acciones[10][18] = 100;
-
-        //aca es todo nuevo
 
         acciones[11][0] = null;
         acciones[11][1] = null;

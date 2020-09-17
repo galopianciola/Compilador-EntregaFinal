@@ -3,8 +3,8 @@ import main.*;
 
 public class AccionSemantica1 extends AccionSemantica {
 
-    public void run(){
-        int hola = 4;
+    @Override
+    public void run() {
+        buffer = Character.toString(Main.caracter);
     }
-
 }
