@@ -6,7 +6,7 @@ public class AccionSemantica14 extends AccionSemantica {
 
     @Override
     public void run() {
-        Main.cursor--;
+        Lexico.cursor--;
         //retorna id del token =;
     }
 }

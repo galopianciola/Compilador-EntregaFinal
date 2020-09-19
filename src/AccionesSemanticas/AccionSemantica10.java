@@ -1,13 +1,12 @@
 package AccionesSemanticas;
 
-import main.AccionSemantica;
-import main.Main;
+import main.*;
 
 public class AccionSemantica10 extends AccionSemantica {
 
     @Override
     public void run() {
-        Main.cursor--;
+        Lexico.cursor--;
         // retorna el id del token <;
     }
 }

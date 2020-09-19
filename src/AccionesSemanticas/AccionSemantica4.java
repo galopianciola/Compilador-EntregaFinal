@@ -1,14 +1,15 @@
 package AccionesSemanticas;
+
 import main.*;
 
-public class AccionSemantica4 extends AccionSemantica{
+public class AccionSemantica4 extends AccionSemantica {
 
     @Override
     public void run() {
-        Main.cursor--;
+        Lexico.cursor--;
 
-        if (buffer.length() > 20){
-            buffer.substring(0,19);
+        if (buffer.length() > 20) {
+            buffer.substring(0, 19);
             //todo:largar warning indicando la linea
         } else {
             /*Buscar en tabla de Símbolos.

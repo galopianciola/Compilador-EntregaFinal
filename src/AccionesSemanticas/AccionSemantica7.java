@@ -1,11 +1,12 @@
 package AccionesSemanticas;
+
 import main.*;
 
 public class AccionSemantica7 extends AccionSemantica {
 
     @Override
     public void run() {
-        switch (Main.caracter){
+        switch (Lexico.caracter) {
             case '+':
                 //return token
             case '-':

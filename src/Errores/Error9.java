@@ -1,10 +1,11 @@
 package Errores;
+
 import main.*;
 
-public class Error9 extends AccionSemantica{
+public class Error9 extends AccionSemantica {
 
     @Override
     public void run() {
-        System.out.println("Warning en la linea "+linea+": el identificador excedió el tamaño máximo, el tamaño se truncó a 20 caracteres");
+        System.out.println("Warning en la linea " + Lexico.linea + ": el identificador excedió el tamaño máximo, el tamaño se truncó a 20 caracteres");
     }
 }

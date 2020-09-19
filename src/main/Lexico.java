@@ -4,9 +4,12 @@ import Errores.*;
 
 public class Lexico {
 
-    private int F;
+    public static char caracter;  //caracter que se esta leyendo del codigo fuente
+    public static int cursor; //indice del codigo fuente
+    public static int linea; //linea que se esta leyendo del codigo fuente
 
-    // Estado final
+    private int F;    // Estado final
+
     private AccionSemantica as1 = new AccionSemantica1();
     private AccionSemantica as2 = new AccionSemantica2();
     private AccionSemantica as3 = new AccionSemantica3();
@@ -24,7 +27,7 @@ public class Lexico {
     private AccionSemantica as15 = new AccionSemantica15();
     private AccionSemantica as16 = new AccionSemantica16();
 
-    private Error1 err1 = new Error1();
+    public Error1 err1 = new Error1();
     private Error2 err2 = new Error2();
     private Error3 err3 = new Error3();
     private Error4 err4 = new Error4();
@@ -33,30 +36,6 @@ public class Lexico {
     private Error7 err7 = new Error7();
     private Error8 err8 = new Error8();
     private Error9 err9 = new Error9();
-
-    private AccionSemantica[][] acciones = {
-            // L    l    d    .    %    <    >    =    "    !    +    -    _    u    i   bl   'd'  <>   /n
-            // 0    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   16   17   18
-            {as1, as1, as1, as1, null, null, null, null, as1, null, as7, as7, err1, as1, as1, null, as1, as7, null},//0
-            {as2, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3},//1
-            {as4, as2, as2, as4, as4, as4, as4, as4, as4, as4, as4, as4, as2, as4, as4, as4, as4, as4, as4},//2
-            {err2, err2, as2, as2, err2, err2, err2, err2, err2, err2, err2, err2, null, err2, err2, err2, err2, err2, err2},//3
-            {err3, err3, err3, err3, err3, err3, err3, err3, err3, err3, err3, err3, err3, null, err3, err3, err3, err3, err3},//4
-            {err4, err4, err4, err4, err4, err4, err4, err4, err4, err4, err4, err4, err4, err4, as5, err4, err4, err4, err4},//5
-            {err5, err5, as2, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5},//6
-            {as6, as6, as2, as6, as6, as6, as6, as6, as6, as6, as6, as6, as6, as6, as6, as6, as2, as6, as6},//7
-            {err6, err6, err6, err6, err6, err6, err6, err6, err6, err6, as2, as2, err6, err6, err6, err6, err6, err6, err6},//8
-            {err5, err5, as2, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5},//9
-            {as6, as6, as2, as6, as6, as6, as6, as6, as6, as6, as6, as6, as6, as6, as6, as6, as6, as6, as6},//10
-            {as8, as8, as8, as8, null, as8, as8, as8, as8, as8, as8, as8, as8, as8, as8, as8, as8, as8, as8},//11
-            {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},//12
-            {as10, as10, as10, as10, as10, as10, as10, as9, as10, as10, as10, as10, as10, as10, as10, as10, as10, as10, as10},//13
-            {as12, as12, as12, as12, as12, as12, as12, as11, as12, as12, as12, as12, as12, as12, as12, as12, as12, as12, as12},//14
-            {as14, as14, as14, as14, as14, as14, as14, as13, as14, as14, as14, as14, as14, as14, as14, as14, as14, as14, as14},//15
-            {err7, err7, err7, err7, err7, err7, err7, as15, err7, err7, err7, err7, err7, err7, err7, err7, err7, err7, err7},//16
-            {as2, as2, as2, as2, as2, as2, as2, as2, as16, as2, as2, as2, as2, as2, as2, as2, as2, as2, err8},//17
-            {as2, as2, as2, as2, as2, as2, as2, as2, as2, as2, as2, as2, as2, as2, as2, as2, as2, as2, as2} //18
-    };
 
     private int[][] transiciones = {
             //L  l  d  .  %  <  >  =  "  !  +  -  _  u  i bt  d  o  nl $
@@ -82,6 +61,29 @@ public class Lexico {
             {17,17,17,17,17,17,17,17,17,17,17,18,17,17,17,17,17,17,17, F},//18
     };
 
+    private AccionSemantica[][] acciones = {
+            // L    l    d    .    %    <    >    =    "    !    +    -    _    u    i   bl   'd'  <>   /n
+            // 0    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   16   17   18
+            {as1, as1, as1, as1, null, null, null, null, as1, null, as7, as7, err1, as1, as1, null, as1, as7, null},//0
+            {as2, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3},//1
+            {as4, as2, as2, as4, as4, as4, as4, as4, as4, as4, as4, as4, as2, as4, as4, as4, as4, as4, as4},//2
+            {err2, err2, as2, as2, err2, err2, err2, err2, err2, err2, err2, err2, null, err2, err2, err2, err2, err2, err2},//3
+            {err3, err3, err3, err3, err3, err3, err3, err3, err3, err3, err3, err3, err3, null, err3, err3, err3, err3, err3},//4
+            {err4, err4, err4, err4, err4, err4, err4, err4, err4, err4, err4, err4, err4, err4, as5, err4, err4, err4, err4},//5
+            {err5, err5, as2, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5},//6
+            {as6, as6, as2, as6, as6, as6, as6, as6, as6, as6, as6, as6, as6, as6, as6, as6, as2, as6, as6},//7
+            {err6, err6, err6, err6, err6, err6, err6, err6, err6, err6, as2, as2, err6, err6, err6, err6, err6, err6, err6},//8
+            {err5, err5, as2, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5},//9
+            {as6, as6, as2, as6, as6, as6, as6, as6, as6, as6, as6, as6, as6, as6, as6, as6, as6, as6, as6},//10
+            {as8, as8, as8, as8, null, as8, as8, as8, as8, as8, as8, as8, as8, as8, as8, as8, as8, as8, as8},//11
+            {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},//12
+            {as10, as10, as10, as10, as10, as10, as10, as9, as10, as10, as10, as10, as10, as10, as10, as10, as10, as10, as10},//13
+            {as12, as12, as12, as12, as12, as12, as12, as11, as12, as12, as12, as12, as12, as12, as12, as12, as12, as12, as12},//14
+            {as14, as14, as14, as14, as14, as14, as14, as13, as14, as14, as14, as14, as14, as14, as14, as14, as14, as14, as14},//15
+            {err7, err7, err7, err7, err7, err7, err7, as15, err7, err7, err7, err7, err7, err7, err7, err7, err7, err7, err7},//16
+            {as2, as2, as2, as2, as2, as2, as2, as2, as16, as2, as2, as2, as2, as2, as2, as2, as2, as2, err8},//17
+            {as2, as2, as2, as2, as2, as2, as2, as2, as2, as2, as2, as2, as2, as2, as2, as2, as2, as2, as2} //18
+    };
 
 
 

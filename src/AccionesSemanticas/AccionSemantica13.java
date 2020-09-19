@@ -1,5 +1,6 @@
 package AccionesSemanticas;
-import main.AccionSemantica;
+
+import main.*;
 
 public class AccionSemantica13 extends AccionSemantica {
 

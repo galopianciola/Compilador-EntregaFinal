@@ -5,6 +5,5 @@ public class AccionSemantica1 extends AccionSemantica {
 
     @Override
     public void run() {
-        buffer = Character.toString(Main.caracter);
-    }
+        buffer = Character.toString(Lexico.caracter);}
 }

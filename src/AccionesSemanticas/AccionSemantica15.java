@@ -1,7 +1,8 @@
 package AccionesSemanticas;
+
 import main.*;
 
-public class AccionSemantica15 extends AccionSemantica{
+public class AccionSemantica15 extends AccionSemantica {
 
     @Override
     public void run() {
