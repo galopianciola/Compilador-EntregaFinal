@@ -14,7 +14,7 @@ public class Main{
             String readLine;
 
             while ((readLine = codigo.readLine())!= null) {
-                buffer.append(readLine + "nl");
+                buffer.append(readLine + "\n");
             }
 
             buffer.append("$");
@@ -36,6 +36,11 @@ public class Main{
 
         StringBuilder codigo = new StringBuilder(getCodigo(br));
 
-        System.out.println(codigo);
+        int linea = 0;
+        for (int i = 0; i<codigo.length();i++){
+            if (codigo.charAt(i) == '\n')
+                linea++;
+        }
+        System.out.println("cant lineas = " + linea);
     }
 }

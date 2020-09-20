@@ -39,7 +39,7 @@ public class Lexico {
     private Error9 err9 = new Error9();
 
     private int[][] transiciones = {
-            //L  l  d  .  %  <  >  =  "  !  +  -  _  u  i bt  d  o  nl $
+            //L  l  d  .  %  <  >  =  "  !  +  -  _  u  i  bt  d  o \n  $
             //0  1  2  3  4  5  6  7  8  9 10  11 12 13 14 15 16 17 18 19
             { 1, 2, 3, 6,11,13,14,15,17,16, F, F,-1, 2, 2, 0, 2, F, 0, F},//0
             { 1, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F},//1
@@ -63,7 +63,7 @@ public class Lexico {
     };
 
     private AccionSemantica[][] acciones = {
-            // L    l    d    .    %    <    >    =    "    !    +    -    _    u    i   bl   'd'  <>   /n
+            // L    l    d    .    %    <    >    =    "    !    +    -    _    u    i   bl   'd'  <>   \n
             // 0    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   16   17   18
             { as1, as1, as1, as1,null,null,null,null, as1,null, as7, as7,err1, as1, as1,null, as1, as7,null},//0
             { as2, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3},//1
@@ -92,8 +92,60 @@ public class Lexico {
         this.codigoFuente = codigoFuente;
     }
 
+    public Token getToken(){
+        //if (codigoFuente.charAt(cursor) != -1)
+          //  caracter = codigoFuente.charAt(cursor);
+        int estadoActual = 0;
 
+        while (caracter != '$'){
+            acciones[estadoActual][getColumna(caracter)]
+            cursor++;
+        }
 
+    }
 
-
+    private int getColumna(char caracter) {
+        if ((caracter >= 65) && (caracter <= 90))
+            return 0; //LETRAS mayusculas
+        if ((caracter >= 97) && (caracter <= 122))
+            return 1; // letras minusculas
+        if ((caracter >= 48) && (caracter <= 57))
+            return 2; // digitos
+        if (caracter == 46)
+            return 3; //.
+        if (caracter == 37)
+            return 4; //%
+        if (caracter == 60)
+            return 5; // <
+        if (caracter == 62)
+            return 6; // >
+        if (caracter == 61)
+            return 7; // =
+        if (caracter == 34)
+            return 8; // "
+        if (caracter == 33)
+            return 9; // !
+        if (caracter == 43)
+            return 10; // +
+        if (caracter == 45)
+            return 11; // -
+        if (caracter == 95)
+            return 12; // _
+        if (caracter == 117)
+            return 13; // TODO 'u'
+        if (caracter == 105)
+            return 14; // 'i'
+        if ((caracter == 09) || (caracter == 32))
+            return 15; // >blanco o tab
+        if (caracter == 100)
+            return 16; // 'd'
+        if (caracter == 111)
+            return 17; // 'o'
+        if (caracter == 10)
+            return 18; // 'nueva linea'
+       /* if (caracter == 36)
+            return 19; // $
+        */
+        return -1; //caracter no valido
+    }
 }
