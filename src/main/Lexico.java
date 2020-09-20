@@ -9,6 +9,7 @@ public class Lexico {
     public static int linea; //linea que se esta leyendo del codigo fuente
 
     private int F;    // Estado final
+    private StringBuilder codigoFuente;
 
     private AccionSemantica as1 = new AccionSemantica1();
     private AccionSemantica as2 = new AccionSemantica2();
@@ -64,26 +65,34 @@ public class Lexico {
     private AccionSemantica[][] acciones = {
             // L    l    d    .    %    <    >    =    "    !    +    -    _    u    i   bl   'd'  <>   /n
             // 0    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   16   17   18
-            {as1, as1, as1, as1, null, null, null, null, as1, null, as7, as7, err1, as1, as1, null, as1, as7, null},//0
-            {as2, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3},//1
-            {as4, as2, as2, as4, as4, as4, as4, as4, as4, as4, as4, as4, as2, as4, as4, as4, as4, as4, as4},//2
-            {err2, err2, as2, as2, err2, err2, err2, err2, err2, err2, err2, err2, null, err2, err2, err2, err2, err2, err2},//3
-            {err3, err3, err3, err3, err3, err3, err3, err3, err3, err3, err3, err3, err3, null, err3, err3, err3, err3, err3},//4
-            {err4, err4, err4, err4, err4, err4, err4, err4, err4, err4, err4, err4, err4, err4, as5, err4, err4, err4, err4},//5
-            {err5, err5, as2, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5},//6
-            {as6, as6, as2, as6, as6, as6, as6, as6, as6, as6, as6, as6, as6, as6, as6, as6, as2, as6, as6},//7
-            {err6, err6, err6, err6, err6, err6, err6, err6, err6, err6, as2, as2, err6, err6, err6, err6, err6, err6, err6},//8
-            {err5, err5, as2, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5},//9
+            { as1, as1, as1, as1,null,null,null,null, as1,null, as7, as7,err1, as1, as1,null, as1, as7,null},//0
+            { as2, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3},//1
+            { as4, as2, as2, as4, as4, as4, as4, as4, as4, as4, as4, as4, as2, as4, as4, as4, as4, as4, as4},//2
+            {err2,err2, as2, as2,err2,err2,err2,err2,err2,err2,err2,err2,null,err2,err2,err2,err2,err2,err2},//3
+            {err3,err3,err3,err3,err3,err3,err3,err3,err3,err3,err3,err3,err3,null,err3,err3,err3,err3,err3},//4
+            {err4,err4,err4,err4,err4,err4,err4,err4,err4,err4,err4,err4,err4,err4, as5,err4,err4,err4,err4},//5
+            {err5,err5, as2,err5,err5,err5,err5,err5,err5,err5,err5,err5,err5,err5,err5,err5,err5,err5,err5},//6
+            { as6, as6, as2, as6, as6, as6, as6, as6, as6, as6, as6, as6, as6, as6, as6, as6, as2, as6, as6},//7
+            {err6,err6,err6,err6,err6,err6,err6,err6,err6,err6, as2, as2,err6,err6,err6,err6,err6,err6,err6},//8
+            {err5,err5, as2,err5,err5,err5,err5,err5,err5,err5,err5,err5,err5,err5,err5,err5,err5,err5,err5},//9
             {as6, as6, as2, as6, as6, as6, as6, as6, as6, as6, as6, as6, as6, as6, as6, as6, as6, as6, as6},//10
-            {as8, as8, as8, as8, null, as8, as8, as8, as8, as8, as8, as8, as8, as8, as8, as8, as8, as8, as8},//11
-            {null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null},//12
-            {as10, as10, as10, as10, as10, as10, as10, as9, as10, as10, as10, as10, as10, as10, as10, as10, as10, as10, as10},//13
-            {as12, as12, as12, as12, as12, as12, as12, as11, as12, as12, as12, as12, as12, as12, as12, as12, as12, as12, as12},//14
-            {as14, as14, as14, as14, as14, as14, as14, as13, as14, as14, as14, as14, as14, as14, as14, as14, as14, as14, as14},//15
-            {err7, err7, err7, err7, err7, err7, err7, as15, err7, err7, err7, err7, err7, err7, err7, err7, err7, err7, err7},//16
-            {as2, as2, as2, as2, as2, as2, as2, as2, as16, as2, as2, as2, as2, as2, as2, as2, as2, as2, err8},//17
-            {as2, as2, as2, as2, as2, as2, as2, as2, as2, as2, as2, as2, as2, as2, as2, as2, as2, as2, as2} //18
+            {as8, as8, as8, as8,null, as8, as8, as8, as8, as8, as8, as8, as8, as8, as8, as8, as8, as8, as8},//11
+            {null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null},//12
+            {as10,as10,as10,as10,as10,as10,as10, as9,as10,as10,as10,as10,as10,as10,as10,as10,as10,as10,as10},//13
+            {as12,as12,as12,as12,as12,as12,as12,as11,as12,as12,as12,as12,as12,as12,as12,as12,as12,as12,as12},//14
+            {as14,as14,as14,as14,as14,as14,as14,as13,as14,as14,as14,as14,as14,as14,as14,as14,as14,as14,as14},//15
+            {err7,err7,err7,err7,err7,err7,err7,as15,err7,err7,err7,err7,err7,err7,err7,err7,err7,err7,err7},//16
+            { as2, as2, as2, as2, as2, as2, as2, as2,as16, as2, as2, as2, as2, as2, as2, as2, as2, as2,err8},//17
+            { as2, as2, as2, as2, as2, as2, as2, as2, as2, as2, as2, as2, as2, as2, as2, as2, as2, as2, as2} //18
     };
+
+    public Lexico(StringBuilder codigoFuente){
+        linea = 1;
+        cursor = 0;
+        this.codigoFuente = codigoFuente;
+    }
+
+
 
 
 

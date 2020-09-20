@@ -1,8 +1,41 @@
 package main;
 
+import java.io.*;
+
 public class Main{
 
-    public static void main(String[]args) {
+    private static BufferedReader codigo;
 
+    private static StringBuilder getCodigo(BufferedReader ubicacion){
+        StringBuilder buffer = new StringBuilder();
+
+        try{
+            codigo = new BufferedReader(new FileReader(ubicacion.readLine()));
+            String readLine;
+
+            while ((readLine = codigo.readLine())!= null) {
+                buffer.append(readLine + "nl");
+            }
+
+            buffer.append("$");
+        }
+        catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        return buffer;
+    }
+
+    public static void main(String[]args) {
+        String direccion = "/Users/macbook/IdeaProjects/Compilador/pruba.txt";
+        InputStream is = new ByteArrayInputStream(direccion.getBytes());
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(is));
+
+        StringBuilder codigo = new StringBuilder(getCodigo(br));
+
+        System.out.println(codigo);
     }
 }
