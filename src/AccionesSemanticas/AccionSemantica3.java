@@ -1,5 +1,6 @@
 package AccionesSemanticas;
 
+import Errores.Error3;
 import main.*;
 
 public class AccionSemantica3 extends AccionSemantica {
@@ -11,6 +12,7 @@ public class AccionSemantica3 extends AccionSemantica {
         if (Lexico.palabrasReservadas.contains(buffer)) { //Buscar en tabla de Palabras Reservadas
             return new Token(this.getID(buffer)); //devolver el id (onda nro del token) de la palabra reservada.
         }
+        Token e3 = new Error3().run();
         return null;
     }
 

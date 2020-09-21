@@ -21,5 +21,6 @@ public class AccionSemantica4 extends AccionSemantica {
             */
 
         }
+        return null;
     }
 }
