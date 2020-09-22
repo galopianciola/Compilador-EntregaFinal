@@ -10,8 +10,15 @@ public class AccionSemantica4 extends AccionSemantica {
 
         if (buffer.length() > 20) {
             buffer.substring(0, 19);
+
             //todo:largar warning indicando la linea
-        } else {
+        }
+        if (!Main.tSimbolos.existeLexema(buffer)) {
+            //Main.tSimbolos.agregarSimbolo(buffer, Lexico.IDE); // todo: por qué dos string??
+        }
+        return new Token(Lexico.IDE, buffer);
+    }
+
             /*Buscar en tabla de Símbolos.
                     Si está,
                         devolver el identificador.
@@ -20,7 +27,4 @@ public class AccionSemantica4 extends AccionSemantica {
                         Devolver ID + Puntero TS
             */
 
-        }
-        return null;
-    }
 }

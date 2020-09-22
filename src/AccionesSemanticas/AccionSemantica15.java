@@ -6,7 +6,8 @@ public class AccionSemantica15 extends AccionSemantica {
 
     @Override
     public Token run() {
-        //retornar id del token '!=' cuando tengamos la lista de tokens
+        return new Token(Lexico.DISTINTO);
+        //retornar id del token '!='
     }
 
 

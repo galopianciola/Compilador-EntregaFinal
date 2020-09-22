@@ -6,6 +6,6 @@ public class AccionSemantica11 extends AccionSemantica {
 
     @Override
     public Token run() {
-        //retorna id del token >=;
+        return new Token(Lexico.MAYOR_IGUAL);
     }
 }

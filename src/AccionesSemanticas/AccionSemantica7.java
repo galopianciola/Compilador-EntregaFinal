@@ -6,7 +6,8 @@ public class AccionSemantica7 extends AccionSemantica {
 
     @Override
     public Token run() {
-        switch (Lexico.caracter) {
+        return new Token(Lexico.caracter);
+        /*switch (Lexico.caracter) {
             case '+':
                 //return token
             case '-':
@@ -28,5 +29,6 @@ public class AccionSemantica7 extends AccionSemantica {
             case ',':
                 //return token
         }
-    }
+        return new Token()
+*/    }
 }
