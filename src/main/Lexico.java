@@ -102,13 +102,13 @@ public class Lexico {
             // L    l    d    .    %    <    >    =    "    !    +    -    _   'u'  'i'  bl   'd'  <>   \n
             // 0    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   16   17   18
             {as1, as1, as1, as1, null, null, null, null, as1, null, as7, as7, err1, as1, as1, null, as1, as7, null},//0
-            {as2, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3},//1
-            {as4, as2, as2, as4, as4, as4, as4, as4, as4, as4, as4, as4, as2, as2, as2, as4, as2, as4, as4},//2
+            {as2, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3, as3},//1
+            {as4, as2, as2, as4, as4, as4, as4, as4, as4, as4, as4, as4, as2, as2, as2, as4, as2, as4, as4, as4},//2
             {err2, err2, as2, as2, err2, err2, err2, err2, err2, err2, err2, err2, null, err2, err2, err2, err2, err2, err2},//3
             {err3, err3, err3, err3, err3, err3, err3, err3, err3, err3, err3, err3, err3, null, err3, err3, err3, err3, err3},//4
             {err4, err4, err4, err4, err4, err4, err4, err4, err4, err4, err4, err4, err4, err4, as5, err4, err4, err4, err4},//5
             {err5, err5, as2, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5},//6
-            {as6, as6, as2, as6, as6, as6, as6, as6, as6, as6, as6, as6, as6, as6, as6, as6, as2, as6, as6},//7
+            {as6, as6, as2, as6, as6, as6, as6, as6, as6, as6, as6, as6, as6, as6, as6, as6, as2, as6, as6, as6},//7
             {err6, err6, err6, err6, err6, err6, err6, err6, err6, err6, as2, as2, err6, err6, err6, err6, err6, err6, err6},//8
             {err5, err5, as2, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5, err5},//9
             {as6, as6, as2, as6, as6, as6, as6, as6, as6, as6, as6, as6, as6, as6, as6, as6, as6, as6, as6},//10
@@ -147,29 +147,30 @@ public class Lexico {
     public Token getToken() {
         caracter = codigoFuente.charAt(cursor);
         int estadoActual = 0;
+        int columna = -1;
         Token token = null;
 
         while (caracter != '$') { // mientras no llego al final del codigo
-            int columna = getColumna(caracter);
+            cursor++;
+            columna = getColumna(caracter);
             if (columna != -1) { // si no es un caracter invalido
                 if (acciones[estadoActual][columna] != null) // si hay una AS
                     token = acciones[estadoActual][columna].run(); //ejecuto la AS correspondiente
 
                 estadoActual = transiciones[estadoActual][columna]; // transicion de estado siempre
                 //TODO:deberiamos preguntar si token no es null? por tema errores.
-                if(estadoActual == F){ //si estoy en final (tengo un token listo para devolver)
+                if(estadoActual == F) //si estoy en final (tengo un token listo para devolver)
                     return token;
-                }
             }
             else{ // error por caracter invalido
                 token = new Error1().run();
             }
             if (caracter == '\n')
                 linea++;
-            cursor++;
             caracter = codigoFuente.charAt(cursor);
         }
-        return token;
+        columna = getColumna(caracter);
+        return acciones[estadoActual][columna].run();
     }
 
     private int getColumna(char caracter) {
@@ -211,9 +212,8 @@ public class Lexico {
             return 17; // 'otro'
         if (caracter == 10)
             return 18; // 'nueva linea'
-       /* if (caracter == 36)
+       if (caracter == 36)
             return 19; // $
-        */
         return -1; //caracter no valido
     }
 }
