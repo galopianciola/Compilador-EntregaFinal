@@ -28,11 +28,11 @@ declaracion  : tipo lista_de_variables
              ;
 
 
-lista_de_variables : lista_de_variables ',' ID
-		   | ID
+lista_de_variables : lista_de_variables ',' IDE
+		   | IDE
 	           ;
 
-procedimiento : PROC ID '(' lista_de_parametros ')' NI '=' CTE_UINT '{' bloque_sentencias '}'
+procedimiento : PROC IDE '(' lista_de_parametros ')' NI '=' CTE_UINT '{' bloque_sentencias '}'
               ;
 
 lista_de_parametros : param
@@ -40,8 +40,8 @@ lista_de_parametros : param
 		    | param ',' param ',' param
 	            ;
 
-param : tipo ID
-      | REF tipo ID
+param : tipo IDE
+      | REF tipo IDE
       ;
 
 tipo : UINT
@@ -55,7 +55,7 @@ ejecucion : control
 	  | invocacion
 	  ;
 
-control : FOR '(' asignacion ';' condicion ';' inc_decr ID ')' '{' bloque_sentencias '}'
+control : FOR '(' UINT '=' CTE_UINT ';' condicion ';' inc_decr CTE_UINT ')' '{' bloque_sentencias '}'
 	;
 
 condicion :  expresion comparador expresion
@@ -74,14 +74,14 @@ termino : termino '*' factor
 
 factor 	: cte
 	| factor_negado
-	| ID
+	| IDE
         ;
 
 cte : CTE_DOUBLE
     | CTE_UINT
     ;
 
-factor_negado : '-' CTE_D
+factor_negado : '-' CTE_DOUBLE
               ;
 
 comparador : '<'
@@ -103,14 +103,14 @@ seleccion : IF '(' condicion ')' '{' bloque_sentencias '}' END_IF
 salida : OUT '(' CADENA ')'
        ;
 
-asignacion : ID '=' expresion
+asignacion : IDE '=' expresion
            ;
 
-invocacion : ID '(' parametros ')'
+invocacion : IDE '(' parametros ')'
 	   ;
 
-parametros : ID ':' ID
-	   | parametros ',' ID ':' ID
+parametros : IDE ':' IDE
+	   | parametros ',' IDE ':' IDE
 	   ;
 
 %%
