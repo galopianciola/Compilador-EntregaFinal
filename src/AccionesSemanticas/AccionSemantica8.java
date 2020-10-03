@@ -3,6 +3,7 @@ package AccionesSemanticas;
 import main.*;
 
 public class AccionSemantica8 extends AccionSemantica {
+    //COMENTARIOS %%
 
     @Override
     public Token run() {
