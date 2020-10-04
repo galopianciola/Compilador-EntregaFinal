@@ -163,17 +163,12 @@ public class Lexico {
 
                 estadoActual = transiciones[estadoActual][columna]; // transicion de estado siempre
                 //TODO:deberiamos preguntar si token no es null? por tema errores.
-                if ((estadoActual == F) && (caracter != '$'))//si estoy en final (tengo un token listo para devolver)
+                if ((estadoActual == F) && (token != null))//si estoy en final (tengo un token listo para devolver)
                     return token;
-                   /* if (caracter == '$') {
-                        //return new Token('$');
-                    } else {
-                        return token;
-                    }*/
-                else if (estadoActual == -1) {
-                    //cursor--;
+                else if (estadoActual == -1)
                     return token;//estadoActual = 0;//DEBERIA IR A FINALo al inicio?
-                }
+                if (estadoActual == F)
+                    estadoActual = 0;
             } else { // error por caracter invalido
                 return new Error1().run();
             }

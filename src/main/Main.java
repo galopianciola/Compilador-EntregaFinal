@@ -70,7 +70,7 @@ public class Main{
         }
         else
             System.out.println("token null");
-        /*Token token3 = l1.getToken();
+        Token token3 = l1.getToken();
         if (token3 != null){
             System.out.println(token3.getId());
             System.out.println(token3.getLexema());
@@ -84,7 +84,7 @@ public class Main{
         }
         else
             System.out.println("token null");
-        Token token5 = l1.getToken();
+        /*Token token5 = l1.getToken();
         if (token5 != null){
             System.out.println(token5.getId());
             System.out.println(token5.getLexema());

@@ -35,13 +35,13 @@ error_sentencia : declaracion error {System.out.println("Error sintáctico: Line
            	| ejecucion error {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó una sentencia mal declarada, falta ';'");}
            	;
 
-declaracion  : tipo lista_de_variables {System.out.println("[Parser | Linea " + Lexico.linea + "] se detectó una declaracion");}
+declaracion  : tipo lista_de_variables{System.out.println("[Parser | Linea " + Lexico.linea + "] se detectó una declaracion");}
     	     | procedimiento
              ;
 
-lista_de_variables : lista_de_variables ',' IDE
-		   | IDE {System.out.println("[Parser | Linea " + Lexico.linea + "] lei un ID");}
-	           ;
+lista_de_variables : IDE {System.out.println("[Parser | Linea " + Lexico.linea + "] lei un ID");}
+      		   | lista_de_variables ',' IDE
+                   ;
 
 procedimiento : PROC IDE'('lista_de_parametros')'NI'='CTE_UINT'{'bloque_sentencias'}'{System.out.println("[Parser | Linea " + Lexico.linea + "]se declaro una PROC");}
               ;

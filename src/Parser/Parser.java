@@ -191,7 +191,7 @@ final static short yylhs[] = {                           -1,
 };
 final static short yylen[] = {                            2,
     1,    1,    3,    1,    3,    3,    1,    2,    2,    2,
-    1,    2,    2,    2,    1,    3,    1,   11,    1,    3,
+    1,    2,    2,    2,    1,    1,    3,   11,    1,    3,
     5,    2,    3,    1,    1,    1,    1,    1,    1,    1,
    14,    3,    3,    3,    1,    4,    3,    3,    1,    1,
     1,    1,    1,    1,    2,    1,    1,    1,    1,    1,
@@ -201,12 +201,12 @@ final static short yydefred[] = {                         0,
     0,    0,    0,    0,   24,   25,    0,    0,    0,    0,
     1,    2,    4,    0,    0,   11,    0,   15,   26,   27,
    28,   29,   30,    7,    0,    0,    0,    0,    0,    0,
-    0,    0,   12,    9,   13,   10,   17,    0,    5,    8,
+    0,    0,   12,    9,   13,   10,   16,    0,    5,    8,
     0,    0,   42,   44,   43,    0,    0,    0,    0,   39,
    40,   41,    0,    0,    0,    0,    0,    6,    3,    0,
     0,    0,   58,    0,   45,    0,    0,    0,    0,    0,
    49,   50,   48,   51,   46,   47,    0,   56,    0,    0,
-    0,    0,    0,   16,   59,    0,    0,    0,    0,   37,
+    0,    0,    0,   17,   59,    0,    0,    0,    0,   37,
    38,    0,    0,    0,    0,   22,    0,    0,    0,   36,
     0,    0,   23,    0,    0,   60,    0,    0,    0,    0,
     0,   54,    0,    0,   21,    0,   52,   53,    0,    0,
@@ -361,8 +361,8 @@ final static String yyrule[] = {
 "error_sentencia : ejecucion error",
 "declaracion : tipo lista_de_variables",
 "declaracion : procedimiento",
-"lista_de_variables : lista_de_variables ',' IDE",
 "lista_de_variables : IDE",
+"lista_de_variables : lista_de_variables ',' IDE",
 "procedimiento : PROC IDE '(' lista_de_parametros ')' NI '=' CTE_UINT '{' bloque_sentencias '}'",
 "lista_de_parametros : param",
 "lista_de_parametros : param ',' param",
@@ -611,8 +611,8 @@ case 14:
 //#line 38 "calc.y"
 {System.out.println("[Parser | Linea " + Lexico.linea + "] se detectó una declaracion");}
 break;
-case 17:
-//#line 43 "calc.y"
+case 16:
+//#line 42 "calc.y"
 {System.out.println("[Parser | Linea " + Lexico.linea + "] lei un ID");}
 break;
 case 18:
