@@ -4,7 +4,7 @@ import main.*;
 %}
 
 %token IDE CTE_UINT MAYOR_IGUAL MENOR_IGUAL IGUAL_IGUAL DISTINTO CTE_DOUBLE CADENA IF THEN ELSE END_IF OUT UINT DOUBLE
-NI REF FOR UP DOWN PROC
+NI REF FOR UP DOWN PROC FUNC RETURN
 %start programa
 
 %%
@@ -12,22 +12,32 @@ NI REF FOR UP DOWN PROC
 programa: bloque
         ;
 
-bloque : sentencia {System.out.println("[Parser | Linea " + Lexico.linea + "] se detectó una sentencia");}
+bloque : sentencia
        | '{'bloque_sentencias'}'
+       | error_bloque
        ;
+
+
+error_bloque : error bloque_sentencias '}' {System.out.println("[Parser | Linea " + Lexico.linea + "] se detectó un bloque de sentencias mal declarado, falta '{'");}
+      	     | '{' bloque_sentencias error {System.out.println("[Parser | Linea " + Lexico.linea + "] se detectó un bloque de sentencias mal declarado, falta '}'");}
+             ;
 
 bloque_sentencias  :  sentencia
                    |  bloque_sentencias sentencia
                    ;
 
-sentencia  : declaracion ';'
-           | ejecucion   ';'
+sentencia  : declaracion ';'{System.out.println("[Parser | Linea " + Lexico.linea + "] se detectó una sentencia declarativa");}
+           | ejecucion ';'{System.out.println("[Parser | Linea " + Lexico.linea + "] se detectó una sentencia de ejecución");}
+           | error_sentencia
            ;
+
+error_sentencia : declaracion error {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó una sentencia mal declarada, falta ';'");}
+           	| ejecucion error {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó una sentencia mal declarada, falta ';'");}
+           	;
 
 declaracion  : tipo lista_de_variables {System.out.println("[Parser | Linea " + Lexico.linea + "] se detectó una declaracion");}
     	     | procedimiento
              ;
-
 
 lista_de_variables : lista_de_variables ',' IDE
 		   | IDE {System.out.println("[Parser | Linea " + Lexico.linea + "] lei un ID");}
@@ -100,6 +110,7 @@ inc_decr : UP
 seleccion : IF '(' condicion ')' '{' bloque_sentencias '}' END_IF {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó un IF");}
 	  | IF '(' condicion ')' '{' bloque_sentencias '}' ELSE '{' bloque_sentencias '}' END_IF {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó un IF con ELSE");}
 	  ;
+
 
 salida : OUT'('CADENA')'{System.out.println("[Parser | Linea " + Lexico.linea + "] se realizó un OUT");}
        ;

@@ -40,6 +40,8 @@ public class Lexico {
     public final static int UP = 275;
     public final static int DOWN = 276;
     public final static int PROC = 277;
+    public final static int FUNC = 277;
+    public final static int RETURN = 277;
 
 
     // ACCIONES SEMANTICAS
@@ -142,6 +144,8 @@ public class Lexico {
         palabrasReservadas.add("UP");
         palabrasReservadas.add("DOWN");
         palabrasReservadas.add("PROC");
+        palabrasReservadas.add("FUNC");
+        palabrasReservadas.add("RETURN");
     }
 
     public Token getToken() {
