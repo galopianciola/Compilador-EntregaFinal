@@ -137,7 +137,11 @@ factor 	: CTE_DOUBLE {System.out.println("[Parser | Linea " + Lexico.linea + "] 
 	| IDE {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó un identificador");}
         ;
 
-factor_negado : '-' CTE_DOUBLE
+factor_negado : '-' CTE_DOUBLE{	$$ = -1*$2;
+				if(($$ > 2.2250738585272014e-308 && $$ < 1.7976931348623157e+308) || ($$ > -1.7976931348623157e+308 && $$ < -2.2250738585072014e-308) || ($$ == 0.0))
+					Main.tSimbolos.modificartabla($2,$$);
+				else
+					Main.tSimbolos.eliminarSimbolo($2);}
               ;
 
 comparador : '<'

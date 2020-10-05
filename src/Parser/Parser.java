@@ -754,7 +754,7 @@ final static String yyrule[] = {
 "error_parametros : IDE ':' error",
 };
 
-//#line 218 "gramatica.y"
+//#line 222 "gramatica.y"
 
 private Lexico lexico;
 public Parser(Lexico lexico)
@@ -1145,139 +1145,147 @@ case 82:
 //#line 137 "gramatica.y"
 {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó un identificador");}
 break;
+case 83:
+//#line 140 "gramatica.y"
+{	yyval = -1 * val_peek(0);
+				if((yyval > 2.2250738585272014e-308 && yyval < 1.7976931348623157e+308) || (yyval > -1.7976931348623157e+308 && yyval < -2.2250738585072014e-308) || (yyval == 0.0))
+					Main.tSimbolos.modificartabla(val_peek(0),yyval);
+				else
+					Main.tSimbolos.eliminarSimbolo(val_peek(0));}
+break;
 case 92:
-//#line 155 "gramatica.y"
+//#line 159 "gramatica.y"
 {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó un IF");}
 break;
 case 93:
-//#line 156 "gramatica.y"
+//#line 160 "gramatica.y"
 {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó un IF con ELSE");}
 break;
 case 95:
-//#line 160 "gramatica.y"
+//#line 164 "gramatica.y"
 {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta '('");}
 break;
 case 96:
-//#line 161 "gramatica.y"
+//#line 165 "gramatica.y"
 {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta la condicion");}
 break;
 case 97:
-//#line 162 "gramatica.y"
+//#line 166 "gramatica.y"
 {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta ')'");}
 break;
 case 98:
-//#line 163 "gramatica.y"
+//#line 167 "gramatica.y"
 {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta '{'");}
 break;
 case 99:
-//#line 164 "gramatica.y"
+//#line 168 "gramatica.y"
 {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta el bloque de sentencias");}
 break;
 case 100:
-//#line 165 "gramatica.y"
+//#line 169 "gramatica.y"
 {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta '}'");}
 break;
 case 101:
-//#line 166 "gramatica.y"
+//#line 170 "gramatica.y"
 {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta el END_IF o ELSE");}
 break;
 case 102:
-//#line 167 "gramatica.y"
+//#line 171 "gramatica.y"
 {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta el ELSE");}
 break;
 case 103:
-//#line 168 "gramatica.y"
+//#line 172 "gramatica.y"
 {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta '{'");}
 break;
 case 104:
-//#line 169 "gramatica.y"
+//#line 173 "gramatica.y"
 {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta el bloque de sentencias del ELSE");}
 break;
 case 105:
-//#line 170 "gramatica.y"
+//#line 174 "gramatica.y"
 {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta '}'");}
 break;
 case 106:
-//#line 171 "gramatica.y"
+//#line 175 "gramatica.y"
 {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta el END_IF");}
 break;
 case 107:
-//#line 176 "gramatica.y"
+//#line 180 "gramatica.y"
 {System.out.println("[Parser | Linea " + Lexico.linea + "] se realizó un OUT");}
 break;
 case 109:
-//#line 180 "gramatica.y"
+//#line 184 "gramatica.y"
 {System.out.println("Error sintáctico: Linea " + Lexico.linea + " falta '(' en el OUT de cadena");}
 break;
 case 110:
-//#line 181 "gramatica.y"
+//#line 185 "gramatica.y"
 {System.out.println("Error sintáctico: Linea " + Lexico.linea + " falta ')' en el OUT de cadena");}
 break;
 case 111:
-//#line 182 "gramatica.y"
+//#line 186 "gramatica.y"
 {System.out.println("Error sintáctico: Linea " + Lexico.linea + " faltan '(' y ')' en el OUT de cadena");}
 break;
 case 112:
-//#line 183 "gramatica.y"
+//#line 187 "gramatica.y"
 {System.out.println("Error sintáctico: Linea " + Lexico.linea + " entre '(' y ')' no hay una cadena");}
 break;
 case 113:
-//#line 184 "gramatica.y"
+//#line 188 "gramatica.y"
 {System.out.println("Error sintáctico: Linea " + Lexico.linea + " falta cadena entre los parentesis en el OUT");}
 break;
 case 114:
-//#line 187 "gramatica.y"
+//#line 191 "gramatica.y"
 {System.out.println("[Parser | Linea " + Lexico.linea + "] se realizó una asignacion");}
 break;
 case 116:
-//#line 191 "gramatica.y"
+//#line 195 "gramatica.y"
 {System.out.println("Error sintáctico: Linea " + Lexico.linea + " falta '=' en la asignacion");}
 break;
 case 117:
-//#line 192 "gramatica.y"
+//#line 196 "gramatica.y"
 {System.out.println("Error sintáctico: Linea " + Lexico.linea + " falta el ID en la asignacion");}
 break;
 case 118:
-//#line 193 "gramatica.y"
+//#line 197 "gramatica.y"
 {System.out.println("Error sintáctico: Linea " + Lexico.linea + " falta una expresión para ser asignada al ID");}
 break;
 case 119:
-//#line 197 "gramatica.y"
+//#line 201 "gramatica.y"
 {System.out.println("[Parser | Linea " + Lexico.linea + "] se realizó una invocacion a una funcion");}
 break;
 case 121:
-//#line 201 "gramatica.y"
+//#line 205 "gramatica.y"
 {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó una invocacion mal declarada, falta el identificador");}
 break;
 case 122:
-//#line 202 "gramatica.y"
+//#line 206 "gramatica.y"
 {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� una invocacion mal declarada, falta el '('");}
 break;
 case 123:
-//#line 203 "gramatica.y"
+//#line 207 "gramatica.y"
 {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� una invocacion mal declarada, faltan los parametros");}
 break;
 case 124:
-//#line 204 "gramatica.y"
+//#line 208 "gramatica.y"
 {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� una invocacion mal declarada, falta el ')'");}
 break;
 case 128:
-//#line 212 "gramatica.y"
+//#line 216 "gramatica.y"
 {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detectaron parametros mal declarados, falta el id de la izquierda");}
 break;
 case 129:
-//#line 213 "gramatica.y"
+//#line 217 "gramatica.y"
 {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detectaron parametros mal declarados, falta ':' entre los id");}
 break;
 case 130:
-//#line 214 "gramatica.y"
+//#line 218 "gramatica.y"
 {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detectaron parametros mal declarados, falta ',' para separar los id");}
 break;
 case 131:
-//#line 215 "gramatica.y"
+//#line 219 "gramatica.y"
 {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detectaron parametros mal declarados, falta el id de la derecha");}
 break;
-//#line 1204 "Parser.java"
+//#line 1212 "Parser.java"
 //########## END OF USER-SUPPLIED ACTIONS ##########
     }//switch
     //#### Now let's reduce... ####

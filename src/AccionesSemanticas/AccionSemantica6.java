@@ -17,9 +17,7 @@ public class AccionSemantica6 extends AccionSemantica {
             System.out.println("[Lexico | Linea " + Lexico.linea + "] Se detecto un token de constante double -> " + buffer);
             return new Token(Lexico.CTE_DOUBLE, buffer);
         }
+
         return new Error9().run();
-            /*Alta en la TS
-              Devolver CTE + Punt TS.
-            */
     }
 }
