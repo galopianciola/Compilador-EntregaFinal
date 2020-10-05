@@ -26,25 +26,25 @@ bloque_sentencias  :  sentencia
                    |  bloque_sentencias sentencia
                    ;
 
-sentencia  : declaracion ';'{System.out.println("[Parser | Linea " + Lexico.linea + "] se detectó una sentencia declarativa");}
-           | ejecucion ';'{System.out.println("[Parser | Linea " + Lexico.linea + "] se detectó una sentencia de ejecución");}
-           | error_sentencia
+sentencia  : declaracion{System.out.println("[Parser | Linea " + Lexico.linea + "] se detectó una sentencia declarativa");}
+           | ejecucion {System.out.println("[Parser | Linea " + Lexico.linea + "] se detectó una sentencia de ejecución");}
            ;
 
-error_sentencia : declaracion error {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó una sentencia mal declarada, falta ';'");}
-           	| ejecucion error {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó una sentencia mal declarada, falta ';'");}
-           	;
-
-declaracion  : tipo lista_de_variables{System.out.println("[Parser | Linea " + Lexico.linea + "] se detectó una declaracion");}
-    	     | procedimiento
+declaracion  : tipo lista_de_variables ';'{System.out.println("[Parser | Linea " + Lexico.linea + "] se detectó una declaracion");}
+    	     | procedimiento';'
+    	     | error_declaracion
              ;
+
+error_declaracion : tipo lista_de_variables error {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó una sentencia mal declarada, falta ';'");}
+           	  | procedimiento error{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó una sentencia mal declarada, falta ';'");}
+           	  ;
 
 lista_de_variables : IDE {System.out.println("[Parser | Linea " + Lexico.linea + "] lei un ID");}
       		   | lista_de_variables ',' IDE
-      		   //| error_lista_de_variables
+      		   | error_lista_de_variables
                    ;
 
-//error_lista_de_variables: lista_de_variables IDE {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó una sentencia mal declarada, falta ',' entre los Id");}
+error_lista_de_variables: lista_de_variables IDE {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó una sentencia mal declarada, falta ',' entre los Id");}
 
 procedimiento : PROC IDE'('lista_de_parametros')'NI'='CTE_UINT'{'bloque_sentencias'}'{System.out.println("[Parser | Linea " + Lexico.linea + "]se declaro una PROC");}
               | error_proc
@@ -84,12 +84,20 @@ tipo : UINT {System.out.println("[Parser | Linea " + Lexico.linea + "] lei un ti
      | DOUBLE {System.out.println("[Parser | Linea " + Lexico.linea + "] lei un tipo DOUBLE");}
      ;
 
-ejecucion : control
-	  | seleccion
-	  | salida
-	  | asignacion
-	  | invocacion
+ejecucion : control';'
+	  | seleccion';'
+	  | salida ';'
+	  | asignacion ';'
+	  | invocacion';'
+	  | error_ejecucion
 	  ;
+
+error_ejecucion  : control error{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó una sentencia mal declarada, falta ';'");}
+               	 | seleccion error{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó una sentencia mal declarada, falta ';'");}
+                 | salida error{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó una sentencia mal declarada, falta ';'");}
+           	 | asignacion error{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó una sentencia mal declarada, falta ';'");}
+             	 | invocacion error{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó una sentencia mal declarada, falta ';'");}
+               	 ;
 
 control : FOR'('IDE'='CTE_UINT';'condicion';'inc_decr CTE_UINT')''{'bloque_sentencias'}'{ System.out.println("[Parser | Linea " + Lexico.linea + "] lei un FOR");}
 	| error_for
@@ -112,9 +120,9 @@ error_for: FOR   IDE'='CTE_UINT';'condicion';'inc_decr CTE_UINT')''{'bloque_sent
 condicion :  expresion comparador expresion
           ;
 
-expresion : expresion '+' termino { System.out.println("[Parser | Linea " + Lexico.linea + "] se realizo una suma");}
+expresion : termino
+	  | expresion '+' termino { System.out.println("[Parser | Linea " + Lexico.linea + "] se realizo una suma");}
 	  | expresion '-' termino { System.out.println("[Parser | Linea " + Lexico.linea + "] se realizo una resta");}
-	  | termino
 	  | DOUBLE '(' expresion ')'{ System.out.println("[Parser | Linea " + Lexico.linea + "] se realizo una conversion");}
           ;
 
@@ -123,14 +131,11 @@ termino : termino '*' factor { System.out.println("[Parser | Linea " + Lexico.li
 	| factor
         ;
 
-factor 	: cte
+factor 	: CTE_DOUBLE {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó una cte double");}
+        | CTE_UINT {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó una cte uint");}
 	| factor_negado
 	| IDE {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó un identificador");}
         ;
-
-cte : CTE_DOUBLE {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó una cte double");}
-    | CTE_UINT {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó una cte uint");}
-    ;
 
 factor_negado : '-' CTE_DOUBLE
               ;
@@ -152,7 +157,7 @@ seleccion : IF '(' condicion ')' '{' bloque_sentencias '}' END_IF {System.out.pr
 	  | error_if
 	  ;
 
-error_if: IF  condicion    ')' '{' bloque_sentencias '}' END_IF {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta '('");}
+error_if: IF     condicion ')' '{' bloque_sentencias '}' END_IF {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta '('");}
 	| IF '('           ')' '{' bloque_sentencias '}' END_IF {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta la condicion");}
 	| IF '(' condicion     '{' bloque_sentencias '}' END_IF {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta ')'");}
 	| IF '(' condicion ')'     bloque_sentencias '}' END_IF {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta '{'");}
@@ -196,7 +201,7 @@ invocacion : IDE '(' parametros ')' {System.out.println("[Parser | Linea " + Lex
 error_invocacion: '(' parametros ')' {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó una invocacion mal declarada, falta el identificador");}
 		| IDE parametros ')' {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� una invocacion mal declarada, falta el '('");}
 		| IDE '(' ')' {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� una invocacion mal declarada, faltan los parametros");}
-		|'('parametros{System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� una invocacion mal declarada, falta el ')'");}
+		| IDE'('parametros {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� una invocacion mal declarada, falta el ')'");}
 		;
 
 parametros : IDE ':' IDE
