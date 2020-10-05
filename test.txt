@@ -1,1 +1,1 @@
-DOUBLE k
+DOUBLE a
