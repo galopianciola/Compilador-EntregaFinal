@@ -54,6 +54,9 @@ public class Main{
         Parser p = new Parser(l1);
         p.run();
 
+        System.out.println("\n********* TABLA DE SIMBOLOS *********");
+        tSimbolos.printTablaSimbolos();
+
         /*Token token = l1.getToken();
         if (token != null){
             System.out.println(token.getId());

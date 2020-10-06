@@ -162,7 +162,6 @@ public class Lexico {
                     token = acciones[estadoActual][columna].run(); //ejecuto la AS correspondiente
 
                 estadoActual = transiciones[estadoActual][columna]; // transicion de estado siempre
-                //TODO:deberiamos preguntar si token no es null? por tema errores.
                 if ((estadoActual == F) && (token != null))//si estoy en final (tengo un token listo para devolver)
                     return token;
                 else if (estadoActual == -1)

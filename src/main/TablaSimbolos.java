@@ -41,9 +41,10 @@ public class TablaSimbolos {
     }
 
     public void printTablaSimbolos(){
-        Enumeration it = tSimbolos.keys();
-        while(it.hasMoreElements()){
-            System.out.println("Lexema: "+ it.nextElement() + ", "+"id: "+tSimbolos.get(it.nextElement()));
+        Enumeration iterador = tSimbolos.keys();
+        while(iterador.hasMoreElements()){
+            String lexema = (String) iterador.nextElement();
+            System.out.println("Lexema: "+ lexema + ", id: "+tSimbolos.get(lexema));
         }
     }
 }
