@@ -1,5 +1,8 @@
 package main;
 
+import com.sun.jmx.snmp.Enumerated;
+
+import java.util.Enumeration;
 import java.util.Hashtable;
 
 public class TablaSimbolos {
@@ -35,5 +38,12 @@ public class TablaSimbolos {
 
     public boolean existeLexema(String s) {
         return (tSimbolos.containsKey(s));
+    }
+
+    public void printTablaSimbolos(){
+        Enumeration it = tSimbolos.keys();
+        while(it.hasMoreElements()){
+            System.out.println("Lexema: "+ it.nextElement() + ", "+"id: "+tSimbolos.get(it.nextElement()));
+        }
     }
 }

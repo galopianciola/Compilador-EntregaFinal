@@ -133,16 +133,13 @@ termino : termino '*' factor { System.out.println("[Parser | Linea " + Lexico.li
 
 factor 	: CTE_DOUBLE {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó una cte double");}
         | CTE_UINT {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó una cte uint");}
-	| factor_negado
+        | '-' factor {chequearFactorNegado();}
 	| IDE {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó un identificador");}
         ;
 
-factor_negado : '-' CTE_DOUBLE{	$$ = -1 * $2;
-				if(($$ > 2.2250738585272014e-308 && $$ < 1.7976931348623157e+308) || ($$ > -1.7976931348623157e+308 && $$ < -2.2250738585072014e-308) || ($$ == 0.0))
-					Main.tSimbolos.modificartabla($2,$$);
-				else
-					Main.tSimbolos.eliminarSimbolo($2);}
-              ;
+/*factor_negado : '-' CTE_DOUBLE{chequearFactorNegado();}
+	      | '-' CTE_UINT{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó una constante UINT fuera de rango");}{Main.tSimbolos.eliminarSimbolo($2.sval);}
+              ;*/
 
 comparador : '<'
 	   | '>'
@@ -230,7 +227,7 @@ public int yylex(){
    Token token = this.lexico.getToken();
    if(token != null ){
    	int val =token.getId();
-   	yyval = new ParserVal(token.getLexema());
+   	yylval = new ParserVal(token.getLexema());
    	return val;
    }
    return 0;
@@ -238,4 +235,22 @@ public int yylex(){
 
 public void yyerror(String s){
     System.out.println("Parser: " + s);
+}
+
+public void chequearFactorNegado(){
+	String lexema = yylval.sval;
+	int id = Main.tSimbolos.getId(lexema);
+	if(id == Lexico.CTE_UINT){
+		System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó una constante UINT fuera de rango");
+		Main.tSimbolos.eliminarSimbolo(lexema);
+	}
+	else if (id == Lexico.CTE_DOUBLE) {
+		double valor = -1*Double.parseDouble(lexema.replace('d','e'));
+		if(( valor > 2.2250738585272014e-308 && valor < 1.7976931348623157e+308) || (valor > -1.7976931348623157e+308 && valor < -2.2250738585072014e-308) || (valor == 0.0))
+                	Main.tSimbolos.modificarSimbolo(lexema, String.valueOf(valor));
+                else {
+                	System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó una constante DOUBLE fuera de rango");
+	               	Main.tSimbolos.eliminarSimbolo(lexema);
+	 	}
+	}
 }
