@@ -1,0 +1,2 @@
+{DOUBLE a,b;
+UINT c;}
