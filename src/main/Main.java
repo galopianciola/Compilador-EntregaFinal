@@ -32,9 +32,15 @@ public class Main{
         return buffer;
     }
 
-    public static void main(String[]args) {
+    public static void main(String[]args) throws IOException {
         //-------------- CARGA DE ARCHIVO --------------
-        String direccion = "test.txt";
+
+        InputStreamReader leer = new InputStreamReader(System.in);
+        BufferedReader buffer = new BufferedReader(leer);
+        System.out.print("Ingrese la direccion del archivo: ");
+        String direccion = buffer.readLine();
+
+       // String direccion = "test.txt";
         InputStream is = new ByteArrayInputStream(direccion.getBytes());
 
         BufferedReader br = new BufferedReader(new InputStreamReader(is));
