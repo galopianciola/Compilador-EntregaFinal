@@ -1,0 +1,1 @@
+IF ( a < z ) { DOUBLE c;} END_IF

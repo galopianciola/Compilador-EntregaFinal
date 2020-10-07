@@ -1,0 +1,1 @@
+IF ( a < z + y ) { DOUBLE c;} ELSE { } END_IF;
