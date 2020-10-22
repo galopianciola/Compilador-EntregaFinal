@@ -5,9 +5,10 @@ public class DatosTabla {
     private String tipo;
     private String uso;
 
-    DatosTabla(int id) {
-        this.id = id;
+    public DatosTabla() {
+        this.id = 0;
         this.tipo = null;
+        this.uso = null;
     }
 
     public int getId() {
