@@ -1,6 +1,8 @@
 %{
 package Parser;
 import main.*;
+import java.util.ArrayList;
+
 %}
 
 %token IDE CTE_UINT MAYOR_IGUAL MENOR_IGUAL IGUAL_IGUAL DISTINTO CTE_DOUBLE CADENA IF THEN ELSE END_IF OUT UINT DOUBLE
@@ -31,14 +33,18 @@ sentencia  : declaracion
            ;
 
 declaracion : tipo lista_de_variables';'{//System.out.println("[Parser | Linea " + Lexico.linea + "] se detectó una declaracion de variables");
-					int tipo = ((Token)$1.obj).getId();
-					System.out.println("tipo "+tipo);
-					//if( = 270)
-					//	tipo=uint;
-					//else
-					//	tipo=double;
-					//String tipo = $1.yylval.sval;
-					//String uso = "variable";}
+					int tipo = ((Token) $1.obj).getId();
+					System.out.println("tipo "+ tipo);
+					String tipoVar;
+					if(tipo == 270)
+						tipoVar = "UINT";
+					else
+						tipoVar = "DOUBLE";
+					for(Token t : (ArrayList<Token>)$2.obj){
+						DatosTabla dt = Main.tSimbolos.getDatosTabla(t.getLexema());
+						dt.setUso("variable");
+						dt.setTipo(tipoVar);
+						}
 					}
 
     	     | procedimiento';'
@@ -49,8 +55,16 @@ error_declaracion : tipo lista_de_variables error {System.out.println("Error sin
            	  | procedimiento error{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó una sentencia mal declarada, falta ';'");}
            	  ;
 
-lista_de_variables : IDE {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyo el identificador -> " + $1.sval);}
-      		   | lista_de_variables ',' IDE {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyo el identificador -> " + $3.sval);}
+lista_de_variables : lista_de_variables ',' IDE {//System.out.println("[Parser | Linea " + Lexico.linea + "] se leyo el identificador -> " + $3.sval);}
+      		   				 ArrayList<Token> lista  = (ArrayList<Token>) $1.obj;
+                                                 lista.add((Token)$3.obj);
+                                                 $$ = new ParserVal(lista);
+                                                 }
+		   | IDE {//System.out.println("[Parser | Linea " + Lexico.linea + "] se leyo el identificador -> " + $1.sval);}
+                          		  ArrayList<Token> lista = new ArrayList<>();
+                                          lista.add((Token)$1.obj);
+                                          $$ = new ParserVal(lista);
+                                          }
       		   | error_lista_de_variables
                    ;
 
@@ -59,7 +73,6 @@ error_lista_de_variables: lista_de_variables IDE {System.out.println("Error sint
 procedimiento : PROC IDE'('lista_de_parametros')'NI'='CTE_UINT'{'bloque_sentencias'}'{System.out.println("[Parser | Linea " + Lexico.linea + "]se declaró un procedimiento");}
               | error_proc
               ;
-
 
 error_proc: PROC    '('lista_de_parametros')'NI'='CTE_UINT'{'bloque_sentencias'}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un procedimiento mal declarado, falta el identificador");}
 	  | PROC IDE   lista_de_parametros')'NI'='CTE_UINT'{'bloque_sentencias'}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un procedimiento mal declarado, falta '('");}
@@ -90,7 +103,8 @@ param : tipo IDE {System.out.println("[Parser | Linea " + Lexico.linea + "]se le
       | REF tipo IDE {System.out.println("[Parser | Linea " + Lexico.linea + "]se leyó el parametro -> " + $2.sval);}
       ;
 
-tipo : UINT {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó un tipo UINT");}
+tipo : UINT {//System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó un tipo UINT");}
+		$$ = new ParserVal ( new Token(Lexico.UINT));}
      | DOUBLE {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó un tipo DOUBLE");}
      ;
 
