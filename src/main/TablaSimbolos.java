@@ -1,7 +1,6 @@
 package main;
 
 import com.sun.jmx.snmp.Enumerated;
-
 import java.util.Enumeration;
 import java.util.Hashtable;
 
@@ -57,11 +56,12 @@ public class TablaSimbolos {
         return (tSimbolos.containsKey(s));
     }
 
-    public void printTablaSimbolos(){
+    public void printTablaSimbolos() {
         Enumeration iterador = tSimbolos.keys();
-        while(iterador.hasMoreElements()){
+        while (iterador.hasMoreElements()) {
             String lexema = (String) iterador.nextElement();
-            System.out.println("Lexema: "+ lexema + ", id: "+tSimbolos.get(lexema));
+            System.out.println("Lexema: " + lexema + ", id: " + tSimbolos.get(lexema).getId() +
+                    ", tipo: " + tSimbolos.get(lexema).getTipo() + ", uso: " + tSimbolos.get(lexema).getUso());
         }
     }
 }

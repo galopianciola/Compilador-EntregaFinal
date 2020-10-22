@@ -30,7 +30,17 @@ sentencia  : declaracion
            | ejecucion
            ;
 
-declaracion  : tipo lista_de_variables ';'{System.out.println("[Parser | Linea " + Lexico.linea + "] se detectó una declaracion de variables");}
+declaracion : tipo lista_de_variables';'{//System.out.println("[Parser | Linea " + Lexico.linea + "] se detectó una declaracion de variables");
+					int tipo = ((Token)$1.obj).getId();
+					System.out.println("tipo "+tipo);
+					//if( = 270)
+					//	tipo=uint;
+					//else
+					//	tipo=double;
+					//String tipo = $1.yylval.sval;
+					//String uso = "variable";}
+					}
+
     	     | procedimiento';'
     	     | error_declaracion
              ;
@@ -222,7 +232,7 @@ public Parser(Lexico lexico)
 public int yylex(){
    Token token = this.lexico.getToken();
    if(token != null ){
-   	int val =token.getId();
+   	int val = token.getId();
    	yylval = new ParserVal(token.getLexema());
    	return val;
    }
