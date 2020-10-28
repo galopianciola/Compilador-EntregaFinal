@@ -33,17 +33,10 @@ sentencia  : declaracion
            ;
 
 declaracion : tipo lista_de_variables';'{//System.out.println("[Parser | Linea " + Lexico.linea + "] se detectó una declaracion de variables");
-					int tipo = ((Token) $1.obj).getId();
-					System.out.println("tipo "+ tipo);
-					String tipoVar;
-					if(tipo == 270)
-						tipoVar = "UINT";
-					else
-						tipoVar = "DOUBLE";
-					for(Token t : (ArrayList<Token>)$2.obj){
-						DatosTabla dt = Main.tSimbolos.getDatosTabla(t.getLexema());
-						dt.setUso("variable");
-						dt.setTipo(tipoVar);
+					String tipoVar = $1.sval;
+					lista_variables = (ArrayList<String>)$2.obj;
+					for(String lexema : lista_variables){
+						Main.tSimbolos.setDatosTabla(lexema,"variable",tipoVar);
 						}
 					}
 
@@ -56,15 +49,14 @@ error_declaracion : tipo lista_de_variables error {System.out.println("Error sin
            	  ;
 
 lista_de_variables : lista_de_variables ',' IDE {//System.out.println("[Parser | Linea " + Lexico.linea + "] se leyo el identificador -> " + $3.sval);}
-      		   				 ArrayList<Token> lista  = (ArrayList<Token>) $1.obj;
-                                                 lista.add((Token)$3.obj);
-                                                 $$ = new ParserVal(lista);
+      		   				 lista_variables = (ArrayList<String>) $1.obj;
+                                                 lista_variables.add($3.sval);
+                                                 $$ = new ParserVal(lista_variables);
                                                  }
 		   | IDE {//System.out.println("[Parser | Linea " + Lexico.linea + "] se leyo el identificador -> " + $1.sval);}
-                          		  ArrayList<Token> lista = new ArrayList<>();
-                                          lista.add((Token)$1.obj);
-                                          $$ = new ParserVal(lista);
-                                          }
+                          	lista_variables.add($1.sval);
+                                $$ = new ParserVal(lista_variables);
+                                }
       		   | error_lista_de_variables
                    ;
 
@@ -104,8 +96,9 @@ param : tipo IDE {System.out.println("[Parser | Linea " + Lexico.linea + "]se le
       ;
 
 tipo : UINT {//System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó un tipo UINT");}
-		$$ = new ParserVal ( new Token(Lexico.UINT));}
-     | DOUBLE {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó un tipo DOUBLE");}
+		$$ = new ParserVal ("UINT");}
+     | DOUBLE {//System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó un tipo DOUBLE");
+     		$$ = new ParserVal ("DOUBLE");}
      ;
 
 ejecucion : control';'
@@ -238,9 +231,12 @@ error_parametros : ':' IDE {System.out.println("Error sintáctico: Linea " + Lex
 %%
 
 private Lexico lexico;
+private ArrayList<String> lista_variables;
+
 public Parser(Lexico lexico)
 {
-  this.lexico= lexico;
+  this.lexico = lexico;
+  this.lista_variables = new ArrayList<String>();
 }
 
 public int yylex(){

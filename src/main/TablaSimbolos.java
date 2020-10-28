@@ -64,4 +64,10 @@ public class TablaSimbolos {
                     ", tipo: " + tSimbolos.get(lexema).getTipo() + ", uso: " + tSimbolos.get(lexema).getUso());
         }
     }
+
+    public void setDatosTabla( String lexema, String uso ,String tipo){
+        DatosTabla tb = tSimbolos.get(lexema);
+        tb.setUso(uso);
+        tb.setTipo(tipo);
+    }
 }

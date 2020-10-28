@@ -1,6 +1,8 @@
 %{
 package Parser;
 import main.*;
+import java.util.ArrayList;
+
 %}
 
 %token IDE CTE_UINT MAYOR_IGUAL MENOR_IGUAL IGUAL_IGUAL DISTINTO CTE_DOUBLE CADENA IF THEN ELSE END_IF OUT UINT DOUBLE
@@ -30,7 +32,14 @@ sentencia  : declaracion
            | ejecucion
            ;
 
-declaracion  : tipo lista_de_variables ';'{System.out.println("[Parser | Linea " + Lexico.linea + "] se detectó una declaracion de variables");}
+declaracion : tipo lista_de_variables';'{//System.out.println("[Parser | Linea " + Lexico.linea + "] se detectó una declaracion de variables");
+					String tipoVar = $1.sval;
+					lista_variables = (ArrayList<String>)$2.obj;
+					for(String lexema : lista_variables){
+						Main.tSimbolos.setDatosTabla(lexema,"variable",tipoVar);
+						}
+					}
+
     	     | procedimiento';'
     	     | error_declaracion
              ;
@@ -39,8 +48,15 @@ error_declaracion : tipo lista_de_variables error {System.out.println("Error sin
            	  | procedimiento error{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó una sentencia mal declarada, falta ';'");}
            	  ;
 
-lista_de_variables : IDE {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyo el identificador -> " + $1.sval);}
-      		   | lista_de_variables ',' IDE {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyo el identificador -> " + $3.sval);}
+lista_de_variables : lista_de_variables ',' IDE {//System.out.println("[Parser | Linea " + Lexico.linea + "] se leyo el identificador -> " + $3.sval);}
+      		   				 lista_variables = (ArrayList<String>) $1.obj;
+                                                 lista_variables.add($3.sval);
+                                                 $$ = new ParserVal(lista_variables);
+                                                 }
+		   | IDE {//System.out.println("[Parser | Linea " + Lexico.linea + "] se leyo el identificador -> " + $1.sval);}
+                          	lista_variables.add($1.sval);
+                                $$ = new ParserVal(lista_variables);
+                                }
       		   | error_lista_de_variables
                    ;
 
@@ -49,7 +65,6 @@ error_lista_de_variables: lista_de_variables IDE {System.out.println("Error sint
 procedimiento : PROC IDE'('lista_de_parametros')'NI'='CTE_UINT'{'bloque_sentencias'}'{System.out.println("[Parser | Linea " + Lexico.linea + "]se declaró un procedimiento");}
               | error_proc
               ;
-
 
 error_proc: PROC    '('lista_de_parametros')'NI'='CTE_UINT'{'bloque_sentencias'}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un procedimiento mal declarado, falta el identificador");}
 	  | PROC IDE   lista_de_parametros')'NI'='CTE_UINT'{'bloque_sentencias'}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un procedimiento mal declarado, falta '('");}
@@ -80,8 +95,10 @@ param : tipo IDE {System.out.println("[Parser | Linea " + Lexico.linea + "]se le
       | REF tipo IDE {System.out.println("[Parser | Linea " + Lexico.linea + "]se leyó el parametro -> " + $2.sval);}
       ;
 
-tipo : UINT {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó un tipo UINT");}
-     | DOUBLE {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó un tipo DOUBLE");}
+tipo : UINT {//System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó un tipo UINT");}
+		$$ = new ParserVal ("UINT");}
+     | DOUBLE {//System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó un tipo DOUBLE");
+     		$$ = new ParserVal ("DOUBLE");}
      ;
 
 ejecucion : control';'
@@ -214,15 +231,18 @@ error_parametros : ':' IDE {System.out.println("Error sintáctico: Linea " + Lex
 %%
 
 private Lexico lexico;
+private ArrayList<String> lista_variables;
+
 public Parser(Lexico lexico)
 {
-  this.lexico= lexico;
+  this.lexico = lexico;
+  this.lista_variables = new ArrayList<String>();
 }
 
 public int yylex(){
    Token token = this.lexico.getToken();
    if(token != null ){
-   	int val =token.getId();
+   	int val = token.getId();
    	yylval = new ParserVal(token.getLexema());
    	return val;
    }
