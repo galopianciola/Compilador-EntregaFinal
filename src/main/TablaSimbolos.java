@@ -67,13 +67,15 @@ public class TablaSimbolos {
         while (iterador.hasMoreElements()) {
             String lexema = (String) iterador.nextElement();
             System.out.println("Lexema: " + lexema + ", id: " + tSimbolos.get(lexema).getId() +
-                    ", tipo: " + tSimbolos.get(lexema).getTipo() + ", uso: " + tSimbolos.get(lexema).getUso());
+                    ", tipo: " + tSimbolos.get(lexema).getTipo() + ", uso: " + tSimbolos.get(lexema).getUso()
+                    + ", declarada: "+ tSimbolos.get(lexema).isDeclarada());
         }
     }
 
-    public void setDatosTabla( String lexema, String uso ,String tipo){
+    public void setDatosTabla( String lexema, String uso ,String tipo, boolean declarada){
         DatosTabla tb = tSimbolos.get(lexema);
         tb.setUso(uso);
         tb.setTipo(tipo);
+        tb.setDeclarada(declarada);
     }
 }

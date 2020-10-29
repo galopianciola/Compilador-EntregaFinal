@@ -36,8 +36,8 @@ declaracion : tipo lista_de_variables';'{//System.out.println("[Parser | Linea "
 					String tipoVar = $1.sval;
 					lista_variables = (ArrayList<String>)$2.obj; //controlar si ya está en la tabla
 					for(String lexema : lista_variables){
-						Main.tSimbolos.setDatosTabla(lexema,"variable",tipoVar);
-						}
+						Main.tSimbolos.setDatosTabla(lexema,"variable",tipoVar,true);
+					}
 					lista_variables.clear();
 					}
 
@@ -142,28 +142,32 @@ expresion : termino { $$ = new ParserVal((Operando)$1.obj);}
 	  | expresion '+' termino {System.out.println("[Parser | Linea " + Lexico.linea + "] se realizó una suma");
 				Operando op1 = (Operando)$1.obj;
 				Operando op2 = (Operando)$3.obj;
-				if(op1.getTipo().equals(op2.getTipo())){
-                                	Terceto t = new Terceto("+", op1.getValor(), op2.getValor());
-                                	adminTerceto.agregarTerceto(t);
-                            		$$ = new ParserVal(new Operando(op1.getTipo(), "["+t.getNumero()+"]"));
-                                	}
-                                else
-                                	System.out.println("Tipos incompatibles");
-                                }
+				if(op1 != null && op2 !=null){
+					if(op1.getTipo().equals(op2.getTipo())){
+						Terceto t = new Terceto("+", op1.getValor(), op2.getValor());
+						adminTerceto.agregarTerceto(t);
+						$$ = new ParserVal(new Operando(op1.getTipo(), "["+t.getNumero()+"]"));
+						}
+					else
+						System.out.println("Tipos incompatibles");
+                                }}
 	  | expresion '-' termino { System.out.println("[Parser | Linea " + Lexico.linea + "] se realizó una resta");
 	  			Operando op1 = (Operando)$1.obj;
                                 Operando op2 = (Operando)$3.obj;
-                                if(op1.getTipo().equals(op2.getTipo())){
-                                	Terceto t = new Terceto("-", op1.getValor(), op2.getValor());
-                                	adminTerceto.agregarTerceto(t);
-                                        $$ = new ParserVal(new Operando(op1.getTipo(),"["+t.getNumero()+"]"));
-                                        }
-                                else
-                                  	System.out.println("Tipos incompatibles");
-                                }
+                                if(op1 != null && op2 !=null){
+					if(op1.getTipo().equals(op2.getTipo())){
+						Terceto t = new Terceto("-", op1.getValor(), op2.getValor());
+						adminTerceto.agregarTerceto(t);
+						$$ = new ParserVal(new Operando(op1.getTipo(),"["+t.getNumero()+"]"));
+						}
+					else
+						System.out.println("Tipos incompatibles");
+                                }}
 	  | DOUBLE '(' expresion ')'{ System.out.println("[Parser | Linea " + Lexico.linea + "] se realizó una conversión");
 	  			Operando op = (Operando)$3.obj;
-	  			$$ = new ParserVal(new Operando("DOUBLE",op.getValor()));}
+	  			 if(op1 != null)
+	  				$$ = new ParserVal(new Operando("DOUBLE",op.getValor()));
+	  			}
           ;
 
 termino : termino '*' factor { System.out.println("[Parser | Linea " + Lexico.linea + "] se realizó una multiplicacion");
@@ -191,16 +195,30 @@ termino : termino '*' factor { System.out.println("[Parser | Linea " + Lexico.li
         ;
 
 factor 	: CTE_DOUBLE {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó la constante double -> " + $1.sval);
-			$$ = new ParserVal(new Operando("DOUBLE", $1.sval));}
+			if(Main.tSimbolos.getDatosTabla($1.sval).isDeclarada())
+				$$ = new ParserVal(new Operando("DOUBLE", $1.sval));
+			else {
+				System.out.println("La variable " + $1.sval +" no fue declarada");
+				$$ = new ParserVal(null);}
+			}
         | CTE_UINT {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó la constante uint -> " + $1.sval);
-        		$$ = new ParserVal(new Operando("UINT", $1.sval));}
+        		if(Main.tSimbolos.getDatosTabla($1.sval).isDeclarada())
+                        	$$ = new ParserVal(new Operando("UINT", $1.sval));
+                        else {
+                        	System.out.println("La variable " + $1.sval +" no fue declarada");
+                        	$$ = new ParserVal(null);}
+                        }
         | '-' factor {	if(chequearFactorNegado()){
         			Operando op = (Operando)$2.obj;
         			$$ = new ParserVal(new Operando(op.getTipo(), "-" + op.getValor()));
         			}}
 	| IDE { System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó el identificador -> " + $1.sval);
-		$$ = new ParserVal(new Operando(Main.tSimbolos.getDatosTabla($1.sval).getTipo(), $1.sval));
-		}
+		if(Main.tSimbolos.getDatosTabla($1.sval).isDeclarada())
+                	$$ = new ParserVal(new Operando(Main.tSimbolos.getDatosTabla($1.sval).getTipo(), $1.sval));
+                else {
+                       	System.out.println("La variable " + $1.sval +" no fue declarada");
+                       	$$ = new ParserVal(null);
+                }}
         ;
 
 comparador : '<'
@@ -250,13 +268,14 @@ error_salida : OUT CADENA ')' {System.out.println("Error sintáctico: Linea " + 
 asignacion : IDE '=' expresion {System.out.println("[Parser | Linea " + Lexico.linea + "] se realizó una asignación al identificador -> " + $1.sval);
 				String tipoIde = Main.tSimbolos.getDatosTabla($1.sval).getTipo();
 				Operando op = (Operando)$3.obj;
-				if(tipoIde.equals(op.getTipo())){
-					Terceto t = new Terceto("=", $1.sval, op.getValor());
-					adminTerceto.agregarTerceto(t);
-					$$ = new ParserVal(new Operando(tipoIde, "[" + t.getNumero()+ "]"));
-				} else
-					System.out.println("Los tipos son incompatibles");
-				}
+				if(op != null){
+					if(tipoIde.equals(op.getTipo())){
+						Terceto t = new Terceto("=", $1.sval, op.getValor());
+						adminTerceto.agregarTerceto(t);
+						$$ = new ParserVal(new Operando(tipoIde, "[" + t.getNumero()+ "]"));
+					} else
+						System.out.println("Los tipos son incompatibles");
+				}}
 	   | error_asignacion
 	   ;
 

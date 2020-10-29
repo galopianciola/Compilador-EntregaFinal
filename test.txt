@@ -1,5 +1,5 @@
 {DOUBLE a;
-UINT b,c,d;
+UINT c,d;
 d=b+c;}
 
 
