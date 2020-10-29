@@ -38,6 +38,7 @@ declaracion : tipo lista_de_variables';'{//System.out.println("[Parser | Linea "
 					for(String lexema : lista_variables){
 						Main.tSimbolos.setDatosTabla(lexema,"variable",tipoVar);
 						}
+					lista_variables.clear();
 					}
 
     	     | procedimiento';'
@@ -141,15 +142,13 @@ expresion : termino { $$ = new ParserVal((Operando)$1.obj);}
 	  | expresion '+' termino {System.out.println("[Parser | Linea " + Lexico.linea + "] se realizó una suma");
 				Operando op1 = (Operando)$1.obj;
 				Operando op2 = (Operando)$3.obj;
-				System.out.println(op1.getTipo());
-				/*if(op1.getTipo().equals(op2.getTipo())){
+				if(op1.getTipo().equals(op2.getTipo())){
                                 	Terceto t = new Terceto("+", op1.getValor(), op2.getValor());
                                 	adminTerceto.agregarTerceto(t);
                             		$$ = new ParserVal(new Operando(op1.getTipo(), "["+t.getNumero()+"]"));
                                 	}
                                 else
                                 	System.out.println("Tipos incompatibles");
-                                */
                                 }
 	  | expresion '-' termino { System.out.println("[Parser | Linea " + Lexico.linea + "] se realizó una resta");
 	  			Operando op1 = (Operando)$1.obj;
@@ -251,15 +250,12 @@ error_salida : OUT CADENA ')' {System.out.println("Error sintáctico: Linea " + 
 asignacion : IDE '=' expresion {System.out.println("[Parser | Linea " + Lexico.linea + "] se realizó una asignación al identificador -> " + $1.sval);
 				String tipoIde = Main.tSimbolos.getDatosTabla($1.sval).getTipo();
 				Operando op = (Operando)$3.obj;
-				System.out.println(tipoIde);
-				System.out.println(op.getTipo());
-				/*if(tipoIde.equals(op.getTipo())){
+				if(tipoIde.equals(op.getTipo())){
 					Terceto t = new Terceto("=", $1.sval, op.getValor());
 					adminTerceto.agregarTerceto(t);
 					$$ = new ParserVal(new Operando(tipoIde, "[" + t.getNumero()+ "]"));
 				} else
 					System.out.println("Los tipos son incompatibles");
-				*/
 				}
 	   | error_asignacion
 	   ;
@@ -296,11 +292,11 @@ private Lexico lexico;
 private ArrayList<String> lista_variables;
 private AdmTercetos adminTerceto;
 
-public Parser(Lexico lexico)
+public Parser(Lexico lexico, AdmTercetos adminTerceto)
 {
   this.lexico = lexico;
   this.lista_variables = new ArrayList<String>();
-  this.adminTerceto = new AdmTercetos();
+  this.adminTerceto = adminTerceto;
 }
 
 public int yylex(){

@@ -23,4 +23,16 @@ public class Terceto {
     public void setNumero(int i){
         this.numero = i;
     }
+
+    public String getOp1() {
+        return op1;
+    }
+
+    public String getOp2() {
+        return op2;
+    }
+
+    public String getOperador() {
+        return operador;
+    }
 }

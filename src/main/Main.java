@@ -3,6 +3,7 @@ package main;
 
 import java.io.*;
 import Parser.*;
+import CodigoInt.*;
 
 public class Main{
 
@@ -51,14 +52,17 @@ public class Main{
         System.out.println("Contenido del archivo: " + codigo);
         //-------------- ///// // /////// --------------
 
+        AdmTercetos adminTercetos = new AdmTercetos();
         Lexico l1 = new Lexico(codigo);
 
         System.out.println("\n********* PARSER.RUN() *********");
-        Parser p = new Parser(l1);
+        Parser p = new Parser(l1, adminTercetos);
         p.run();
 
         System.out.println("\n********* TABLA DE SIMBOLOS *********");
         tSimbolos.printTablaSimbolos();
 
+        System.out.println("\n********* TERCETOS *********");
+        adminTercetos.printTercetos();
     }
 }
