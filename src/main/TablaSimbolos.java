@@ -22,6 +22,12 @@ public class TablaSimbolos {
         }
     }
 
+    public DatosTabla getDatosTabla(String lexema){
+        if(tSimbolos.containsKey(lexema))
+            return tSimbolos.get(lexema);
+        return null;
+    }
+
     public void agregarSimbolo(String lexema, Integer id, String tipo) {
         if (tSimbolos.containsKey(lexema))
             System.out.println("El identificador " + lexema + " ya existe");
