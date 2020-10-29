@@ -20,7 +20,7 @@
 package Parser;
 import main.*;
 import java.util.ArrayList;
-
+import CodigoInt.*;
 //#line 22 "Parser.java"
 
 
@@ -740,15 +740,17 @@ final static String yyrule[] = {
 "error_parametros : IDE ':' error",
 };
 
-//#line 232 "gramatica.y"
+//#line 294 "gramatica.y"
 
 private Lexico lexico;
 private ArrayList<String> lista_variables;
+private AdmTercetos adminTerceto;
 
 public Parser(Lexico lexico)
 {
   this.lexico = lexico;
   this.lista_variables = new ArrayList<String>();
+  this.adminTerceto = new AdmTercetos();
 }
 
 public int yylex(){
@@ -765,7 +767,7 @@ public void yyerror(String s){
     System.out.println("Parser: " + s);
 }
 
-public void chequearFactorNegado(){
+public boolean chequearFactorNegado(){
 	String lexema = yylval.sval;
 	int id = Main.tSimbolos.getId(lexema);
 	if(id == Lexico.CTE_UINT){
@@ -776,13 +778,15 @@ public void chequearFactorNegado(){
 		double valor = -1*Double.parseDouble(lexema.replace('d','e'));
 		if(( valor > 2.2250738585272014e-308 && valor < 1.7976931348623157e+308) || (valor > -1.7976931348623157e+308 && valor < -2.2250738585072014e-308) || (valor == 0.0))
                 	Main.tSimbolos.modificarSimbolo(lexema, String.valueOf(valor));
+                	return true;
+                	}
                 else {
                 	System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó una constante DOUBLE fuera de rango");
 	               	Main.tSimbolos.eliminarSimbolo(lexema);
 	 	}
-	}
+	return false;
 }
-//#line 714 "Parser.java"
+//#line 718 "Parser.java"
 //###############################################################
 // method: yylexdebug : check lexer state
 //###############################################################
@@ -948,7 +952,7 @@ case 11:
 //#line 35 "gramatica.y"
 {/*System.out.println("[Parser | Linea " + Lexico.linea + "] se detectó una declaracion de variables");*/
 					String tipoVar = val_peek(2).sval;
-					lista_variables = (ArrayList<String>)val_peek(1).obj;
+					lista_variables = (ArrayList<String>)val_peek(1).obj; /*controlar si ya está en la tabla*/
 					for(String lexema : lista_variables){
 						Main.tSimbolos.setDatosTabla(lexema,"variable",tipoVar);
 						}
@@ -1139,183 +1143,253 @@ case 70:
 //#line 135 "gramatica.y"
 {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un FOR mal declarado, falta '}'");}
 break;
+case 72:
+//#line 140 "gramatica.y"
+{ yyval = new ParserVal((Operando)val_peek(0).obj);}
+break;
 case 73:
 //#line 141 "gramatica.y"
-{ System.out.println("[Parser | Linea " + Lexico.linea + "] se realizó una suma");}
+{System.out.println("[Parser | Linea " + Lexico.linea + "] se realizó una suma");
+				Operando op1 = (Operando)val_peek(2).obj;
+				Operando op2 = (Operando)val_peek(0).obj;
+				System.out.println(op1.getTipo());
+				/*if(op1.getTipo().equals(op2.getTipo())){
+                                	Terceto t = new Terceto("+", op1.getValor(), op2.getValor());
+                                	adminTerceto.agregarTerceto(t);
+                            		$$ = new ParserVal(new Operando(op1.getTipo(), "["+t.getNumero()+"]"));
+                                	}
+                                else
+                                	System.out.println("Tipos incompatibles");
+                                */
+                                }
 break;
 case 74:
-//#line 142 "gramatica.y"
-{ System.out.println("[Parser | Linea " + Lexico.linea + "] se realizó una resta");}
+//#line 154 "gramatica.y"
+{ System.out.println("[Parser | Linea " + Lexico.linea + "] se realizó una resta");
+	  			Operando op1 = (Operando)val_peek(2).obj;
+                                Operando op2 = (Operando)val_peek(0).obj;
+                                if(op1.getTipo().equals(op2.getTipo())){
+                                	Terceto t = new Terceto("-", op1.getValor(), op2.getValor());
+                                	adminTerceto.agregarTerceto(t);
+                                        yyval = new ParserVal(new Operando(op1.getTipo(),"["+t.getNumero()+"]"));
+                                        }
+                                else
+                                  	System.out.println("Tipos incompatibles");
+                                }
 break;
 case 75:
-//#line 143 "gramatica.y"
-{ System.out.println("[Parser | Linea " + Lexico.linea + "] se realizó una conversión");}
+//#line 165 "gramatica.y"
+{ System.out.println("[Parser | Linea " + Lexico.linea + "] se realizó una conversión");
+	  			Operando op = (Operando)val_peek(1).obj;
+	  			yyval = new ParserVal(new Operando("DOUBLE",op.getValor()));}
 break;
 case 76:
-//#line 146 "gramatica.y"
-{ System.out.println("[Parser | Linea " + Lexico.linea + "] se realizó una multiplicacion");}
+//#line 170 "gramatica.y"
+{ System.out.println("[Parser | Linea " + Lexico.linea + "] se realizó una multiplicacion");
+				Operando op1 = (Operando)val_peek(2).obj;
+				Operando op2 = (Operando)val_peek(0).obj;
+				if(op1.getTipo().equals(op2.getTipo())){
+					Terceto t = new Terceto("*", op1.getValor(), op2.getValor());
+					adminTerceto.agregarTerceto(t);
+					yyval = new ParserVal(new Operando(op1.getTipo(), "["+t.getNumero()+"]"));
+					}
+				else
+					System.out.println("Tipos incompatibles");
+				}
 break;
 case 77:
-//#line 147 "gramatica.y"
-{ System.out.println("[Parser | Linea " + Lexico.linea + "] se realizó una division");}
+//#line 181 "gramatica.y"
+{ System.out.println("[Parser | Linea " + Lexico.linea + "] se realizó una division");
+				Operando op1 = (Operando)val_peek(2).obj;
+                                Operando op2 = (Operando)val_peek(0).obj;
+                                if (op1.getTipo().equals(op2.getTipo())){
+                                	Terceto t = new Terceto("/", op1.getValor(), op2.getValor());
+                                	adminTerceto.agregarTerceto(t);
+                                        yyval = new ParserVal(new Operando(op1.getTipo(), "["+t.getNumero()+"]"));
+                                } else {
+                                	System.out.println("Tipos incompatibles");
+                                }}
+break;
+case 78:
+//#line 191 "gramatica.y"
+{ yyval = new ParserVal((Operando)val_peek(0).obj);}
 break;
 case 79:
-//#line 151 "gramatica.y"
-{System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó la constante double -> " + val_peek(0).sval);}
+//#line 194 "gramatica.y"
+{System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó la constante double -> " + val_peek(0).sval);
+			yyval = new ParserVal(new Operando("DOUBLE", val_peek(0).sval));}
 break;
 case 80:
-//#line 152 "gramatica.y"
-{System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó la constante uint -> " + val_peek(0).sval);}
+//#line 196 "gramatica.y"
+{System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó la constante uint -> " + val_peek(0).sval);
+        		yyval = new ParserVal(new Operando("UINT", val_peek(0).sval));}
 break;
 case 81:
-//#line 153 "gramatica.y"
-{chequearFactorNegado();}
+//#line 198 "gramatica.y"
+{	if(chequearFactorNegado()){
+        			Operando op = (Operando)val_peek(0).obj;
+        			yyval = new ParserVal(new Operando(op.getTipo(), "-" + op.getValor()));
+        			}}
 break;
 case 82:
-//#line 154 "gramatica.y"
-{System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó el identificador -> " + val_peek(0).sval);}
+//#line 202 "gramatica.y"
+{ System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó el identificador -> " + val_peek(0).sval);
+		yyval = new ParserVal(new Operando(Main.tSimbolos.getDatosTabla(val_peek(0).sval).getTipo(), val_peek(0).sval));
+		}
 break;
 case 91:
-//#line 169 "gramatica.y"
+//#line 219 "gramatica.y"
 {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó una sentencia IF");}
 break;
 case 92:
-//#line 170 "gramatica.y"
+//#line 220 "gramatica.y"
 {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó una sentencia IF con ELSE");}
 break;
 case 94:
-//#line 174 "gramatica.y"
+//#line 224 "gramatica.y"
 {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta '('");}
 break;
 case 95:
-//#line 175 "gramatica.y"
+//#line 225 "gramatica.y"
 {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta la condicion");}
 break;
 case 96:
-//#line 176 "gramatica.y"
+//#line 226 "gramatica.y"
 {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta ')'");}
 break;
 case 97:
-//#line 177 "gramatica.y"
+//#line 227 "gramatica.y"
 {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta '{'");}
 break;
 case 98:
-//#line 178 "gramatica.y"
+//#line 228 "gramatica.y"
 {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta el bloque de sentencias");}
 break;
 case 99:
-//#line 179 "gramatica.y"
+//#line 229 "gramatica.y"
 {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta '}'");}
 break;
 case 100:
-//#line 180 "gramatica.y"
+//#line 230 "gramatica.y"
 {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta el END_IF o ELSE");}
 break;
 case 101:
-//#line 181 "gramatica.y"
+//#line 231 "gramatica.y"
 {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta el ELSE");}
 break;
 case 102:
-//#line 182 "gramatica.y"
+//#line 232 "gramatica.y"
 {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta '{'");}
 break;
 case 103:
-//#line 183 "gramatica.y"
+//#line 233 "gramatica.y"
 {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta el bloque de sentencias del ELSE");}
 break;
 case 104:
-//#line 184 "gramatica.y"
+//#line 234 "gramatica.y"
 {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta '}'");}
 break;
 case 105:
-//#line 185 "gramatica.y"
+//#line 235 "gramatica.y"
 {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta el END_IF");}
 break;
 case 106:
-//#line 190 "gramatica.y"
+//#line 240 "gramatica.y"
 {System.out.println("[Parser | Linea " + Lexico.linea + "] se realizó una sentencia OUT");}
 break;
 case 108:
-//#line 194 "gramatica.y"
+//#line 244 "gramatica.y"
 {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un OUT mal declarado, falta '('");}
 break;
 case 109:
-//#line 195 "gramatica.y"
+//#line 245 "gramatica.y"
 {System.out.println("Error sintáctico: Linea " + Lexico.linea + "  se detectó un OUT mal declarado, falta ')'");}
 break;
 case 110:
-//#line 196 "gramatica.y"
+//#line 246 "gramatica.y"
 {System.out.println("Error sintáctico: Linea " + Lexico.linea + "  se detectó un OUT mal declarado, faltan '(' y ')'");}
 break;
 case 111:
-//#line 197 "gramatica.y"
+//#line 247 "gramatica.y"
 {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un OUT mal declarado, entre los paréntesis debe ir una cadena");}
 break;
 case 112:
-//#line 198 "gramatica.y"
+//#line 248 "gramatica.y"
 {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un OUT mal declarado, falta la cadena entre los parentésis en el OUT");}
 break;
 case 113:
-//#line 201 "gramatica.y"
-{System.out.println("[Parser | Linea " + Lexico.linea + "] se realizó una asignación al identificador -> " + val_peek(2).sval);}
+//#line 251 "gramatica.y"
+{System.out.println("[Parser | Linea " + Lexico.linea + "] se realizó una asignación al identificador -> " + val_peek(2).sval);
+				String tipoIde = Main.tSimbolos.getDatosTabla(val_peek(2).sval).getTipo();
+				Operando op = (Operando)val_peek(0).obj;
+				System.out.println(tipoIde);
+				System.out.println(op.getTipo());
+				/*if(tipoIde.equals(op.getTipo())){
+					Terceto t = new Terceto("=", $1.sval, op.getValor());
+					adminTerceto.agregarTerceto(t);
+					$$ = new ParserVal(new Operando(tipoIde, "[" + t.getNumero()+ "]"));
+				} else
+					System.out.println("Los tipos son incompatibles");
+				*/
+				}
 break;
 case 115:
-//#line 205 "gramatica.y"
+//#line 267 "gramatica.y"
 {System.out.println("Error sintáctico: Linea " + Lexico.linea + " falta '=' en la asignación");}
 break;
 case 116:
-//#line 206 "gramatica.y"
+//#line 268 "gramatica.y"
 {System.out.println("Error sintáctico: Linea " + Lexico.linea + " falta el identificador del lado izquierdo de la asignación");}
 break;
 case 117:
-//#line 207 "gramatica.y"
+//#line 269 "gramatica.y"
 {System.out.println("Error sintáctico: Linea " + Lexico.linea + " falta una expresión aritmética del lado derecho de la asignación");}
 break;
 case 118:
-//#line 211 "gramatica.y"
+//#line 273 "gramatica.y"
 {System.out.println("[Parser | Linea " + Lexico.linea + "] se realizó una invocacion al procedimiento -> " + val_peek(3).sval );}
 break;
 case 120:
-//#line 215 "gramatica.y"
+//#line 277 "gramatica.y"
 {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó una invocación mal declarada, falta el identificador");}
 break;
 case 121:
-//#line 216 "gramatica.y"
+//#line 278 "gramatica.y"
 {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó una invocación mal declarada, falta el '('");}
 break;
 case 122:
-//#line 217 "gramatica.y"
+//#line 279 "gramatica.y"
 {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó una invocación mal declarada, faltan los parámetros");}
 break;
 case 123:
-//#line 218 "gramatica.y"
+//#line 280 "gramatica.y"
 {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó una invocación mal declarada, falta el ')'");}
 break;
 case 124:
-//#line 221 "gramatica.y"
+//#line 283 "gramatica.y"
 {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyeron los parámetros -> " + val_peek(2).sval +" y " +val_peek(0).sval);}
 break;
 case 125:
-//#line 222 "gramatica.y"
+//#line 284 "gramatica.y"
 {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyeron los parámetros -> " + val_peek(2).sval +" y " +val_peek(0).sval);}
 break;
 case 127:
-//#line 226 "gramatica.y"
+//#line 288 "gramatica.y"
 {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectaron parámetros mal declarados, falta el identificador de la izquierda");}
 break;
 case 128:
-//#line 227 "gramatica.y"
+//#line 289 "gramatica.y"
 {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectaron parámetros mal declarados, falta ':' entre los identificadores");}
 break;
 case 129:
-//#line 228 "gramatica.y"
+//#line 290 "gramatica.y"
 {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectaron parámetros mal declarados, falta la ',' que separa los identificadores");}
 break;
 case 130:
-//#line 229 "gramatica.y"
+//#line 291 "gramatica.y"
 {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectaron parámetros mal declarados, falta el identificador de la derecha");}
 break;
-//#line 1242 "Parser.java"
+//#line 1316 "Parser.java"
 //########## END OF USER-SUPPLIED ACTIONS ##########
     }//switch
     //#### Now let's reduce... ####

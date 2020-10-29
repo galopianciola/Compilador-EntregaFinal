@@ -2,7 +2,7 @@
 package Parser;
 import main.*;
 import java.util.ArrayList;
-
+import CodigoInt.*;
 %}
 
 %token IDE CTE_UINT MAYOR_IGUAL MENOR_IGUAL IGUAL_IGUAL DISTINTO CTE_DOUBLE CADENA IF THEN ELSE END_IF OUT UINT DOUBLE
@@ -34,7 +34,7 @@ sentencia  : declaracion
 
 declaracion : tipo lista_de_variables';'{//System.out.println("[Parser | Linea " + Lexico.linea + "] se detectó una declaracion de variables");
 					String tipoVar = $1.sval;
-					lista_variables = (ArrayList<String>)$2.obj;
+					lista_variables = (ArrayList<String>)$2.obj; //controlar si ya está en la tabla
 					for(String lexema : lista_variables){
 						Main.tSimbolos.setDatosTabla(lexema,"variable",tipoVar);
 						}
@@ -137,21 +137,71 @@ error_for: FOR   IDE'='CTE_UINT';'condicion';'inc_decr CTE_UINT')''{'bloque_sent
 condicion :  expresion comparador expresion
           ;
 
-expresion : termino
-	  | expresion '+' termino { System.out.println("[Parser | Linea " + Lexico.linea + "] se realizó una suma");}
-	  | expresion '-' termino { System.out.println("[Parser | Linea " + Lexico.linea + "] se realizó una resta");}
-	  | DOUBLE '(' expresion ')'{ System.out.println("[Parser | Linea " + Lexico.linea + "] se realizó una conversión");}
+expresion : termino { $$ = new ParserVal((Operando)$1.obj);}
+	  | expresion '+' termino {System.out.println("[Parser | Linea " + Lexico.linea + "] se realizó una suma");
+				Operando op1 = (Operando)$1.obj;
+				Operando op2 = (Operando)$3.obj;
+				System.out.println(op1.getTipo());
+				/*if(op1.getTipo().equals(op2.getTipo())){
+                                	Terceto t = new Terceto("+", op1.getValor(), op2.getValor());
+                                	adminTerceto.agregarTerceto(t);
+                            		$$ = new ParserVal(new Operando(op1.getTipo(), "["+t.getNumero()+"]"));
+                                	}
+                                else
+                                	System.out.println("Tipos incompatibles");
+                                */
+                                }
+	  | expresion '-' termino { System.out.println("[Parser | Linea " + Lexico.linea + "] se realizó una resta");
+	  			Operando op1 = (Operando)$1.obj;
+                                Operando op2 = (Operando)$3.obj;
+                                if(op1.getTipo().equals(op2.getTipo())){
+                                	Terceto t = new Terceto("-", op1.getValor(), op2.getValor());
+                                	adminTerceto.agregarTerceto(t);
+                                        $$ = new ParserVal(new Operando(op1.getTipo(),"["+t.getNumero()+"]"));
+                                        }
+                                else
+                                  	System.out.println("Tipos incompatibles");
+                                }
+	  | DOUBLE '(' expresion ')'{ System.out.println("[Parser | Linea " + Lexico.linea + "] se realizó una conversión");
+	  			Operando op = (Operando)$3.obj;
+	  			$$ = new ParserVal(new Operando("DOUBLE",op.getValor()));}
           ;
 
-termino : termino '*' factor { System.out.println("[Parser | Linea " + Lexico.linea + "] se realizó una multiplicacion");}
-	| termino '/' factor  { System.out.println("[Parser | Linea " + Lexico.linea + "] se realizó una division");}
-	| factor
+termino : termino '*' factor { System.out.println("[Parser | Linea " + Lexico.linea + "] se realizó una multiplicacion");
+				Operando op1 = (Operando)$1.obj;
+				Operando op2 = (Operando)$3.obj;
+				if(op1.getTipo().equals(op2.getTipo())){
+					Terceto t = new Terceto("*", op1.getValor(), op2.getValor());
+					adminTerceto.agregarTerceto(t);
+					$$ = new ParserVal(new Operando(op1.getTipo(), "["+t.getNumero()+"]"));
+					}
+				else
+					System.out.println("Tipos incompatibles");
+				}
+	| termino '/' factor  { System.out.println("[Parser | Linea " + Lexico.linea + "] se realizó una division");
+				Operando op1 = (Operando)$1.obj;
+                                Operando op2 = (Operando)$3.obj;
+                                if (op1.getTipo().equals(op2.getTipo())){
+                                	Terceto t = new Terceto("/", op1.getValor(), op2.getValor());
+                                	adminTerceto.agregarTerceto(t);
+                                        $$ = new ParserVal(new Operando(op1.getTipo(), "["+t.getNumero()+"]"));
+                                } else {
+                                	System.out.println("Tipos incompatibles");
+                                }}
+	| factor { $$ = new ParserVal((Operando)$1.obj);}
         ;
 
-factor 	: CTE_DOUBLE {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó la constante double -> " + $1.sval);}
-        | CTE_UINT {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó la constante uint -> " + $1.sval);}
-        | '-' factor {chequearFactorNegado();}
-	| IDE {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó el identificador -> " + $1.sval);}
+factor 	: CTE_DOUBLE {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó la constante double -> " + $1.sval);
+			$$ = new ParserVal(new Operando("DOUBLE", $1.sval));}
+        | CTE_UINT {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó la constante uint -> " + $1.sval);
+        		$$ = new ParserVal(new Operando("UINT", $1.sval));}
+        | '-' factor {	if(chequearFactorNegado()){
+        			Operando op = (Operando)$2.obj;
+        			$$ = new ParserVal(new Operando(op.getTipo(), "-" + op.getValor()));
+        			}}
+	| IDE { System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó el identificador -> " + $1.sval);
+		$$ = new ParserVal(new Operando(Main.tSimbolos.getDatosTabla($1.sval).getTipo(), $1.sval));
+		}
         ;
 
 comparador : '<'
@@ -198,7 +248,19 @@ error_salida : OUT CADENA ')' {System.out.println("Error sintáctico: Linea " + 
 	     | OUT '(' ')' {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un OUT mal declarado, falta la cadena entre los parentésis en el OUT");}
 	     ;
 
-asignacion : IDE '=' expresion {System.out.println("[Parser | Linea " + Lexico.linea + "] se realizó una asignación al identificador -> " + $1.sval);}
+asignacion : IDE '=' expresion {System.out.println("[Parser | Linea " + Lexico.linea + "] se realizó una asignación al identificador -> " + $1.sval);
+				String tipoIde = Main.tSimbolos.getDatosTabla($1.sval).getTipo();
+				Operando op = (Operando)$3.obj;
+				System.out.println(tipoIde);
+				System.out.println(op.getTipo());
+				/*if(tipoIde.equals(op.getTipo())){
+					Terceto t = new Terceto("=", $1.sval, op.getValor());
+					adminTerceto.agregarTerceto(t);
+					$$ = new ParserVal(new Operando(tipoIde, "[" + t.getNumero()+ "]"));
+				} else
+					System.out.println("Los tipos son incompatibles");
+				*/
+				}
 	   | error_asignacion
 	   ;
 
@@ -232,11 +294,13 @@ error_parametros : ':' IDE {System.out.println("Error sintáctico: Linea " + Lex
 
 private Lexico lexico;
 private ArrayList<String> lista_variables;
+private AdmTercetos adminTerceto;
 
 public Parser(Lexico lexico)
 {
   this.lexico = lexico;
   this.lista_variables = new ArrayList<String>();
+  this.adminTerceto = new AdmTercetos();
 }
 
 public int yylex(){
@@ -253,7 +317,7 @@ public void yyerror(String s){
     System.out.println("Parser: " + s);
 }
 
-public void chequearFactorNegado(){
+public boolean chequearFactorNegado(){
 	String lexema = yylval.sval;
 	int id = Main.tSimbolos.getId(lexema);
 	if(id == Lexico.CTE_UINT){
@@ -264,9 +328,11 @@ public void chequearFactorNegado(){
 		double valor = -1*Double.parseDouble(lexema.replace('d','e'));
 		if(( valor > 2.2250738585272014e-308 && valor < 1.7976931348623157e+308) || (valor > -1.7976931348623157e+308 && valor < -2.2250738585072014e-308) || (valor == 0.0))
                 	Main.tSimbolos.modificarSimbolo(lexema, String.valueOf(valor));
+                	return true;
+                	}
                 else {
                 	System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó una constante DOUBLE fuera de rango");
 	               	Main.tSimbolos.eliminarSimbolo(lexema);
 	 	}
-	}
+	return false;
 }
