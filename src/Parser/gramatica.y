@@ -246,19 +246,27 @@ inc_decr : UP
 	 | DOWN
 	 ;
 
-seleccion : IF '(' condicion_if ')' bloque END_IF {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó una sentencia IF");
+seleccion : if_condicion bloque END_IF {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó una sentencia IF");
 								adminTerceto.desapilar();}
-	  | IF '(' condicion_if ')' bloque ELSE {adminTerceto.desapilar();
-                                                 Terceto t = new Terceto("BI", null null);
-                                                 adminTerceto.agregarTerceto(t);
-                                                 adminTerceto.apilar(t);
-                                                } bloque END_IF {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó una sentencia IF con ELSE");
+	  | if_condicion bloque_else ELSE bloque END_IF {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó una sentencia IF con ELSE");
 	  					adminTerceto.desapilar();}
-	  | error_if
+//	  | error_if
 	  ;
 
+bloque_else: bloque {adminTerceto.desapilar();
+                     Terceto t = new Terceto("BI", null, null);
+                     adminTerceto.agregarTerceto(t);
+                     adminTerceto.apilar(t.getNumero());
+                     }
 
-error_if: IF     condicion_if ')'  bloque  END_IF {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta '('");}
+if_condicion: IF '(' condicion ')' {System.out.println(" se leyó una sentencia IF" + $3.sval);
+				if($3.sval != null){
+				Terceto t = new Terceto("BF", $3.sval, null);
+				adminTerceto.agregarTerceto(t);
+				adminTerceto.apilar(t.getNumero());
+				}}
+
+/*error_if: IF     condicion_if ')'  bloque  END_IF {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta '('");}
 	| IF '('              ')'  bloque  END_IF {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta la condicion");}
 	| IF '(' condicion_if      bloque  END_IF {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta ')'");}
 	| IF '(' condicion_if ')'          END_IF {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta el bloque de sentencias");}
@@ -266,13 +274,7 @@ error_if: IF     condicion_if ')'  bloque  END_IF {System.out.println("Error sin
 	| IF '(' condicion_if ')'  bloque  error  bloque  END_IF{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta el ELSE");}
 	| IF '(' condicion_if ')'  bloque  ELSE           END_IF{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta el bloque de sentencias del ELSE");}
 	| IF '(' condicion_if ')'  bloque  ELSE   bloque        {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta el END_IF");}
-	;
-
-condicion_if: condicion {if($1.sval != null){
-				Terceto t = new Terceto("BF", $1.sval, null);
-				adminTerceto.agregarTerceto(t);
-				adminTerceto.apilar(t);
-			}}
+	;*/
 
 salida : OUT'('CADENA')'{System.out.println("[Parser | Linea " + Lexico.linea + "] se realizó una sentencia OUT");}
        | error_salida

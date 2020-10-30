@@ -1,4 +1,4 @@
-{if (a > 0)
-    k := k*5;
- else
-    j := j-3;}
+{UINT a,k,j;
+IF (a > 0_ui)
+    k = k*5_ui;
+END_IF;}

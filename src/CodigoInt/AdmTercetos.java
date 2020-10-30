@@ -14,17 +14,19 @@ public class AdmTercetos {
     }
 
     public void apilar(int nroTerceto){
+        System.out.println("apilo "+pila.size());
         pila.add(nroTerceto);
     }
 
     public void desapilar(){
+        System.out.println("desapilo " + pila.size());
         int tercetoIncompleto = pila.get(pila.size()-1);
         pila.remove(pila.size()-1);
         Terceto nuevoTerceto = tercetos.get(tercetoIncompleto);
         if(nuevoTerceto.getOperador() == "BF")
-            nuevoTerceto.setOp2(Integer.toString(tercetos.size()+2));
+            nuevoTerceto.setOp2(Integer.toString(tercetos.size()+1));
         else
-            nuevoTerceto.setOp1(Integer.toString(tercetos.size()+1));
+            nuevoTerceto.setOp1(Integer.toString(tercetos.size()));
         tercetos.set(tercetoIncompleto, nuevoTerceto);
     }
 
