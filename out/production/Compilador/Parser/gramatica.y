@@ -246,18 +246,19 @@ inc_decr : UP
 	 | DOWN
 	 ;
 
-seleccion : if_condicion bloque {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó una sentencia IF");
-								adminTerceto.desapilar();} END_IF
+seleccion : if_condicion bloque END_IF {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó una sentencia IF");
+								adminTerceto.desapilar();}
 	  | if_condicion bloque_else ELSE bloque END_IF {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó una sentencia IF con ELSE");
 	  					adminTerceto.desapilar();}
-//	  | error_if
+	  | error_if
 	  ;
 
-bloque_else: bloque {adminTerceto.desapilar();
-                     Terceto t = new Terceto("BI", null, null);
+bloque_else: bloque {Terceto t = new Terceto("BI", null, null);
                      adminTerceto.agregarTerceto(t);
+                     adminTerceto.desapilar();
                      adminTerceto.apilar(t.getNumero());
                      }
+	    ;
 
 if_condicion: IF '(' condicion ')' {System.out.println(" se leyó una sentencia IF" + $3.sval);
 				if($3.sval != null){
@@ -265,16 +266,21 @@ if_condicion: IF '(' condicion ')' {System.out.println(" se leyó una sentencia 
 				adminTerceto.agregarTerceto(t);
 				adminTerceto.apilar(t.getNumero());
 				}}
+	     | error_if_condicion
+	     ;
 
-/*error_if: IF     condicion_if ')'  bloque  END_IF {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta '('");}
-	| IF '('              ')'  bloque  END_IF {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta la condicion");}
-	| IF '(' condicion_if      bloque  END_IF {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta ')'");}
-	| IF '(' condicion_if ')'          END_IF {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta el bloque de sentencias");}
-	| IF '(' condicion_if ')'  bloque  error  {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta el END_IF o ELSE");}
-	| IF '(' condicion_if ')'  bloque  error  bloque  END_IF{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta el ELSE");}
-	| IF '(' condicion_if ')'  bloque  ELSE           END_IF{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta el bloque de sentencias del ELSE");}
-	| IF '(' condicion_if ')'  bloque  ELSE   bloque        {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta el END_IF");}
-	;*/
+error_if_condicion: IF     condicion ')' {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un IF mal declarado, falta '('");}
+		  | IF '('           ')' {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un IF mal declarado, falta la condicion");}
+		  | IF '(' condicion     {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un IF mal declarado, falta ')'");}
+		  | IF     condicion 	{System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un IF mal declarado, falta los parentesis");}
+		  ;
+
+error_if: if_condicion          END_IF {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta el bloque de sentencias");}
+	| if_condicion  bloque error{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta el END_IF o ELSE");}
+	//| if_condicion  bloque_else  error  bloque  END_IF{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta el ELSE");}
+	| if_condicion  bloque_else  ELSE           END_IF{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta el bloque de sentencias del ELSE");}
+	| if_condicion  bloque_else  ELSE   bloque        {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta el END_IF");}
+	;
 
 salida : OUT'('CADENA')'{System.out.println("[Parser | Linea " + Lexico.linea + "] se realizó una sentencia OUT");}
        | error_salida

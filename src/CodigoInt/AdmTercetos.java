@@ -24,7 +24,7 @@ public class AdmTercetos {
         pila.remove(pila.size()-1);
         Terceto nuevoTerceto = tercetos.get(tercetoIncompleto);
         if(nuevoTerceto.getOperador() == "BF")
-            nuevoTerceto.setOp2(Integer.toString(tercetos.size()+1));
+            nuevoTerceto.setOp2(Integer.toString(tercetos.size()));
         else
             nuevoTerceto.setOp1(Integer.toString(tercetos.size()));
         tercetos.set(tercetoIncompleto, nuevoTerceto);
