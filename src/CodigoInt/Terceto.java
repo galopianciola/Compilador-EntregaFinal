@@ -35,4 +35,14 @@ public class Terceto {
     public String getOperador() {
         return operador;
     }
+
+    public void setOp1(String op1) {
+        this.op1 = op1;
+    }
+
+    public void setOp2(String op2) {
+        this.op2 = op2;
+    }
+
+
 }
