@@ -1,7 +1,3 @@
-{UINT a,k,j;
-IF (a > 0_ui)
-    k = k*5_ui;
-
-    k = k*5_ui;
-END_IF;
+{UINT a,b;
+FOR( a = 2_ui ; a >= b ; DOWN 5_ui) { DOUBLE c; c = 3.0;};
 }

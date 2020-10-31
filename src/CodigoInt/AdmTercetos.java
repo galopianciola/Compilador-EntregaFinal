@@ -30,6 +30,14 @@ public class AdmTercetos {
         tercetos.set(tercetoIncompleto, nuevoTerceto);
     }
 
+    public void desapilarFor(){
+        int nroTerceto = pila.get(pila.size()-1);
+        pila.remove(pila.size()-1);
+        Terceto nuevoTerceto = tercetos.get(tercetos.size()-1);
+        nuevoTerceto.setOp1(Integer.toString(nroTerceto));
+        tercetos.set(tercetos.size()-1, nuevoTerceto);
+    }
+
     public void printTercetos(){
         for (Terceto t: this.tercetos){
             System.out.println(t.getNumero() + ". (" + t.getOperador()+", "+t.getOp1()+ ", "+t.getOp2()+")");

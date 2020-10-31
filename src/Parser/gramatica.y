@@ -117,11 +117,44 @@ error_ejecucion  : control error{System.out.println("Error sintáctico: Linea " 
              	 | invocacion error{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó una sentencia mal declarada, falta ';'");}
                	 ;
 
-control : FOR'('IDE'='CTE_UINT';'condicion';'inc_decr CTE_UINT')''{'bloque_sentencias'}'{ System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó una sentencia FOR");}
-	| error_for
+control : FOR'('asignacion_for';'condicion_for';'inc_decr CTE_UINT')''{'bloque_sentencias'}'{ System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó una sentencia FOR");
+							if($3.sval != null){
+								Terceto t = new Terceto($7.sval,$3.sval,$8.sval);
+								adminTerceto.agregarTerceto(t);
+								t = new Terceto("BI", null, null);
+								adminTerceto.agregarTerceto(t);
+								adminTerceto.desapilar(); //para completar BF
+								adminTerceto.desapilarFor();
+							}}
+	//| error_for
 	;
 
-error_for: FOR   IDE'='CTE_UINT';'condicion';'inc_decr CTE_UINT')''{'bloque_sentencias'}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un FOR mal declarado, falta '('");}
+condicion_for: condicion {if($1.sval != null){
+				Terceto t = new Terceto("BF", $1.sval, null);
+                          	adminTerceto.agregarTerceto(t);
+                          	adminTerceto.apilar(t.getNumero());}
+                          }
+
+asignacion_for: IDE '=' CTE_UINT{ System.out.println("[Parser | Linea " + Lexico.linea + "] se realiz� una asignaci�n al identificador -> " + $1.sval);
+                                  if(Main.tSimbolos.getDatosTabla($1.sval).isDeclarada()){
+                            		String tipoIde = Main.tSimbolos.getDatosTabla($1.sval).getTipo();
+                                        if(tipoIde.equals("UINT")){
+                                		Terceto t = new Terceto("=", $1.sval, $3.sval);
+                                		adminTerceto.agregarTerceto(t);
+                                		adminTerceto.apilar(t.getNumero()+1);
+                                		$$ = new ParserVal($1.sval);
+                                	} else
+                                		System.out.println("Los tipos son incompatibles");
+                                  } else {
+                                	System.out.println("La variable " + $1.sval +" no fue declarada");
+                                	$$ = new ParserVal(null);}
+                              	  }
+
+            //| error_asignacion_for
+              ;
+
+
+/*error_for: FOR   IDE'='CTE_UINT';'condicion';'inc_decr CTE_UINT')''{'bloque_sentencias'}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un FOR mal declarado, falta '('");}
 	 | FOR'('   '='CTE_UINT';'condicion';'inc_decr CTE_UINT')''{'bloque_sentencias'}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un FOR mal declarado, falta el identificador ");}
 	 | FOR'('IDE   CTE_UINT';'condicion';'inc_decr CTE_UINT')''{'bloque_sentencias'}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un FOR mal declarado, falta '='");}
 	 | FOR'('IDE'='        ';'condicion';'inc_decr CTE_UINT')''{'bloque_sentencias'}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un FOR mal declarado, falta una constante UINT");}
@@ -134,6 +167,7 @@ error_for: FOR   IDE'='CTE_UINT';'condicion';'inc_decr CTE_UINT')''{'bloque_sent
 	 | FOR'('IDE'='CTE_UINT';'condicion';'inc_decr CTE_UINT')'   bloque_sentencias'}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un FOR mal declarado, falta '{'");}
 	 | FOR'('IDE'='CTE_UINT';'condicion';'inc_decr CTE_UINT')''{'                 '}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un FOR mal declarado, falta el bloque de sentencias");}
 	 | FOR'('IDE'='CTE_UINT';'condicion';'inc_decr CTE_UINT')''{'bloque_sentencias   {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un FOR mal declarado, falta '}'");}
+*/
 
 condicion :  expresion comparador expresion {Operando op1 = (Operando)$1.obj;
                                              Operando op2 = (Operando)$3.obj;
@@ -242,8 +276,8 @@ comparador : '<' {$$ = new ParserVal("<");}
 	   | DISTINTO {$$ = new ParserVal("!=");}
            ;
 
-inc_decr : UP
-	 | DOWN
+inc_decr : UP {$$ = new ParserVal("+");}
+	 | DOWN {$$ = new ParserVal("-");}
 	 ;
 
 seleccion : IF '(' if_condicion ')' bloque_then END_IF {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó una sentencia IF");
