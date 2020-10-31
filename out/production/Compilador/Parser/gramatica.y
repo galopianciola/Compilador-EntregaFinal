@@ -126,7 +126,7 @@ control : FOR'('asignacion_for';'condicion_for';'inc_decr CTE_UINT')''{'bloque_s
 								adminTerceto.desapilar(); //para completar BF
 								adminTerceto.desapilarFor();
 							}}
-	//| error_for
+	| error_for
 	;
 
 condicion_for: condicion {if($1.sval != null){
@@ -135,7 +135,7 @@ condicion_for: condicion {if($1.sval != null){
                           	adminTerceto.apilar(t.getNumero());}
                           }
 
-asignacion_for: IDE '=' CTE_UINT{ System.out.println("[Parser | Linea " + Lexico.linea + "] se realiz� una asignaci�n al identificador -> " + $1.sval);
+asignacion_for: IDE '=' CTE_UINT { System.out.println("[Parser | Linea " + Lexico.linea + "] se realiz� una asignaci�n al identificador -> " + $1.sval);
                                   if(Main.tSimbolos.getDatosTabla($1.sval).isDeclarada()){
                             		String tipoIde = Main.tSimbolos.getDatosTabla($1.sval).getTipo();
                                         if(tipoIde.equals("UINT")){
@@ -149,25 +149,25 @@ asignacion_for: IDE '=' CTE_UINT{ System.out.println("[Parser | Linea " + Lexico
                                 	System.out.println("La variable " + $1.sval +" no fue declarada");
                                 	$$ = new ParserVal(null);}
                               	  }
+             | error_asignacion_for {$$ = new ParserVal(null);}
+             ;
 
-            //| error_asignacion_for
-              ;
+error_asignacion_for:     '=' CTE_UINT {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un FOR mal declarado, falta el identificador");}
+		    | IDE     CTE_UINT {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un FOR mal declarado, falta '='");}
+		    | IDE '=' error    {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un FOR mal declarado, falta una constante UINT");}
+		    ;
 
-
-/*error_for: FOR   IDE'='CTE_UINT';'condicion';'inc_decr CTE_UINT')''{'bloque_sentencias'}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un FOR mal declarado, falta '('");}
-	 | FOR'('   '='CTE_UINT';'condicion';'inc_decr CTE_UINT')''{'bloque_sentencias'}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un FOR mal declarado, falta el identificador ");}
-	 | FOR'('IDE   CTE_UINT';'condicion';'inc_decr CTE_UINT')''{'bloque_sentencias'}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un FOR mal declarado, falta '='");}
-	 | FOR'('IDE'='        ';'condicion';'inc_decr CTE_UINT')''{'bloque_sentencias'}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un FOR mal declarado, falta una constante UINT");}
-	 | FOR'('IDE'='CTE_UINT   condicion';'inc_decr CTE_UINT')''{'bloque_sentencias'}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un FOR mal declarado, falta ';'");}
-	 | FOR'('IDE'='CTE_UINT';'         ';'inc_decr CTE_UINT')''{'bloque_sentencias'}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un FOR mal declarado, falta la condición");}
-	 | FOR'('IDE'='CTE_UINT';'condicion   inc_decr CTE_UINT')''{'bloque_sentencias'}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un FOR mal declarado, falta ';'");}
-	 | FOR'('IDE'='CTE_UINT';'condicion';'         CTE_UINT')''{'bloque_sentencias'}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un FOR mal declarado, falta la palabra UP o DOWN");}
-	 | FOR'('IDE'='CTE_UINT';'condicion';'inc_decr         ')''{'bloque_sentencias'}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un FOR mal declarado, falta una constante CTE_UINT");}
-	 | FOR'('IDE'='CTE_UINT';'condicion';'inc_decr CTE_UINT   '{'bloque_sentencias'}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un FOR mal declarado, falta ')'");}
-	 | FOR'('IDE'='CTE_UINT';'condicion';'inc_decr CTE_UINT')'   bloque_sentencias'}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un FOR mal declarado, falta '{'");}
-	 | FOR'('IDE'='CTE_UINT';'condicion';'inc_decr CTE_UINT')''{'                 '}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un FOR mal declarado, falta el bloque de sentencias");}
-	 | FOR'('IDE'='CTE_UINT';'condicion';'inc_decr CTE_UINT')''{'bloque_sentencias   {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un FOR mal declarado, falta '}'");}
-*/
+error_for:   FOR    asignacion_for ';'condicion_for';'inc_decr CTE_UINT')''{'bloque_sentencias'}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un FOR mal declarado, falta '('");}
+	   | FOR'(' asignacion_for    condicion_for';'inc_decr CTE_UINT')''{'bloque_sentencias'}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un FOR mal declarado, falta ';'");}
+	   | FOR'(' asignacion_for ';'             ';'inc_decr CTE_UINT')''{'bloque_sentencias'}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un FOR mal declarado, falta la condición");}
+	   | FOR'(' asignacion_for ';'condicion_for   inc_decr CTE_UINT')''{'bloque_sentencias'}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un FOR mal declarado, falta ';'");}
+	   | FOR'(' asignacion_for ';'condicion_for';'         CTE_UINT')''{'bloque_sentencias'}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un FOR mal declarado, falta la palabra UP o DOWN");}
+	   | FOR'(' asignacion_for ';'condicion_for';'inc_decr         ')''{'bloque_sentencias'}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un FOR mal declarado, falta una constante CTE_UINT");}
+	   | FOR'(' asignacion_for ';'condicion_for';'inc_decr CTE_UINT   '{'bloque_sentencias'}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un FOR mal declarado, falta ')'");}
+	   | FOR'(' asignacion_for ';'condicion_for';'inc_decr CTE_UINT')'   bloque_sentencias'}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un FOR mal declarado, falta '{'");}
+	   | FOR'(' asignacion_for ';'condicion_for';'inc_decr CTE_UINT')''{'                 '}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un FOR mal declarado, falta el bloque de sentencias");}
+	   | FOR'(' asignacion_for ';'condicion_for';'inc_decr CTE_UINT')''{'bloque_sentencias   {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un FOR mal declarado, falta '}'");}
+	   ;
 
 condicion :  expresion comparador expresion {Operando op1 = (Operando)$1.obj;
                                              Operando op2 = (Operando)$3.obj;
