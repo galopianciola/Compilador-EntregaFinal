@@ -1,5 +1,7 @@
 {UINT a,k,j;
 IF (a > 0_ui)
-    {k = k*5_ui;}
-;
+    k = k*5_ui;
+
+    k = k*5_ui;
+END_IF;
 }
