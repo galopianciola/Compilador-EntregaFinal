@@ -6,7 +6,8 @@ public class DatosTabla {
     private String uso;
     private boolean declarada;
     private boolean parametroRef;
-    private String llamados;
+    private int llamadosMax;
+    private int llamadosActuales;
 
     public DatosTabla() {
         this.id = 0;
@@ -14,7 +15,8 @@ public class DatosTabla {
         this.uso = null;
         this.declarada = false;
         this.parametroRef = false;
-        this.llamados = "";
+        this.llamadosMax = 0;
+        this.llamadosActuales = 0;
     }
 
     public boolean isDeclarada() {
@@ -57,11 +59,11 @@ public class DatosTabla {
         this.parametroRef = parametroRef;
     }
 
-    public String getLlamados() {
-        return llamados;
+    public int getLlamadosMax() {
+        return llamadosMax;
     }
 
-    public void setLlamados(String llamados) {
-        this.llamados = llamados;
+    public void setLlamadosMax(String llamados) {
+        this.llamadosMax = Integer.parseInt(llamados.substring(0,llamados.indexOf("_")));
     }
 }

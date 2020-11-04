@@ -87,7 +87,7 @@ declaracion_proc: PROC IDE'('lista_de_parametros')'NI'='CTE_UINT {String nuevoLe
 				if(!Main.tSimbolos.existeLexema(nuevoLexema)){
 					DatosTabla dt = Main.tSimbolos.getDatosTabla($2.sval);
 					dt.setUso("nombreProcedimiento");
-					dt.setLlamados($8.sval);
+					dt.setLlamadosMax($8.sval);
 					Main.tSimbolos.setDatosTabla($2.sval, dt);
 					Main.tSimbolos.reemplazarLexema($2.sval, nuevoLexema);
 					lista_parametros = (ArrayList<String>)$4.obj;
@@ -213,13 +213,14 @@ condicion_for: condicion {if($1.sval != null){
                           }
 
 asignacion_for: IDE '=' CTE_UINT { System.out.println("[Parser | Linea " + Lexico.linea + "] se realiz� una asignaci�n al identificador -> " + $1.sval);
-                                  if(Main.tSimbolos.getDatosTabla($1.sval).isDeclarada()){
-                            		String tipoIde = Main.tSimbolos.getDatosTabla($1.sval).getTipo();
+                                  String ambitoVariable = Main.tSimbolos.verificarAmbito($1.sval, ambito);
+                                  if(ambitoVariable != null) {
+                            		String tipoIde = Main.tSimbolos.getDatosTabla(ambitoVariable).getTipo();
                                         if(tipoIde.equals("UINT")){
-                                		Terceto t = new Terceto("=", $1.sval, $3.sval);
+                                		Terceto t = new Terceto("=", ambitoVariable, $3.sval);
                                 		adminTerceto.agregarTerceto(t);
                                 		adminTerceto.apilar(t.getNumero()+1);
-                                		$$ = new ParserVal($1.sval);
+                                		$$ = new ParserVal(ambitoVariable);
                                 	} else
                                 		System.out.println("Los tipos son incompatibles");
                                   } else {
@@ -343,7 +344,7 @@ factor 	: CTE_DOUBLE {System.out.println("[Parser | Linea " + Lexico.linea + "] 
 	| IDE { System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó el identificador -> " + $1.sval);
 		String ambitoVariable = Main.tSimbolos.verificarAmbito($1.sval, ambito);
 		if(ambitoVariable != null)
-                	$$ = new ParserVal(new Operando(Main.tSimbolos.getDatosTabla(ambitoVariable).getTipo(), $1.sval));
+                	$$ = new ParserVal(new Operando(Main.tSimbolos.getDatosTabla(ambitoVariable).getTipo(), ambitoVariable));
                 else {
                        	System.out.println("La variable " + $1.sval +" no fue declarada");
                        	$$ = new ParserVal(null);
@@ -417,7 +418,7 @@ asignacion : IDE '=' expresion {System.out.println("[Parser | Linea " + Lexico.l
 					Operando op = (Operando)$3.obj;
 					if(op != null)
 						if(tipoIde.equals(op.getTipo())){
-							Terceto t = new Terceto("=", $1.sval, op.getValor());
+							Terceto t = new Terceto("=", ambitoVariable, op.getValor());
 							adminTerceto.agregarTerceto(t);
 							$$ = new ParserVal(new Operando(tipoIde, "[" + t.getNumero()+ "]"));
 						} else

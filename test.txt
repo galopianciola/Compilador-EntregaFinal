@@ -1,1 +1,1 @@
-PROC f1 (UINT a, REF UINT b, DOUBLE c) NI = 3_ui { DOUBLE c; ;
+PROC f1 (UINT a, REF UINT b, DOUBLE c) NI = 2_ui {DOUBLE c; };
