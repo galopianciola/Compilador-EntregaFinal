@@ -14,12 +14,10 @@ public class AdmTercetos {
     }
 
     public void apilar(int nroTerceto){
-        System.out.println("apilo "+pila.size());
         pila.add(nroTerceto);
     }
 
     public void desapilar(){
-        System.out.println("desapilo " + pila.size());
         int tercetoIncompleto = pila.get(pila.size()-1);
         pila.remove(pila.size()-1);
         Terceto nuevoTerceto = tercetos.get(tercetoIncompleto);

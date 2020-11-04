@@ -36,7 +36,18 @@ declaracion : tipo lista_de_variables';'{//System.out.println("[Parser | Linea "
 					String tipoVar = $1.sval;
 					lista_variables = (ArrayList<String>)$2.obj; //controlar si ya está en la tabla
 					for(String lexema : lista_variables){
-						Main.tSimbolos.setDatosTabla(lexema,"variable",tipoVar,true);
+						String nuevoLexema = lexema + "@" + ambito;
+						if(!Main.tSimbolos.existeLexema(nuevoLexema)){
+							Main.tSimbolos.reemplazarLexema(lexema, nuevoLexema);
+							DatosTabla dt = Main.tSimbolos.getDatosTabla(nuevoLexema);
+							dt.setUso("variable");
+							dt.setTipo(tipoVar);
+							dt.setDeclarada(true);
+							Main.tSimbolos.setDatosTabla(nuevoLexema, dt);
+						} else {
+							System.out.println("La variable " + lexema + " ya fue declarada en este ambito");
+							Main.tSimbolos.eliminarSimbolo(lexema);
+							}
 					}
 					lista_variables.clear();
 					}
@@ -55,33 +66,87 @@ lista_de_variables : lista_de_variables ',' IDE {//System.out.println("[Parser |
                                                  $$ = new ParserVal(lista_variables);
                                                  }
 		   | IDE {//System.out.println("[Parser | Linea " + Lexico.linea + "] se leyo el identificador -> " + $1.sval);}
-                          	lista_variables.add($1.sval);
-                                $$ = new ParserVal(lista_variables);
+                          lista_variables.add($1.sval);
+                          $$ = new ParserVal(lista_variables);
                                 }
       		   | error_lista_de_variables
                    ;
 
 error_lista_de_variables: lista_de_variables IDE {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó una sentencia mal declarada, falta ',' entre los identificadores");}
 
-procedimiento : PROC IDE'('lista_de_parametros')'NI'='CTE_UINT'{'bloque_sentencias'}'{System.out.println("[Parser | Linea " + Lexico.linea + "]se declaró un procedimiento");}
-              | error_proc
-              ;
+procedimiento : declaracion_proc '{'bloque_sentencias'}'{System.out.println("[Parser | Linea " + Lexico.linea + "]se declaró un procedimiento");
+							if($1.sval != null){ // se declaro todo bien
+								ambito = ambito.substring(0,ambito.lastIndexOf("@"+$1.sval));}
+							}
+             | declaracion_proc    bloque_sentencias'}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un procedimiento mal declarado, falta '{' que abre el bloque de sentecias ");}
+             | declaracion_proc '{'                 '}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un procedimiento mal declarado, falta el bloque de sentencias");}
+             | declaracion_proc '{'bloque_sentencias   {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un procedimiento mal declarado, falta '}' que cierra el bloque de sentencias");}
+             ;
 
-error_proc: PROC    '('lista_de_parametros')'NI'='CTE_UINT'{'bloque_sentencias'}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un procedimiento mal declarado, falta el identificador");}
+declaracion_proc: PROC IDE'('lista_de_parametros')'NI'='CTE_UINT {String nuevoLexema = $2.sval + "@" + ambito;
+				if(!Main.tSimbolos.existeLexema(nuevoLexema)){
+					DatosTabla dt = Main.tSimbolos.getDatosTabla($2.sval);
+					dt.setUso("nombreProcedimiento");
+					dt.setLlamados($8.sval);
+					Main.tSimbolos.setDatosTabla($2.sval, dt);
+					Main.tSimbolos.reemplazarLexema($2.sval, nuevoLexema);
+					lista_parametros = (ArrayList<String>)$4.obj;
+					if(!lista_parametros.isEmpty()){
+						for(String parametro : lista_parametros){
+							Main.tSimbolos.reemplazarLexema(parametro, parametro +"@"+$2.sval);
+						}
+						ambito = ambito + "@"+ $2.sval;
+						$$ = new ParserVal($2.sval); // para corroborar q el proc se declaro bien (no se si va)
+					}
+					else
+						$$ = new ParserVal(null); // Hay 2 parametros con el mismo ide
+				} else {
+					System.out.print("El procedimiento "+ $2.sval + " ya fue declarado en este ambito");
+					$$ = new ParserVal(null);
+				}
+				}
+		| error_declaracion_proc
+		;
+
+error_declaracion_proc: PROC    '('lista_de_parametros')'NI'='CTE_UINT {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un procedimiento mal declarado, falta el identificador");}
+                      | PROC IDE   lista_de_parametros')'NI'='CTE_UINT {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un procedimiento mal declarado, falta '('");}
+                      | PROC IDE'('                   ')'NI'='CTE_UINT {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un procedimiento mal declarado, falta lista de parametros");}
+                      | PROC IDE'('lista_de_parametros   NI'='CTE_UINT {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un procedimiento mal declarado, falta ')'");}
+                      | PROC IDE'('lista_de_parametros')'  '='CTE_UINT {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un procedimiento mal declarado, falta la palabra reservada NI ");}
+                      | PROC IDE'('lista_de_parametros')'NI   CTE_UINT {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un procedimiento mal declarado, '=' despues de NI ");}
+                      | PROC IDE'('lista_de_parametros')'NI'=' error   {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un procedimiento mal declarado, falta la constante UINT ");}
+               	      ;
+
+/*error_proc: PROC    '('lista_de_parametros')'NI'='CTE_UINT'{'bloque_sentencias'}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un procedimiento mal declarado, falta el identificador");}
 	  | PROC IDE   lista_de_parametros')'NI'='CTE_UINT'{'bloque_sentencias'}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un procedimiento mal declarado, falta '('");}
 	  | PROC IDE'('                   ')'NI'='CTE_UINT'{'bloque_sentencias'}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un procedimiento mal declarado, falta lista de parametros");}
 	  | PROC IDE'('lista_de_parametros   NI'='CTE_UINT'{'bloque_sentencias'}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un procedimiento mal declarado, falta ')'");}
 	  | PROC IDE'('lista_de_parametros')'  '='CTE_UINT'{'bloque_sentencias'}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un procedimiento mal declarado, falta la palabra reservada NI ");}
 	  | PROC IDE'('lista_de_parametros')'NI   CTE_UINT'{'bloque_sentencias'}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un procedimiento mal declarado, '=' despues de NI ");}
 	  | PROC IDE'('lista_de_parametros')'NI'='        '{'bloque_sentencias'}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un procedimiento mal declarado, falta la constante UINT ");}
-	  | PROC IDE'('lista_de_parametros')'NI'='CTE_UINT   bloque_sentencias'}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un procedimiento mal declarado, falta '{' que abre el bloque de sentecias ");}
-	  | PROC IDE'('lista_de_parametros')'NI'='CTE_UINT'{'                 '}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un procedimiento mal declarado, falta el bloque de sentencias");}
-	  | PROC IDE'('lista_de_parametros')'NI'='CTE_UINT'{'bloque_sentencias   {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un procedimiento mal declarado, falta '}' que cierra el bloque de sentencias");}
+	  | declaracion_proc    bloque_sentencias'}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un procedimiento mal declarado, falta '{' que abre el bloque de sentecias ");}
+	  | declaracion_proc '{'                 '}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un procedimiento mal declarado, falta el bloque de sentencias");}
+	  | declaracion_proc '{'bloque_sentencias   {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un procedimiento mal declarado, falta '}' que cierra el bloque de sentencias");}
+	  ;*/
 
-
-lista_de_parametros : param
-		    | param ',' param
-		    | param ',' param ',' param
+lista_de_parametros : param {lista_parametros.clear();
+			     lista_parametros.add($1.sval);
+			     $$ = new ParserVal(lista_parametros);}
+		    | param ',' param  {lista_parametros.clear();
+		    			if(!$1.sval.equals($3.sval)){
+						lista_parametros.add($1.sval);
+						lista_parametros.add($3.sval);
+					} else
+						System.out.println("No puede haber dos parametros con el mismo IDE");
+					$$ = new ParserVal(lista_parametros);}
+		    | param ',' param ',' param {lista_parametros.clear();
+		    				 if(!$1.sval.equals($3.sval) && !$1.sval.equals($5.sval) && !$3.sval.equals($5.sval)){
+							lista_parametros.add($1.sval);
+							lista_parametros.add($3.sval);
+							lista_parametros.add($5.sval);
+						 } else {
+							System.out.println("No puede haber dos parametros con el mismo IDE");}
+		    				 $$ = new ParserVal(lista_parametros);}
 		    | error_lista_de_parametros
 	            ;
 
@@ -92,8 +157,20 @@ error_lista_de_parametros : param ',' param ',' param ',' lista_de_parametros {S
 			  | param param ',' param {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectaron parametros mal declarados, falta ','");}
 			  ;
 
-param : tipo IDE {System.out.println("[Parser | Linea " + Lexico.linea + "]se leyó el parametro -> " + $2.sval);}//copia valor
-      | REF tipo IDE {System.out.println("[Parser | Linea " + Lexico.linea + "]se leyó el parametro -> " + $2.sval);}//referencia
+param : tipo IDE {//System.out.println("[Parser | Linea " + Lexico.linea + "]se leyó el parametro -> " + $2.sval);
+		  DatosTabla dt = Main.tSimbolos.getDatosTabla($2.sval);
+		  dt.setUso("nombreParametro");
+		  dt.setTipo($1.sval);
+		  Main.tSimbolos.setDatosTabla($2.sval, dt);
+		  $$ = new ParserVal($2.sval);} //copia valor
+
+      | REF tipo IDE {//System.out.println("[Parser | Linea " + Lexico.linea + "]se leyó el parametro -> " + $2.sval);
+      		  DatosTabla dt = Main.tSimbolos.getDatosTabla($3.sval);
+                  dt.setUso("nombreParametro");
+                  dt.setTipo($2.sval);
+                  dt.setParametroRef(true);
+                  Main.tSimbolos.setDatosTabla($3.sval, dt);
+                  $$ = new ParserVal($3.sval);} //referencia
       ;
 
 tipo : UINT {//System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó un tipo UINT");}
@@ -212,12 +289,16 @@ expresion : termino { $$ = new ParserVal((Operando)$1.obj);}
                                         $$ = new ParserVal(null);}
 	  | DOUBLE '(' expresion ')'{ System.out.println("[Parser | Linea " + Lexico.linea + "] se realizó una conversión");
 	  			Operando op = (Operando)$3.obj;
-	  			 if(op != null)
-	  				$$ = new ParserVal(new Operando("DOUBLE",op.getValor()));
+	  			if(op != null)
+	  				if(op.getTipo() == "UINT")
+	  					$$ = new ParserVal(new Operando("DOUBLE",op.getValor()));
+	  				else{
+	  					System.out.println("Error: no se permite convertir un double");
+	  					$$ = new ParserVal(null);}
 	  			else
 	  				$$ = new ParserVal(null);
 	  			}
-          ;
+         ;
 
 termino : termino '*' factor { System.out.println("[Parser | Linea " + Lexico.linea + "] se realizó una multiplicacion");
 				Operando op1 = (Operando)$1.obj;
@@ -260,8 +341,9 @@ factor 	: CTE_DOUBLE {System.out.println("[Parser | Linea " + Lexico.linea + "] 
         			$$ = new ParserVal(new Operando(op.getTipo(), "-" + op.getValor()));
         			}}
 	| IDE { System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó el identificador -> " + $1.sval);
-		if(Main.tSimbolos.getDatosTabla($1.sval).isDeclarada())
-                	$$ = new ParserVal(new Operando(Main.tSimbolos.getDatosTabla($1.sval).getTipo(), $1.sval));
+		String ambitoVariable = Main.tSimbolos.verificarAmbito($1.sval, ambito);
+		if(ambitoVariable != null)
+                	$$ = new ParserVal(new Operando(Main.tSimbolos.getDatosTabla(ambitoVariable).getTipo(), $1.sval));
                 else {
                        	System.out.println("La variable " + $1.sval +" no fue declarada");
                        	$$ = new ParserVal(null);
@@ -297,34 +379,22 @@ bloque_then: bloque {Terceto t = new Terceto("BI", null, null);
                      }
 	    ;
 
-if_condicion: condicion {System.out.println(" se leyó una sentencia IF" + $1.sval);
+if_condicion: condicion {//System.out.println(" se leyó una sentencia IF" + $1.sval);
 				if($1.sval != null){
 					Terceto t = new Terceto("BF", $1.sval, null);
 					adminTerceto.agregarTerceto(t);
 					adminTerceto.apilar(t.getNumero());
 				}}
-	//     | error_if_condicion
 	     ;
-
-/*error_if_condicion: IF     condicion ')' {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un IF mal declarado, falta '('");}
-		  | IF '('           ')' {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un IF mal declarado, falta la condicion");}
-		  | IF '(' condicion     {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un IF mal declarado, falta ')'");}
-		  | IF     condicion 	{System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un IF mal declarado, falta los parentesis");}
-		  ;*/
-
 
 error_if: IF     if_condicion ')' bloque END_IF {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta '('");}
 	| IF '('              ')' bloque END_IF {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta la condicion");}
 	| IF '(' if_condicion     bloque END_IF {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta ')'");}
-	//| IF '(' if_condicion ')' bloque END_IF {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta '{'");}
 	| IF '(' if_condicion ')'        END_IF {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta el bloque de sentencias");}
-	//| IF '(' if_condicion ')' bloque END_IF {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta '}'");}
 	| IF '(' if_condicion ')' bloque        {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta el END_IF o ELSE");}
 	//el de arriba si falta ELSE no se recuper bien, revisar.
 	//| IF '(' if_condicion ')' '{' bloques '}'      '{' bloque_sentencias '}' END_IF{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta el ELSE");}
-	//| IF '(' if_condicion ')'  bloque_then  ELSE bloque END_IF{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta '{'");}
 	| IF '(' if_condicion ')'  bloque_then  ELSE        END_IF{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta el bloque de sentencias del ELSE");}
-	//| IF '(' if_condicion ')'  bloque_then  ELSE bloque END_IF{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta '}'");}
 	| IF '(' if_condicion ')'  bloque_then  ELSE bloque       {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un IF mal declarado, falta el END_IF");}
 	;
 
@@ -341,8 +411,9 @@ error_salida : OUT CADENA ')' {System.out.println("Error sintáctico: Linea " + 
 	     ;
 
 asignacion : IDE '=' expresion {System.out.println("[Parser | Linea " + Lexico.linea + "] se realizó una asignación al identificador -> " + $1.sval);
-				if(Main.tSimbolos.getDatosTabla($1.sval).isDeclarada()){
-					String tipoIde = Main.tSimbolos.getDatosTabla($1.sval).getTipo();
+				String ambitoVariable = Main.tSimbolos.verificarAmbito($1.sval, ambito);
+				if(ambitoVariable != null){
+					String tipoIde = Main.tSimbolos.getDatosTabla(ambitoVariable).getTipo();
 					Operando op = (Operando)$3.obj;
 					if(op != null)
 						if(tipoIde.equals(op.getTipo())){
@@ -389,13 +460,17 @@ error_parametros : ':' IDE {System.out.println("Error sintáctico: Linea " + Lex
 
 private Lexico lexico;
 private ArrayList<String> lista_variables;
+private ArrayList<String> lista_parametros;
 private AdmTercetos adminTerceto;
+private String ambito;
 
 public Parser(Lexico lexico, AdmTercetos adminTerceto)
 {
   this.lexico = lexico;
   this.lista_variables = new ArrayList<String>();
+  this.lista_parametros = new ArrayList<String>();
   this.adminTerceto = adminTerceto;
+  this.ambito = "main";
 }
 
 public int yylex(){
@@ -409,7 +484,7 @@ public int yylex(){
 }
 
 public void yyerror(String s){
-    System.out.println("Parser: " + s);
+    //System.out.println("Parser: " + s);  Comentando esto no tira lo de Parser: sintax error
 }
 
 public boolean chequearFactorNegado(){

@@ -1,3 +1,1 @@
-{UINT a,b;
-FOR ( a = 2_ui ; a < b ; UP 5_ui) {DOUBLE c;}
-}
+PROC f1 (UINT a, REF UINT b, DOUBLE c) NI = 3_ui { DOUBLE c; ;

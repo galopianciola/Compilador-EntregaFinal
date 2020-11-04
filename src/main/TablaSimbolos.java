@@ -29,13 +29,13 @@ public class TablaSimbolos {
     }
 
     public void agregarSimbolo(String lexema, Integer id, String tipo) {
-        if (tSimbolos.containsKey(lexema))
-            System.out.println("El identificador " + lexema + " ya existe");
-        else {
+        if (!tSimbolos.containsKey(lexema)) {
             DatosTabla dt = new DatosTabla();
             dt.setId(id);
             dt.setTipo(tipo);
             tSimbolos.put(lexema, dt);
+        } else {
+            // System.out.println("El identificador " + lexema + " ya existe");
         }
     }
 
@@ -71,11 +71,25 @@ public class TablaSimbolos {
                     + ", declarada: "+ tSimbolos.get(lexema).isDeclarada());
         }
     }
+    public void reemplazarLexema(String lexema, String nuevoLexema){
+        DatosTabla dt = tSimbolos.get(lexema);
+        tSimbolos.remove(lexema);
+        tSimbolos.put(nuevoLexema, dt);
+    }
 
-    public void setDatosTabla( String lexema, String uso ,String tipo, boolean declarada){
-        DatosTabla tb = tSimbolos.get(lexema);
-        tb.setUso(uso);
-        tb.setTipo(tipo);
-        tb.setDeclarada(declarada);
+    public void setDatosTabla( String lexema, DatosTabla dt){
+        tSimbolos.replace(lexema, dt);
+    }
+
+    public String verificarAmbito(String ide, String ambito){
+        String aux = ide + "@" + ambito;
+     //   System.out.println("aux "+aux + tSimbolos.containsKey(aux));
+        while(!aux.equals(ide)){
+            if(tSimbolos.containsKey(aux)){
+                return aux;
+            }
+            aux = aux.substring(0,ambito.lastIndexOf("@"));
+        }
+        return null;
     }
 }

@@ -5,12 +5,16 @@ public class DatosTabla {
     private String tipo;
     private String uso;
     private boolean declarada;
+    private boolean parametroRef;
+    private String llamados;
 
     public DatosTabla() {
         this.id = 0;
         this.tipo = null;
         this.uso = null;
         this.declarada = false;
+        this.parametroRef = false;
+        this.llamados = "";
     }
 
     public boolean isDeclarada() {
@@ -43,5 +47,21 @@ public class DatosTabla {
 
     public void setUso(String uso) {
         this.uso = uso;
+    }
+
+    public boolean isParametroRef() {
+        return parametroRef;
+    }
+
+    public void setParametroRef(boolean parametroRef) {
+        this.parametroRef = parametroRef;
+    }
+
+    public String getLlamados() {
+        return llamados;
+    }
+
+    public void setLlamados(String llamados) {
+        this.llamados = llamados;
     }
 }
