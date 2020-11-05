@@ -1,10 +1,14 @@
 package CodigoInt;
 
+import javafx.util.Pair;
+
 import java.util.ArrayList;
+import java.util.Hashtable;
 
 public class AdmTercetos {
     private ArrayList<Terceto> tercetos = new ArrayList<Terceto>();
     private ArrayList<Integer> pila = new ArrayList<>();
+    private Hashtable<String, Integer> procedimientos = new Hashtable<String, Integer>();
 
     public AdmTercetos(){}
 
@@ -34,6 +38,10 @@ public class AdmTercetos {
         Terceto nuevoTerceto = tercetos.get(tercetos.size()-1);
         nuevoTerceto.setOp1(Integer.toString(nroTerceto));
         tercetos.set(tercetos.size()-1, nuevoTerceto);
+    }
+
+    public void agregarProcedimiento(String proc){
+        procedimientos.put(proc, tercetos.size());
     }
 
     public void printTercetos(){
