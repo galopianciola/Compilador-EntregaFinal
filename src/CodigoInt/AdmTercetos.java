@@ -61,13 +61,12 @@ public class AdmTercetos {
                     System.out.println(t.getNumero() + ". (" + t.getOperador()+", "+t.getOp1()+ ", "+t.getOp2()+")");
                     int inicioProc = procedimientos.get(t.getOp1());
                     int finProc = this.buscarFinProc(t.getOp1());
-                    System.out.println("inicio" + inicioProc + " fin "+finProc);
+                    //System.out.println("inicio" + inicioProc + " fin "+finProc);
                     Terceto t1 = tercetos.get(inicioProc);
                     for(int index = inicioProc; index <= finProc; index++){
                         t1 = tercetos.get(index);
                         System.out.println(t1.getNumero() + ". (" + t1.getOperador() + ", " + t1.getOp1() + ", " + t1.getOp2() + ")");
                     }
-                    //System.out.println(t1.getNumero() + ". (" + t1.getOperador() + ", " + t1.getOp1() + ", " + t1.getOp2() + ")");
                     i++;
                 } else
                         System.out.println(t.getNumero() + ". (" + t.getOperador()+", "+t.getOp1()+ ", "+t.getOp2()+")");
@@ -86,8 +85,7 @@ public class AdmTercetos {
 
     public int buscarFinProc(String procedimiento){
         for(Terceto t : tercetos){
-            if(t.getOperador() == "FinProc" && t.getOp1() == procedimiento){
-                System.out.println("entro if");
+            if(t.getOperador().equals("FinProc") && t.getOp1().equals(procedimiento)){
                 return t.getNumero();}
         }
         return 0;
