@@ -3,6 +3,7 @@ package CodigoInt;
 import javafx.util.Pair;
 
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Hashtable;
 
 public class AdmTercetos {
@@ -41,12 +42,36 @@ public class AdmTercetos {
     }
 
     public void agregarProcedimiento(String proc){
-        procedimientos.put(proc, tercetos.size());
+        procedimientos.put(proc, tercetos.size()-1);
     }
 
     public void printTercetos(){
-        for (Terceto t: this.tercetos){
-            System.out.println(t.getNumero() + ". (" + t.getOperador()+", "+t.getOp1()+ ", "+t.getOp2()+")");
+        for (int i = 0; i < tercetos.size(); i++){
+            Terceto t = tercetos.get(i);
+            if(t.getOperador() == "PROC"){
+                while(t.getOperador() != "FinProc"){
+                    i++;
+                    t = tercetos.get(i);
+                }
+            } else
+                if(t.getOperador() == "INV"){
+                    System.out.println(t.getNumero() + ". (" + t.getOperador()+", "+t.getOp1()+ ", "+t.getOp2()+")");
+                    int numero = procedimientos.get(t.getOp1());
+                    Terceto t1 = tercetos.get(numero);
+                    while(t1.getOperador() != "FinProc") {
+                        System.out.println(t1.getNumero() + ". (" + t1.getOperador() + ", " + t1.getOp1() + ", " + t1.getOp2() + ")");
+                        numero++;
+                        t1 = tercetos.get(numero);
+                    }
+                    System.out.println(t1.getNumero() + ". (" + t1.getOperador() + ", " + t1.getOp1() + ", " + t1.getOp2() + ")");
+                    i++;
+                } else
+                        System.out.println(t.getNumero() + ". (" + t.getOperador()+", "+t.getOp1()+ ", "+t.getOp2()+")");
         }
+    }
+
+    public void printProcedimientos() {
+        System.out.println("\nProcedimientos:");
+        System.out.println(procedimientos);
     }
 }

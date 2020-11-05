@@ -65,8 +65,8 @@ public class DatosTabla {
         return llamadosMax;
     }
 
-    public void setLlamadosMax(String llamados) {
-        this.llamadosMax = Integer.parseInt(llamados.substring(0, llamados.indexOf("_")));
+    public void setLlamadosMax(int llamados) {
+        this.llamadosMax = llamados;
     }
 
     public int getLlamadosActuales() { return llamadosActuales; }
@@ -79,7 +79,7 @@ public class DatosTabla {
         return orden;
     }
 
-    public void incremetarLlamados() {
+    public void incrementarLlamados() {
         this.llamadosActuales++;
     }
 

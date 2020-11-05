@@ -77,8 +77,10 @@ error_lista_de_variables: lista_de_variables IDE {System.out.println("Error sint
 
 procedimiento : declaracion_proc '{'bloque_sentencias'}'{System.out.println("[Parser | Linea " + Lexico.linea + "]se declaró un procedimiento");
 							if($1.sval != null){ // se declaro todo bien
-								ambito = ambito.substring(0,ambito.lastIndexOf("@"+$1.sval));
-								Terceto t = new Terceto(FinProc, $1.sval, null);}
+								ambito = ambito.substring(0,ambito.lastIndexOf("@"));
+								Terceto t = new Terceto("FinProc", $1.sval, null);
+								adminTerceto.agregarTerceto(t);
+								}
 							}
              | declaracion_proc    bloque_sentencias'}' {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un procedimiento mal declarado, falta '{' que abre el bloque de sentecias ");}
              | declaracion_proc '{'                 '}' {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un procedimiento mal declarado, falta el bloque de sentencias");}
@@ -90,18 +92,18 @@ declaracion_proc: PROC IDE'('lista_de_parametros')'NI'='CTE_UINT {String nuevoLe
 					Main.tSimbolos.reemplazarLexema($2.sval, nuevoLexema);
 					DatosTabla dt = Main.tSimbolos.getDatosTabla(nuevoLexema);
 					dt.setUso("nombreProcedimiento");
-					dt.setLlamadosMax($8.sval);
+					dt.setLlamadosMax(Integer.parseInt($8.sval));
 					Main.tSimbolos.setDatosTabla(nuevoLexema, dt);
 					lista_parametros = (ArrayList<String>)$4.obj;
 					if(!lista_parametros.isEmpty()){
 						int posicion = 1;
 						for(String parametro : lista_parametros){
 							Main.tSimbolos.reemplazarLexema(parametro, parametro +"@"+$2.sval);
-							Main.tsimbolos.getDatosTabla(parametro +"@"+$2.sval).setOrden(posicion);
+							Main.tSimbolos.getDatosTabla(parametro +"@"+$2.sval).setOrden(posicion);
 							posicion++;
 						}
 						ambito = ambito + "@"+ $2.sval;
-						Tercetos t = new Terceto(PROC, nuevoLexema, null);
+						Terceto t = new Terceto("PROC", nuevoLexema, null);
 						adminTerceto.agregarTerceto(t);
 						adminTerceto.agregarProcedimiento(nuevoLexema);
 						$$ = new ParserVal(nuevoLexema); // para corroborar q el proc se declaro bien (no se si va)
@@ -450,14 +452,20 @@ invocacion : IDE '(' parametros ')'{//System.out.println("[Parser | Linea " + Le
 				   lista_param_invocacion = (ArrayList<Pair<String, String>>)$3.obj;
 			  	   if(!lista_param_invocacion.isEmpty()){ // Hubo un error mas abajo
 			  	    	String ambitoProc = Main.tSimbolos.verificarAmbito($1.sval, ambito);
-			  	    	if(ambitoProc != null && this.verificarParametros(lista_param_invocacion, $1.sval) && main.tSimbolos.getDatosTabla(ambitoProc).getLlamadosActuales() < main.tSimbolos.getDatosTabla(ambitoProc).getLlamadosMax()){
-			  	    		for(Pair p : lista_param_invocacion){
-			  	    			Terceto t = new Terceto("=" ,p.getKey()+"@"+$1.sval, p.getValue());
-			  	    			adminTerceto.agregarTerceto(t);
-			  	    		}
-			  	    		Terceto t = new Terceto("INV", ambitoProc, null); //ver como guardar linea inicial de procedimiento.
-			  	    		Main.tSimbolos.getDatosTabla(ambitoProc).incrementarLlamados();
-			  	    	} else
+			  	    	if(ambitoProc != null)
+			  	    	   	if (verificarParametros($1.sval)){
+							if(Main.tSimbolos.getDatosTabla(ambitoProc).getLlamadosActuales() < Main.tSimbolos.getDatosTabla(ambitoProc).getLlamadosMax()){
+								for(Pair p : lista_param_invocacion){
+									Terceto t = new Terceto("=" ,p.getKey()+"@"+$1.sval, (String)p.getValue());
+									adminTerceto.agregarTerceto(t);
+								}
+								Terceto t = new Terceto("INV", ambitoProc, null); //ver como guardar linea inicial de procedimiento.
+								Main.tSimbolos.getDatosTabla(ambitoProc).incrementarLlamados();
+								adminTerceto.agregarTerceto(t);
+							} else
+								System.out.println("Supero la cantidad maxima de llamados a "+$1.sval);
+						}
+			  	    	else
 			  	    		System.out.println("El procedimiento "+$1.sval+" esta fuera de alcance");
 			  	   }}
 	   | error_invocacion
@@ -504,6 +512,7 @@ private ArrayList<String> lista_parametros;
 private ArrayList<Pair<String,String>> lista_param_invocacion;
 private AdmTercetos adminTerceto;
 private String ambito;
+//private String procedimiento;
 
 public Parser(Lexico lexico, AdmTercetos adminTerceto)
 {
@@ -539,27 +548,31 @@ public boolean chequearFactorNegado(){
 	else if (id == Lexico.CTE_DOUBLE) {
 		double valor = -1*Double.parseDouble(lexema.replace('d','e'));
 		if(( valor > 2.2250738585272014e-308 && valor < 1.7976931348623157e+308) || (valor > -1.7976931348623157e+308 && valor < -2.2250738585072014e-308) || (valor == 0.0))
-                	Main.tSimbolos.modificarSimbolo(lexema, String.valueOf(valor));
+                	{Main.tSimbolos.modificarSimbolo(lexema, String.valueOf(valor));
                 	return true;
                 	}
                 else {
                 	System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó una constante DOUBLE fuera de rango");
 	               	Main.tSimbolos.eliminarSimbolo(lexema);
 	 	}
+	}
 	return false;
 }
 
-public boolean verificarParametros(ArrayList<Pair<String,String>> lista, String proc){
+public boolean verificarParametros(String proc){
 	int orden = 1;
-	for(Pair p : lista){
+	for(Pair p : lista_param_invocacion){
 		String parametroFormal = p.getKey() + "@" + proc;
-		String parametroReal = p.getValue();
+		String parametroReal = (String)p.getValue();
 		if(!Main.tSimbolos.existeLexema(parametroFormal)){ //el usuario lo escribio mal en la invocacion
-			return false;
-		if(Main.tSimbolos.getDatosTabla(parametroFormal).getOrden() != orden)
-			return false;
-		if((Main.tSimbolos.getDatosTabla(parametroFormal).getTipo() != Main.tSimbolos.getDatosTabla(parametroReal).getTipo())
-			return false;
+			System.out.println("No se reconoce el parametro "+ parametroFormal);
+			return false;}
+		if(Main.tSimbolos.getDatosTabla(parametroFormal).getOrden() != orden){
+			System.out.println("Los parametros no estan en el orden correcto");
+			return false;}
+		if(Main.tSimbolos.getDatosTabla(parametroFormal).getTipo() != Main.tSimbolos.getDatosTabla(parametroReal).getTipo()){
+			System.out.println("Los tipos de los parametros reales y formales no son iguales");
+			return false;}
 		orden++;
 	}
 	return true;

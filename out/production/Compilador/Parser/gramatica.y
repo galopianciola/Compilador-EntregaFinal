@@ -3,6 +3,7 @@ package Parser;
 import main.*;
 import java.util.ArrayList;
 import CodigoInt.*;
+import javafx.util.Pair;
 %}
 
 %token IDE CTE_UINT MAYOR_IGUAL MENOR_IGUAL IGUAL_IGUAL DISTINTO CTE_DOUBLE CADENA IF THEN ELSE END_IF OUT UINT DOUBLE
@@ -76,34 +77,43 @@ error_lista_de_variables: lista_de_variables IDE {System.out.println("Error sint
 
 procedimiento : declaracion_proc '{'bloque_sentencias'}'{System.out.println("[Parser | Linea " + Lexico.linea + "]se declaró un procedimiento");
 							if($1.sval != null){ // se declaro todo bien
-								ambito = ambito.substring(0,ambito.lastIndexOf("@"+$1.sval));}
+								ambito = ambito.substring(0,ambito.lastIndexOf("@"));
+								Terceto t = new Terceto("FinProc", $1.sval, null);
+								adminTerceto.agregarTerceto(t);
+								}
 							}
-             | declaracion_proc    bloque_sentencias'}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un procedimiento mal declarado, falta '{' que abre el bloque de sentecias ");}
-             | declaracion_proc '{'                 '}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un procedimiento mal declarado, falta el bloque de sentencias");}
-             | declaracion_proc '{'bloque_sentencias   {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un procedimiento mal declarado, falta '}' que cierra el bloque de sentencias");}
+             | declaracion_proc    bloque_sentencias'}' {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un procedimiento mal declarado, falta '{' que abre el bloque de sentecias ");}
+             | declaracion_proc '{'                 '}' {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un procedimiento mal declarado, falta el bloque de sentencias");}
+             | declaracion_proc '{'bloque_sentencias    {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un procedimiento mal declarado, falta '}' que cierra el bloque de sentencias");}
              ;
 
 declaracion_proc: PROC IDE'('lista_de_parametros')'NI'='CTE_UINT {String nuevoLexema = $2.sval + "@" + ambito;
 				if(!Main.tSimbolos.existeLexema(nuevoLexema)){
-					DatosTabla dt = Main.tSimbolos.getDatosTabla($2.sval);
-					dt.setUso("nombreProcedimiento");
-					dt.setLlamados($8.sval);
-					Main.tSimbolos.setDatosTabla($2.sval, dt);
 					Main.tSimbolos.reemplazarLexema($2.sval, nuevoLexema);
+					DatosTabla dt = Main.tSimbolos.getDatosTabla(nuevoLexema);
+					dt.setUso("nombreProcedimiento");
+					dt.setLlamadosMax(Integer.parseInt($8.sval));
+					Main.tSimbolos.setDatosTabla(nuevoLexema, dt);
 					lista_parametros = (ArrayList<String>)$4.obj;
 					if(!lista_parametros.isEmpty()){
+						int posicion = 1;
 						for(String parametro : lista_parametros){
 							Main.tSimbolos.reemplazarLexema(parametro, parametro +"@"+$2.sval);
+							Main.tSimbolos.getDatosTabla(parametro +"@"+$2.sval).setOrden(posicion);
+							posicion++;
 						}
 						ambito = ambito + "@"+ $2.sval;
-						$$ = new ParserVal($2.sval); // para corroborar q el proc se declaro bien (no se si va)
+						Terceto t = new Terceto("PROC", nuevoLexema, null);
+						adminTerceto.agregarTerceto(t);
+						adminTerceto.agregarProcedimiento(nuevoLexema);
+						$$ = new ParserVal(nuevoLexema); // para corroborar q el proc se declaro bien (no se si va)
 					}
 					else
 						$$ = new ParserVal(null); // Hay 2 parametros con el mismo ide
 				} else {
 					System.out.print("El procedimiento "+ $2.sval + " ya fue declarado en este ambito");
 					$$ = new ParserVal(null);
-				}
+					}
 				}
 		| error_declaracion_proc
 		;
@@ -213,13 +223,14 @@ condicion_for: condicion {if($1.sval != null){
                           }
 
 asignacion_for: IDE '=' CTE_UINT { System.out.println("[Parser | Linea " + Lexico.linea + "] se realiz� una asignaci�n al identificador -> " + $1.sval);
-                                  if(Main.tSimbolos.getDatosTabla($1.sval).isDeclarada()){
-                            		String tipoIde = Main.tSimbolos.getDatosTabla($1.sval).getTipo();
+                                  String ambitoVariable = Main.tSimbolos.verificarAmbito($1.sval, ambito);
+                                  if(ambitoVariable != null) {
+                            		String tipoIde = Main.tSimbolos.getDatosTabla(ambitoVariable).getTipo();
                                         if(tipoIde.equals("UINT")){
-                                		Terceto t = new Terceto("=", $1.sval, $3.sval);
+                                		Terceto t = new Terceto("=", ambitoVariable, $3.sval);
                                 		adminTerceto.agregarTerceto(t);
                                 		adminTerceto.apilar(t.getNumero()+1);
-                                		$$ = new ParserVal($1.sval);
+                                		$$ = new ParserVal(ambitoVariable);
                                 	} else
                                 		System.out.println("Los tipos son incompatibles");
                                   } else {
@@ -343,7 +354,7 @@ factor 	: CTE_DOUBLE {System.out.println("[Parser | Linea " + Lexico.linea + "] 
 	| IDE { System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó el identificador -> " + $1.sval);
 		String ambitoVariable = Main.tSimbolos.verificarAmbito($1.sval, ambito);
 		if(ambitoVariable != null)
-                	$$ = new ParserVal(new Operando(Main.tSimbolos.getDatosTabla(ambitoVariable).getTipo(), $1.sval));
+                	$$ = new ParserVal(new Operando(Main.tSimbolos.getDatosTabla(ambitoVariable).getTipo(), ambitoVariable));
                 else {
                        	System.out.println("La variable " + $1.sval +" no fue declarada");
                        	$$ = new ParserVal(null);
@@ -399,7 +410,9 @@ error_if: IF     if_condicion ')' bloque END_IF {System.out.println("Error sint�
 	;
 
 
-salida : OUT'('CADENA')'{System.out.println("[Parser | Linea " + Lexico.linea + "] se realizó una sentencia OUT");}
+salida : OUT'('CADENA')'{//System.out.println("[Parser | Linea " + Lexico.linea + "] se realizó una sentencia OUT");
+			Terceto t = new Terceto("OUT", $3.sval, null);
+			adminTerceto.agregarTerceto(t);}
        | error_salida
        ;
 
@@ -417,7 +430,7 @@ asignacion : IDE '=' expresion {System.out.println("[Parser | Linea " + Lexico.l
 					Operando op = (Operando)$3.obj;
 					if(op != null)
 						if(tipoIde.equals(op.getTipo())){
-							Terceto t = new Terceto("=", $1.sval, op.getValor());
+							Terceto t = new Terceto("=", ambitoVariable, op.getValor());
 							adminTerceto.agregarTerceto(t);
 							$$ = new ParserVal(new Operando(tipoIde, "[" + t.getNumero()+ "]"));
 						} else
@@ -426,7 +439,6 @@ asignacion : IDE '=' expresion {System.out.println("[Parser | Linea " + Lexico.l
 					System.out.println("La variable " + $1.sval +" no fue declarada");
 					// ver si devolver null}
 				}}
-
 	   | error_asignacion
 	   ;
 
@@ -436,7 +448,26 @@ error_asignacion : IDE expresion {System.out.println("Error sintáctico: Linea "
 		 ;
 
 
-invocacion : IDE '(' parametros ')' {System.out.println("[Parser | Linea " + Lexico.linea + "] se realizó una invocacion al procedimiento -> " + $1.sval );}
+invocacion : IDE '(' parametros ')'{//System.out.println("[Parser | Linea " + Lexico.linea + "] se realizó una invocacion al procedimiento -> " + $1.sval );
+				   lista_param_invocacion = (ArrayList<Pair<String, String>>)$3.obj;
+			  	   if(!lista_param_invocacion.isEmpty()){ // Hubo un error mas abajo
+			  	    	String ambitoProc = Main.tSimbolos.verificarAmbito($1.sval, ambito);
+			  	    	if(ambitoProc != null)
+			  	    	   	if (verificarParametros($1.sval)){
+							if(Main.tSimbolos.getDatosTabla(ambitoProc).getLlamadosActuales() < Main.tSimbolos.getDatosTabla(ambitoProc).getLlamadosMax()){
+								for(Pair p : lista_param_invocacion){
+									Terceto t = new Terceto("=" ,p.getKey()+"@"+$1.sval, (String)p.getValue());
+									adminTerceto.agregarTerceto(t);
+								}
+								Terceto t = new Terceto("INV", ambitoProc, null); //ver como guardar linea inicial de procedimiento.
+								Main.tSimbolos.getDatosTabla(ambitoProc).incrementarLlamados();
+								adminTerceto.agregarTerceto(t);
+							} else
+								System.out.println("Supero la cantidad maxima de llamados a "+$1.sval);
+						}
+			  	    	else
+			  	    		System.out.println("El procedimiento "+$1.sval+" esta fuera de alcance");
+			  	   }}
 	   | error_invocacion
 	   ;
 
@@ -446,8 +477,25 @@ error_invocacion: '(' parametros ')' {System.out.println("Error sintáctico: Lin
 		| IDE'('parametros {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó una invocación mal declarada, falta el ')'");}
 		;
 
-parametros : IDE ':' IDE {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyeron los parámetros -> " + $1.sval +" y " +$3.sval);}
-	   | parametros ',' IDE ':' IDE  {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyeron los parámetros -> " + $3.sval +" y " +$5.sval);}
+parametros : IDE ':' IDE {//System.out.println("[Parser | Linea " + Lexico.linea + "] se leyeron los parámetros -> " + $1.sval +" y " +$3.sval);
+			  lista_param_invocacion.clear();
+			  String ambitoVariable = Main.tSimbolos.verificarAmbito($3.sval, ambito);
+			  if(ambitoVariable != null){
+			  	lista_param_invocacion.add(new Pair<String,String>($1.sval, ambitoVariable));
+			  	$$ = new ParserVal(lista_param_invocacion);} // esto no se si como seria pq hay 2 listas :'(
+			  else
+			  	System.out.println("La variable "+$3.sval+ "no se encuentra en el ambito");
+			  }
+	   | parametros ',' IDE ':' IDE {//System.out.println("[Parser | Linea " + Lexico.linea + "] se leyeron los parámetros -> " + $3.sval +" y " +$5.sval);
+                               	lista_param_invocacion = (ArrayList<Pair<String, String>>)$1.obj;
+                               	if(!lista_param_invocacion.isEmpty()){
+                               		String ambitoVariable = Main.tSimbolos.verificarAmbito($5.sval, ambito);
+                                        if(ambitoVariable != null){
+                                        	lista_param_invocacion.add(new Pair<String,String>($3.sval, ambitoVariable));
+                                    		$$ = new ParserVal(lista_param_invocacion);
+                                     	} else
+                                        	System.out.println("La variable "+$5.sval+ " no se encuentra en el ambito");
+                                }}
 	   | error_parametros
 	   ;
 
@@ -461,14 +509,17 @@ error_parametros : ':' IDE {System.out.println("Error sintáctico: Linea " + Lex
 private Lexico lexico;
 private ArrayList<String> lista_variables;
 private ArrayList<String> lista_parametros;
+private ArrayList<Pair<String,String>> lista_param_invocacion;
 private AdmTercetos adminTerceto;
 private String ambito;
+//private String procedimiento;
 
 public Parser(Lexico lexico, AdmTercetos adminTerceto)
 {
   this.lexico = lexico;
   this.lista_variables = new ArrayList<String>();
   this.lista_parametros = new ArrayList<String>();
+  this.lista_param_invocacion = new ArrayList<>();
   this.adminTerceto = adminTerceto;
   this.ambito = "main";
 }
@@ -497,12 +548,32 @@ public boolean chequearFactorNegado(){
 	else if (id == Lexico.CTE_DOUBLE) {
 		double valor = -1*Double.parseDouble(lexema.replace('d','e'));
 		if(( valor > 2.2250738585272014e-308 && valor < 1.7976931348623157e+308) || (valor > -1.7976931348623157e+308 && valor < -2.2250738585072014e-308) || (valor == 0.0))
-                	Main.tSimbolos.modificarSimbolo(lexema, String.valueOf(valor));
+                	{Main.tSimbolos.modificarSimbolo(lexema, String.valueOf(valor));
                 	return true;
                 	}
                 else {
                 	System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó una constante DOUBLE fuera de rango");
 	               	Main.tSimbolos.eliminarSimbolo(lexema);
 	 	}
+	}
 	return false;
+}
+
+public boolean verificarParametros(String proc){
+	int orden = 1;
+	for(Pair p : lista_param_invocacion){
+		String parametroFormal = p.getKey() + "@" + proc;
+		String parametroReal = (String)p.getValue();
+		if(!Main.tSimbolos.existeLexema(parametroFormal)){ //el usuario lo escribio mal en la invocacion
+			System.out.println("No se reconoce el parametro "+ parametroFormal);
+			return false;}
+		if(Main.tSimbolos.getDatosTabla(parametroFormal).getOrden() != orden){
+			System.out.println("Los parametros no estan en el orden correcto");
+			return false;}
+		if(Main.tSimbolos.getDatosTabla(parametroFormal).getTipo() != Main.tSimbolos.getDatosTabla(parametroReal).getTipo()){
+			System.out.println("Los tipos de los parametros reales y formales no son iguales");
+			return false;}
+		orden++;
+	}
+	return true;
 }

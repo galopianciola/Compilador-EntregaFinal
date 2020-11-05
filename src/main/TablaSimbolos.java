@@ -68,7 +68,7 @@ public class TablaSimbolos {
             String lexema = (String) iterador.nextElement();
             System.out.println("Lexema: " + lexema + ", id: " + tSimbolos.get(lexema).getId() +
                     ", tipo: " + tSimbolos.get(lexema).getTipo() + ", uso: " + tSimbolos.get(lexema).getUso()
-                    + ", declarada: "+ tSimbolos.get(lexema).isDeclarada());
+                    + "");
         }
     }
     public void reemplazarLexema(String lexema, String nuevoLexema){
@@ -83,12 +83,20 @@ public class TablaSimbolos {
 
     public String verificarAmbito(String ide, String ambito){
         String aux = ide + "@" + ambito;
-     //   System.out.println("aux "+aux + tSimbolos.containsKey(aux));
+        // Verificar ambito variables
         while(!aux.equals(ide)){
             if(tSimbolos.containsKey(aux)){
                 return aux;
             }
-            aux = aux.substring(0,ambito.lastIndexOf("@"));
+            aux = aux.substring(0,aux.lastIndexOf("@"));
+        }
+        // Verificar ambito parametros
+        String[] proc = ambito.split("@");
+        for(int i = 1; i<proc.length; i++){
+            aux = ide + "@" +proc[i];
+            if(tSimbolos.containsKey(aux)){
+                return aux;
+            }
         }
         return null;
     }
