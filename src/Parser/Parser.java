@@ -964,7 +964,7 @@ case 21:
                  		ambito = ambito.substring(0,ambito.lastIndexOf("@"));
 				Terceto t = new Terceto("FinProc", val_peek(0).sval, null);
                           	adminTerceto.agregarTerceto(t);
-                          }
+                          	}
                           }
 break;
 case 22:
