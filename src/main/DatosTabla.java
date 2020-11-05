@@ -9,6 +9,7 @@ public class DatosTabla {
     private int llamadosMax;
     private int llamadosActuales;
     private int orden;
+    private int cantParametros;
 
     public DatosTabla() {
         this.id = 0;
@@ -83,5 +84,11 @@ public class DatosTabla {
         this.llamadosActuales++;
     }
 
+    public int getCantParametros() {
+        return cantParametros;
+    }
 
+    public void setCantParametros(int cantParametros) {
+        this.cantParametros = cantParametros;
+    }
 }

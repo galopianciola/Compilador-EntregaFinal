@@ -66,11 +66,15 @@ public class TablaSimbolos {
         Enumeration iterador = tSimbolos.keys();
         while (iterador.hasMoreElements()) {
             String lexema = (String) iterador.nextElement();
-            System.out.println("Lexema: " + lexema + ", id: " + tSimbolos.get(lexema).getId() +
-                    ", tipo: " + tSimbolos.get(lexema).getTipo() + ", uso: " + tSimbolos.get(lexema).getUso()
-                    + "");
+            if(lexema.indexOf('@') != -1)
+                System.out.println("Lexema: " + lexema + ", id: " + tSimbolos.get(lexema).getId() +
+                        ", tipo: " + tSimbolos.get(lexema).getTipo() + ", uso: " + tSimbolos.get(lexema).getUso()
+                        + "");
+            else
+                tSimbolos.remove(lexema);
         }
     }
+
     public void reemplazarLexema(String lexema, String nuevoLexema){
         DatosTabla dt = tSimbolos.get(lexema);
         tSimbolos.remove(lexema);

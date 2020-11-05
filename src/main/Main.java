@@ -62,6 +62,9 @@ public class Main{
         System.out.println("\n********* TABLA DE SIMBOLOS *********");
         tSimbolos.printTablaSimbolos();
 
+        System.out.println("\n********* CODIGO INTERMEDIO *********");
+        adminTercetos.printCodigoIntermedio();
+
         System.out.println("\n********* TERCETOS *********");
         adminTercetos.printTercetos();
 

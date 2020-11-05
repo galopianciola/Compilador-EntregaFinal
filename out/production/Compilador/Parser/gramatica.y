@@ -61,7 +61,7 @@ error_declaracion : tipo lista_de_variables error {System.out.println("Error sin
            	  | procedimiento error{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó una sentencia mal declarada, falta ';'");}
            	  ;
 
-lista_de_variables : lista_de_variables ',' IDE {//System.out.println("[Parser | Linea " + Lexico.linea + "] se leyo el identificador -> " + $3.sval);}
+lista_de_variables : lista_de_variables ',' IDE {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyo el identificador -> " + $3.sval);
       		   				 lista_variables = (ArrayList<String>) $1.obj;
                                                  lista_variables.add($3.sval);
                                                  $$ = new ParserVal(lista_variables);
@@ -82,39 +82,49 @@ procedimiento : declaracion_proc '{'bloque_sentencias'}'{System.out.println("[Pa
 								adminTerceto.agregarTerceto(t);
 								}
 							}
-             | declaracion_proc    bloque_sentencias'}' {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un procedimiento mal declarado, falta '{' que abre el bloque de sentecias ");}
+	     | error_proc {System.out.println("[Parser | Linea " + Lexico.linea + "]se declar� un procedimiento");
+                            if($1.sval != null){ // se declaro todo bien
+                 		ambito = ambito.substring(0,ambito.lastIndexOf("@"));
+				Terceto t = new Terceto("FinProc", $1.sval, null);
+                          	adminTerceto.agregarTerceto(t);
+                          	}
+                          }
+	     ;
+
+
+error_proc: declaracion_proc    bloque_sentencias'}' {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un procedimiento mal declarado, falta '{' que abre el bloque de sentecias ");}
              | declaracion_proc '{'                 '}' {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un procedimiento mal declarado, falta el bloque de sentencias");}
              | declaracion_proc '{'bloque_sentencias    {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un procedimiento mal declarado, falta '}' que cierra el bloque de sentencias");}
              ;
 
-declaracion_proc: PROC IDE'('lista_de_parametros')'NI'='CTE_UINT {String nuevoLexema = $2.sval + "@" + ambito;
+declaracion_proc: PROC IDE'('lista_de_parametros')'NI'='CTE_UINT {
+			lista_parametros = (ArrayList<String>)$4.obj;
+			if(!lista_parametros.isEmpty()){
+				String nuevoLexema = $2.sval + "@" + ambito;
 				if(!Main.tSimbolos.existeLexema(nuevoLexema)){
 					Main.tSimbolos.reemplazarLexema($2.sval, nuevoLexema);
 					DatosTabla dt = Main.tSimbolos.getDatosTabla(nuevoLexema);
 					dt.setUso("nombreProcedimiento");
 					dt.setLlamadosMax(Integer.parseInt($8.sval));
+					dt.setCantParametros(lista_parametros.size());
 					Main.tSimbolos.setDatosTabla(nuevoLexema, dt);
-					lista_parametros = (ArrayList<String>)$4.obj;
-					if(!lista_parametros.isEmpty()){
-						int posicion = 1;
-						for(String parametro : lista_parametros){
-							Main.tSimbolos.reemplazarLexema(parametro, parametro +"@"+$2.sval);
-							Main.tSimbolos.getDatosTabla(parametro +"@"+$2.sval).setOrden(posicion);
-							posicion++;
-						}
-						ambito = ambito + "@"+ $2.sval;
-						Terceto t = new Terceto("PROC", nuevoLexema, null);
-						adminTerceto.agregarTerceto(t);
-						adminTerceto.agregarProcedimiento(nuevoLexema);
-						$$ = new ParserVal(nuevoLexema); // para corroborar q el proc se declaro bien (no se si va)
+
+					int posicion = 1;
+					for(String parametro : lista_parametros){
+						Main.tSimbolos.reemplazarLexema(parametro, parametro +"@"+$2.sval);
+						Main.tSimbolos.getDatosTabla(parametro +"@"+$2.sval).setOrden(posicion);
+						posicion++;
 					}
-					else
-						$$ = new ParserVal(null); // Hay 2 parametros con el mismo ide
+					ambito = ambito + "@"+ $2.sval;
+					Terceto t = new Terceto("PROC", nuevoLexema, null);
+					adminTerceto.agregarTerceto(t);
+					adminTerceto.agregarProcedimiento(nuevoLexema);
+					$$ = new ParserVal(nuevoLexema); // para corroborar q el proc se declaro bien (no se si va)
 				} else {
 					System.out.print("El procedimiento "+ $2.sval + " ya fue declarado en este ambito");
 					$$ = new ParserVal(null);
 					}
-				}
+			}}
 		| error_declaracion_proc
 		;
 
@@ -126,18 +136,6 @@ error_declaracion_proc: PROC    '('lista_de_parametros')'NI'='CTE_UINT {System.o
                       | PROC IDE'('lista_de_parametros')'NI   CTE_UINT {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un procedimiento mal declarado, '=' despues de NI ");}
                       | PROC IDE'('lista_de_parametros')'NI'=' error   {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un procedimiento mal declarado, falta la constante UINT ");}
                	      ;
-
-/*error_proc: PROC    '('lista_de_parametros')'NI'='CTE_UINT'{'bloque_sentencias'}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un procedimiento mal declarado, falta el identificador");}
-	  | PROC IDE   lista_de_parametros')'NI'='CTE_UINT'{'bloque_sentencias'}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un procedimiento mal declarado, falta '('");}
-	  | PROC IDE'('                   ')'NI'='CTE_UINT'{'bloque_sentencias'}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un procedimiento mal declarado, falta lista de parametros");}
-	  | PROC IDE'('lista_de_parametros   NI'='CTE_UINT'{'bloque_sentencias'}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un procedimiento mal declarado, falta ')'");}
-	  | PROC IDE'('lista_de_parametros')'  '='CTE_UINT'{'bloque_sentencias'}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un procedimiento mal declarado, falta la palabra reservada NI ");}
-	  | PROC IDE'('lista_de_parametros')'NI   CTE_UINT'{'bloque_sentencias'}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un procedimiento mal declarado, '=' despues de NI ");}
-	  | PROC IDE'('lista_de_parametros')'NI'='        '{'bloque_sentencias'}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un procedimiento mal declarado, falta la constante UINT ");}
-	  | declaracion_proc    bloque_sentencias'}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un procedimiento mal declarado, falta '{' que abre el bloque de sentecias ");}
-	  | declaracion_proc '{'                 '}'{System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un procedimiento mal declarado, falta el bloque de sentencias");}
-	  | declaracion_proc '{'bloque_sentencias   {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectó un procedimiento mal declarado, falta '}' que cierra el bloque de sentencias");}
-	  ;*/
 
 lista_de_parametros : param {lista_parametros.clear();
 			     lista_parametros.add($1.sval);
@@ -157,7 +155,8 @@ lista_de_parametros : param {lista_parametros.clear();
 						 } else {
 							System.out.println("No puede haber dos parametros con el mismo IDE");}
 		    				 $$ = new ParserVal(lista_parametros);}
-		    | error_lista_de_parametros
+		    | error_lista_de_parametros {lista_parametros.clear();
+		    				$$ = new ParserVal(lista_parametros);}
 	            ;
 
 error_lista_de_parametros : param ',' param ',' param ',' lista_de_parametros {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectaron más parametros de los permitidos (3)");}
@@ -167,14 +166,14 @@ error_lista_de_parametros : param ',' param ',' param ',' lista_de_parametros {S
 			  | param param ',' param {System.out.println("Error sintáctico: Linea " + Lexico.linea + " se detectaron parametros mal declarados, falta ','");}
 			  ;
 
-param : tipo IDE {//System.out.println("[Parser | Linea " + Lexico.linea + "]se leyó el parametro -> " + $2.sval);
+param : tipo IDE {System.out.println("[Parser | Linea " + Lexico.linea + "]se leyó el parametro -> " + $2.sval);
 		  DatosTabla dt = Main.tSimbolos.getDatosTabla($2.sval);
 		  dt.setUso("nombreParametro");
 		  dt.setTipo($1.sval);
 		  Main.tSimbolos.setDatosTabla($2.sval, dt);
 		  $$ = new ParserVal($2.sval);} //copia valor
 
-      | REF tipo IDE {//System.out.println("[Parser | Linea " + Lexico.linea + "]se leyó el parametro -> " + $2.sval);
+      | REF tipo IDE {System.out.println("[Parser | Linea " + Lexico.linea + "]se leyó el parametro -> " + $2.sval);
       		  DatosTabla dt = Main.tSimbolos.getDatosTabla($3.sval);
                   dt.setUso("nombreParametro");
                   dt.setTipo($2.sval);
@@ -183,9 +182,9 @@ param : tipo IDE {//System.out.println("[Parser | Linea " + Lexico.linea + "]se 
                   $$ = new ParserVal($3.sval);} //referencia
       ;
 
-tipo : UINT {//System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó un tipo UINT");}
+tipo : UINT {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó un tipo UINT");
 		$$ = new ParserVal ("UINT");}
-     | DOUBLE {//System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó un tipo DOUBLE");
+     | DOUBLE {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó un tipo DOUBLE");
      		$$ = new ParserVal ("DOUBLE");}
      ;
 
@@ -375,10 +374,7 @@ inc_decr : UP {$$ = new ParserVal("+");}
 
 seleccion : IF '(' if_condicion ')' bloque_then END_IF {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó una sentencia IF");
 								adminTerceto.desapilar();}
-	  | IF '(' if_condicion ')' bloque_then ELSE /*{Terceto t = new Terceto("BI", null, null);
-                                                                   adminTerceto.agregarTerceto(t);
-                                                                   adminTerceto.desapilar();
-                                                                   adminTerceto.apilar(t.getNumero());} */ bloque END_IF {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó una sentencia IF con ELSE");
+	  | IF '(' if_condicion ')' bloque_then ELSE bloque END_IF {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyó una sentencia IF con ELSE");
 	  			                                   adminTerceto.desapilar();}
 	  | error_if
 	  ;
@@ -390,7 +386,7 @@ bloque_then: bloque {Terceto t = new Terceto("BI", null, null);
                      }
 	    ;
 
-if_condicion: condicion {//System.out.println(" se leyó una sentencia IF" + $1.sval);
+if_condicion: condicion {System.out.println(" se leyó una sentencia IF" + $1.sval);
 				if($1.sval != null){
 					Terceto t = new Terceto("BF", $1.sval, null);
 					adminTerceto.agregarTerceto(t);
@@ -410,7 +406,7 @@ error_if: IF     if_condicion ')' bloque END_IF {System.out.println("Error sint�
 	;
 
 
-salida : OUT'('CADENA')'{//System.out.println("[Parser | Linea " + Lexico.linea + "] se realizó una sentencia OUT");
+salida : OUT'('CADENA')'{System.out.println("[Parser | Linea " + Lexico.linea + "] se realizó una sentencia OUT");
 			Terceto t = new Terceto("OUT", $3.sval, null);
 			adminTerceto.agregarTerceto(t);}
        | error_salida
@@ -448,25 +444,27 @@ error_asignacion : IDE expresion {System.out.println("Error sintáctico: Linea "
 		 ;
 
 
-invocacion : IDE '(' parametros ')'{//System.out.println("[Parser | Linea " + Lexico.linea + "] se realizó una invocacion al procedimiento -> " + $1.sval );
+invocacion : IDE '(' parametros ')'{System.out.println("[Parser | Linea " + Lexico.linea + "] se realizó una invocacion al procedimiento -> " + $1.sval );
 				   lista_param_invocacion = (ArrayList<Pair<String, String>>)$3.obj;
 			  	   if(!lista_param_invocacion.isEmpty()){ // Hubo un error mas abajo
 			  	    	String ambitoProc = Main.tSimbolos.verificarAmbito($1.sval, ambito);
-			  	    	if(ambitoProc != null)
+			  	    	if(ambitoProc != null){
 			  	    	   	if (verificarParametros($1.sval)){
-							if(Main.tSimbolos.getDatosTabla(ambitoProc).getLlamadosActuales() < Main.tSimbolos.getDatosTabla(ambitoProc).getLlamadosMax()){
-								for(Pair p : lista_param_invocacion){
-									Terceto t = new Terceto("=" ,p.getKey()+"@"+$1.sval, (String)p.getValue());
+			  	    	   		if(lista_param_invocacion.size() == Main.tSimbolos.getDatosTabla(ambitoProc).getCantParametros()){
+								if(Main.tSimbolos.getDatosTabla(ambitoProc).getLlamadosActuales() < Main.tSimbolos.getDatosTabla(ambitoProc).getLlamadosMax()){
+									for(Pair p : lista_param_invocacion){
+										Terceto t = new Terceto("=" ,p.getKey()+"@"+$1.sval, (String)p.getValue());
+										adminTerceto.agregarTerceto(t);
+									}
+									Terceto t = new Terceto("INV", ambitoProc, null); //ver como guardar linea inicial de procedimiento.
+									Main.tSimbolos.getDatosTabla(ambitoProc).incrementarLlamados();
 									adminTerceto.agregarTerceto(t);
-								}
-								Terceto t = new Terceto("INV", ambitoProc, null); //ver como guardar linea inicial de procedimiento.
-								Main.tSimbolos.getDatosTabla(ambitoProc).incrementarLlamados();
-								adminTerceto.agregarTerceto(t);
-							} else
-								System.out.println("Supero la cantidad maxima de llamados a "+$1.sval);
-						}
-			  	    	else
-			  	    		System.out.println("El procedimiento "+$1.sval+" esta fuera de alcance");
+								} else
+									System.out.println("Supero la cantidad maxima de llamados a "+$1.sval);
+							}else
+								System.out.println("Faltan parametros para invocar al procedimiento "+$1.sval);						}
+			  	    	}else{
+			  	    		System.out.println("El procedimiento "+$1.sval+" esta fuera de alcance");}
 			  	   }}
 	   | error_invocacion
 	   ;
