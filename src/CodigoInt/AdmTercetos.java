@@ -10,6 +10,7 @@ public class AdmTercetos {
     private ArrayList<Terceto> tercetos = new ArrayList<Terceto>();
     private ArrayList<Integer> pila = new ArrayList<>();
     private Hashtable<String, Integer> procedimientos = new Hashtable<String, Integer>();
+    private ArrayList<ArrayList<Terceto>> codigoIntermedio = new ArrayList<>(5);
 
     public AdmTercetos(){}
 
@@ -45,31 +46,38 @@ public class AdmTercetos {
         procedimientos.put(proc, tercetos.size()-1);
     }
 
-    public void printTercetos(){
-        for (int i = 0; i < tercetos.size(); i++){
+    public void generarCodigoIntermedio(int inicio, int finalProc, String proc, int index){
+        ArrayList<Terceto> aux = new ArrayList<>();
+        ArrayList<String> invocados = new ArrayList<>();
+        codigoIntermedio.add(index,new ArrayList<>());
+        for(int i = inicio; i <= finalProc; i++){
             Terceto t = tercetos.get(i);
-            if(t.getOperador() == "PROC"){
-                while(t.getOperador() != "FinProc"){
-                    i++;
+            if(t.getOperador().equals("INV") && !invocados.contains(t.getOp1())){
+                String procInvocado = t.getOp1();
+                generarCodigoIntermedio(procedimientos.get(procInvocado), this.buscarFinProc(procInvocado), procInvocado, index+1);
+                invocados.add(procInvocado);
+            }
+            while((t.getOperador().equals("ComienzaProc") && !t.getOp1().equals(proc)) && (i <= finalProc)) {
+                i = this.buscarFinProc(t.getOp1())+1;
+                if(i <= finalProc)
                     t = tercetos.get(i);
-                }
-                i++;
-                //t = tercetos.get(i);
-            } else
-                if(t.getOperador() == "INV"){
-                    String procInvocado = t.getOp1();
-                    System.out.println(t.getNumero() + ". (" + t.getOperador()+", "+t.getOp1()+ ", "+t.getOp2()+")");
-                    int inicioProc = procedimientos.get(t.getOp1());
-                    int finProc = this.buscarFinProc(t.getOp1());
-                    //System.out.println("inicio" + inicioProc + " fin "+finProc);
-                    Terceto t1 = tercetos.get(inicioProc);
-                    for(int index = inicioProc; index <= finProc; index++){
-                        t1 = tercetos.get(index);
-                        System.out.println(t1.getNumero() + ". (" + t1.getOperador() + ", " + t1.getOp1() + ", " + t1.getOp2() + ")");
-                    }
-                    i++;
-                } else
-                        System.out.println(t.getNumero() + ". (" + t.getOperador()+", "+t.getOp1()+ ", "+t.getOp2()+")");
+            }
+            if(i <= finalProc) {   // Por si en el if de arriba me da un numero mayor a el tama�o de finProc
+                aux.add(t);
+            }
+        }
+        codigoIntermedio.set(index,aux);
+    }
+
+    public void printTercetos(){
+        this.generarCodigoIntermedio(0,tercetos.size()-1,"main", 0);
+        int i = 0;
+        for(ArrayList<Terceto> a : codigoIntermedio){
+            System.out.println("procedimiento "+i);
+            for(Terceto t : a){
+                System.out.println(t.getNumero() + ". (" + t.getOperador()+", "+t.getOp1()+ ", "+t.getOp2()+")");
+            }
+            i++;
         }
     }
 

@@ -66,7 +66,7 @@ public class TablaSimbolos {
         Enumeration iterador = tSimbolos.keys();
         while (iterador.hasMoreElements()) {
             String lexema = (String) iterador.nextElement();
-            if(lexema.indexOf('@') != -1)
+            if(lexema.contains("@") || (!lexema.contains("@") && tSimbolos.get(lexema).getId() != 257))
                 System.out.println("Lexema: " + lexema + ", id: " + tSimbolos.get(lexema).getId() +
                         ", tipo: " + tSimbolos.get(lexema).getTipo() + ", uso: " + tSimbolos.get(lexema).getUso()
                         + "");
@@ -98,10 +98,11 @@ public class TablaSimbolos {
         String[] proc = ambito.split("@");
         for(int i = 1; i<proc.length; i++){
             aux = ide + "@" +proc[i];
-            if(tSimbolos.containsKey(aux)){
+            if(tSimbolos.containsKey(aux) && tSimbolos.get(aux).getUso().equals("nombreParametro")){
                 return aux;
             }
         }
         return null;
     }
+
 }
