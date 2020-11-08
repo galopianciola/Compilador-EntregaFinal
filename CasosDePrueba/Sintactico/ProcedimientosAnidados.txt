@@ -1,1 +1,1 @@
-PROC a (UINT a, REF UINT b, DOUBLE c) NI = 2_ui { PROC c (UINT h, REF UINT g, DOUBLE f) NI = 6_ui { DOUBLE c;}; };
+PROC f1 (UINT a, REF UINT b, DOUBLE c) NI = 2_ui { PROC f2 (UINT h, REF UINT g, DOUBLE f) NI = 6_ui { DOUBLE c;}; };
