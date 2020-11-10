@@ -381,17 +381,22 @@ inc_decr : UP {$$ = new ParserVal("+");}
 
 seleccion : IF '(' if_condicion ')' bloque END_IF {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyï¿½ una sentencia IF");
 						   if($3.sval != null)adminTerceto.desapilar();}
-	  | IF '(' if_condicion ')' bloque_then ELSE bloque END_IF {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyï¿½ una sentencia IF con ELSE");
-	  			                                   adminTerceto.desapilar();}
+	  | IF '(' if_condicion ')' bloque {if($3.sval != null){
+	  					Terceto t = new Terceto("BI", null, null);
+                                            	adminTerceto.agregarTerceto(t);
+                                            	adminTerceto.desapilar();
+                           	            	adminTerceto.apilar(t.getNumero());}
+                                            } ELSE bloque END_IF {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyï¿½ una sentencia IF con ELSE");
+	  			                                   if($3.sval != null) adminTerceto.desapilar();}
 	  | error_if
 	  ;
 
-bloque_then: bloque {Terceto t = new Terceto("BI", null, null);
+/*bloque_then: bloque {Terceto t = new Terceto("BI", null, null);
                      adminTerceto.agregarTerceto(t);
                      adminTerceto.desapilar();
                      adminTerceto.apilar(t.getNumero());
                      }
-	    ;
+	    ;*/
 
 if_condicion: condicion {if($1.sval != null){
 				Terceto t = new Terceto("BF", $1.sval, null);
@@ -407,15 +412,14 @@ error_if: IF     if_condicion ')' bloque END_IF {System.out.println("Error sintï
 	| IF '(' if_condicion     bloque END_IF {System.out.println("Error sintï¿½ctico: Linea " + Lexico.linea + " se detectï¿½ un IF mal declarado, falta ')'");}
 	| IF '(' if_condicion ')'        END_IF {System.out.println("Error sintï¿½ctico: Linea " + Lexico.linea + " se detectï¿½ un IF mal declarado, falta el bloque de sentencias");}
 	| IF '(' if_condicion ')' bloque        {System.out.println("Error sintï¿½ctico: Linea " + Lexico.linea + " se detectï¿½ un IF mal declarado, falta el END_IF o ELSE");}
-	//el de arriba si falta ELSE no se recuper bien, revisar.
-	//| IF '(' if_condicion ')' '{' bloques '}'      '{' bloque_sentencias '}' END_IF{System.out.println("Error sintï¿½ctico: Linea " + Lexico.linea + " se detectï¿½ un IF mal declarado, falta el ELSE");}
-	| IF     if_condicion ')'  bloque_then ELSE bloque END_IF{System.out.println("Error sintï¿½ctico: Linea " + Lexico.linea + " se detectï¿½ un IF mal declarado, falta '('");}
-	| IF '('              ')'  bloque_then ELSE bloque END_IF {System.out.println("Error sintï¿½ctico: Linea " + Lexico.linea + " se detectï¿½ un IF mal declarado, falta la condicion");}
-	| IF '(' if_condicion      bloque_then ELSE bloque END_IF {System.out.println("Error sintï¿½ctico: Linea " + Lexico.linea + " se detectï¿½ un IF mal declarado, falta ')'");}
-	| IF '(' if_condicion ')'  bloque_then ELSE       END_IF{System.out.println("Error sintï¿½ctico: Linea " + Lexico.linea + " se detectï¿½ un IF mal declarado, falta el bloque de sentencias del ELSE");}
-	| IF '(' if_condicion ')'  bloque_then ELSE bloque       {System.out.println("Error sintï¿½ctico: Linea " + Lexico.linea + " se detectï¿½ un IF mal declarado, falta el END_IF");}
+	// el de arriba si falta ELSE no se recuper bien, revisar.
+//	| IF '(' if_condicion ')' bloque      bloque END_IF{System.out.println("Error sintï¿½ctico: Linea " + Lexico.linea + " se detectï¿½ un IF mal declarado, falta el ELSE");}
+	| IF     if_condicion ')' bloque ELSE bloque END_IF {System.out.println("Error sintï¿½ctico: Linea " + Lexico.linea + " se detectï¿½ un IF mal declarado, falta '('");}
+	| IF '('              ')' bloque ELSE bloque END_IF {System.out.println("Error sintï¿½ctico: Linea " + Lexico.linea + " se detectï¿½ un IF mal declarado, falta la condicion");}
+	| IF '(' if_condicion     bloque ELSE bloque END_IF {System.out.println("Error sintï¿½ctico: Linea " + Lexico.linea + " se detectï¿½ un IF mal declarado, falta ')'");}
+//	| IF '(' if_condicion ')' bloque ELSE        END_IF {System.out.println("Error sintï¿½ctico: Linea " + Lexico.linea + " se detectï¿½ un IF mal declarado, falta el bloque de sentencias del ELSE");}
+//	| IF '(' if_condicion ')' bloque ELSE bloque        {System.out.println("Error sintï¿½ctico: Linea " + Lexico.linea + " se detectï¿½ un IF mal declarado, falta el END_IF");}
 	;
-
 
 salida : OUT'('CADENA')'{System.out.println("[Parser | Linea " + Lexico.linea + "] se realizï¿½ una sentencia OUT");
 			Terceto t = new Terceto("OUT", $3.sval, null);
