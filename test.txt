@@ -1,5 +1,4 @@
-{PROC f1 (UINT a, REF UINT b, DOUBLE c) NI = 2_ui {DOUBLE d; d = c; };
-UINT x,y;
-DOUBLE z;
-f1(a:x, b:y, c:z);
+{UINT a,b;
+DOUBLE d;
+FOR( a = 2_ui ; a >= b ; DOWN 5_ui) { DOUBLE c; c=d;};
 }

@@ -66,7 +66,7 @@ public class TablaSimbolos {
         Enumeration iterador = tSimbolos.keys();
         while (iterador.hasMoreElements()) {
             String lexema = (String) iterador.nextElement();
-            if(lexema.contains("@") || (!lexema.contains("@") && tSimbolos.get(lexema).getId() != 257))
+            if(lexema.contains("&") || (!lexema.contains("&") && tSimbolos.get(lexema).getId() != 257))
                 System.out.println("Lexema: " + lexema + ", id: " + tSimbolos.get(lexema).getId() +
                         ", tipo: " + tSimbolos.get(lexema).getTipo() + ", uso: " + tSimbolos.get(lexema).getUso()
                         + "");
@@ -86,23 +86,27 @@ public class TablaSimbolos {
     }
 
     public String verificarAmbito(String ide, String ambito){
-        String aux = ide + "@" + ambito;
+        String aux = ide + "&" + ambito;
         // Verificar ambito variables
         while(!aux.equals(ide)){
             if(tSimbolos.containsKey(aux)){
                 return aux;
             }
-            aux = aux.substring(0,aux.lastIndexOf("@"));
+            aux = aux.substring(0,aux.lastIndexOf("&"));
         }
         // Verificar ambito parametros
-        String[] proc = ambito.split("@");
+        String[] proc = ambito.split("&");
         for(int i = 1; i<proc.length; i++){
-            aux = ide + "@" +proc[i];
+            aux = ide + "&" +proc[i];
             if(tSimbolos.containsKey(aux) && tSimbolos.get(aux).getUso().equals("nombreParametro")){
                 return aux;
             }
         }
         return null;
+    }
+
+    public Enumeration getKeys(){
+        return tSimbolos.keys();
     }
 
 }

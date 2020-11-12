@@ -19,6 +19,10 @@ public class AdmTercetos {
         tercetos.add(t);
     }
 
+    public int cantTercetos(){
+        return tercetos.size();
+    }
+
     public void apilar(int nroTerceto){
         pila.add(nroTerceto);
     }
@@ -97,5 +101,9 @@ public class AdmTercetos {
                 return t.getNumero();}
         }
         return 0;
+    }
+
+    public Terceto getTerceto(int nroTerceto){
+        return tercetos.get(nroTerceto);
     }
 }

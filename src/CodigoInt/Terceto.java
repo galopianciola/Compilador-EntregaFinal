@@ -5,15 +5,13 @@ public class Terceto {
     private String op1;
     private String op2;
     private String operador;
-    //private TablaSimbolos tablaSimbolos;
-    private String tipoSalto;
+    private String resultado;
 
     public Terceto(String operador, String op1, String op2) {
         this.operador = operador;
         this.op1 = op1;
         this.op2 = op2;
-        //tablaSimbolos=null;
-        //tipoSalto=null;
+        this.resultado = null;
     }
 
     public int getNumero() {
@@ -44,5 +42,18 @@ public class Terceto {
         this.op2 = op2;
     }
 
+    public String getResultado() {
+        return resultado;
+    }
 
+    public void setResultado(String resultado) {
+        this.resultado = resultado;
+    }
+
+    public boolean esVariable(int op){
+        if(op == 1)
+            return !this.op1.contains("[");
+        else
+            return !this.op2.contains("[");
+    }
 }
