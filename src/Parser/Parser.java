@@ -667,7 +667,7 @@ final static String yyrule[] = {
 "error_parametros : IDE ':' error",
 };
 
-//#line 540 "gramatica.y"
+//#line 546 "gramatica.y"
 
 private Lexico lexico;
 private ArrayList<String> lista_variables;
@@ -725,7 +725,7 @@ public boolean chequearFactorNegado(){
 public boolean verificarParametros(String proc){
 	int orden = 1;
 	for(Pair p : lista_param_invocacion){
-		String parametroFormal = p.getKey() + "&" + proc;
+		String parametroFormal = p.getKey() + "@" + proc;
 		String parametroReal = (String)p.getValue();
 		if(!Main.tSimbolos.existeLexema(parametroFormal)){ //el usuario lo escribio mal en la invocacion
 			System.out.println("No se reconoce el parametro formal "+ p.getKey());
@@ -908,7 +908,7 @@ case 11:
 					String tipoVar = val_peek(2).sval;
 					lista_variables = (ArrayList<String>)val_peek(1).obj; /*controlar si ya est� en la tabla*/
 					for(String lexema : lista_variables){
-						String nuevoLexema = lexema + "&" + ambito;
+						String nuevoLexema = lexema + "@" + ambito;
 						if(!Main.tSimbolos.existeLexema(nuevoLexema)){
 							Main.tSimbolos.reemplazarLexema(lexema, nuevoLexema);
 							DatosTabla dt = Main.tSimbolos.getDatosTabla(nuevoLexema);
@@ -955,7 +955,7 @@ case 20:
 //#line 78 "gramatica.y"
 {System.out.println("[Parser | Linea " + Lexico.linea + "]se declar� un procedimiento");
 							if(val_peek(3).sval != null){ /* se declaro todo bien*/
-								ambito = ambito.substring(0,ambito.lastIndexOf("&"));
+								ambito = ambito.substring(0,ambito.lastIndexOf("@"));
 								Terceto t = new Terceto("FinProc", val_peek(3).sval, null);
 								adminTerceto.agregarTerceto(t);
 								}
@@ -965,7 +965,7 @@ case 21:
 //#line 85 "gramatica.y"
 {System.out.println("[Parser | Linea " + Lexico.linea + "]se declar? un procedimiento");
                             if(val_peek(0).sval != null){ /* se declaro todo bien*/
-                 		ambito = ambito.substring(0,ambito.lastIndexOf("&"));
+                 		ambito = ambito.substring(0,ambito.lastIndexOf("@"));
 				Terceto t = new Terceto("FinProc", val_peek(0).sval, null);
                           	adminTerceto.agregarTerceto(t);
                           	}
@@ -988,7 +988,7 @@ case 25:
 {
 			lista_parametros = (ArrayList<String>)val_peek(4).obj;
 			if(!lista_parametros.isEmpty()){
-				String nuevoLexema = val_peek(6).sval + "&" + ambito;
+				String nuevoLexema = val_peek(6).sval + "@" + ambito;
 				if(!Main.tSimbolos.existeLexema(nuevoLexema)){
 					Main.tSimbolos.reemplazarLexema(val_peek(6).sval, nuevoLexema);
 					DatosTabla dt = Main.tSimbolos.getDatosTabla(nuevoLexema);
@@ -999,11 +999,11 @@ case 25:
 
 					int posicion = 1;
 					for(String parametro : lista_parametros){
-						Main.tSimbolos.reemplazarLexema(parametro, parametro +"&"+val_peek(6).sval);
-						Main.tSimbolos.getDatosTabla(parametro +"&"+val_peek(6).sval).setOrden(posicion);
+						Main.tSimbolos.reemplazarLexema(parametro, parametro +"@"+val_peek(6).sval);
+						Main.tSimbolos.getDatosTabla(parametro +"@"+val_peek(6).sval).setOrden(posicion);
 						posicion++;
 					}
-					ambito = ambito + "&"+ val_peek(6).sval;
+					ambito = ambito + "@"+ val_peek(6).sval;
 					Terceto t = new Terceto("ComienzaProc", nuevoLexema, null);
 					adminTerceto.agregarTerceto(t);
 					adminTerceto.agregarProcedimiento(nuevoLexema);
@@ -1177,6 +1177,7 @@ case 61:
                                 		Terceto t = new Terceto("=", ambitoVariable, val_peek(0).sval);
                                 		adminTerceto.agregarTerceto(t);
                                 		t = new Terceto("Label"+adminTerceto.cantTercetos(), null, null);
+
                                 		adminTerceto.agregarTerceto(t);
                                 		adminTerceto.apilar(t.getNumero());
                                 		yyval = new ParserVal(ambitoVariable);
@@ -1188,63 +1189,63 @@ case 61:
                               	  }
 break;
 case 62:
-//#line 245 "gramatica.y"
+//#line 246 "gramatica.y"
 {yyval = new ParserVal(null);}
 break;
 case 63:
-//#line 248 "gramatica.y"
+//#line 249 "gramatica.y"
 {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un FOR mal declarado, falta el identificador");}
 break;
 case 64:
-//#line 249 "gramatica.y"
+//#line 250 "gramatica.y"
 {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un FOR mal declarado, falta '='");}
 break;
 case 65:
-//#line 250 "gramatica.y"
+//#line 251 "gramatica.y"
 {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un FOR mal declarado, falta una constante UINT");}
 break;
 case 66:
-//#line 253 "gramatica.y"
+//#line 254 "gramatica.y"
 {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un FOR mal declarado, falta '('");}
 break;
 case 67:
-//#line 254 "gramatica.y"
+//#line 255 "gramatica.y"
 {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un FOR mal declarado, falta ';'");}
 break;
 case 68:
-//#line 255 "gramatica.y"
+//#line 256 "gramatica.y"
 {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un FOR mal declarado, falta la condici�n");}
 break;
 case 69:
-//#line 256 "gramatica.y"
+//#line 257 "gramatica.y"
 {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un FOR mal declarado, falta ';'");}
 break;
 case 70:
-//#line 257 "gramatica.y"
+//#line 258 "gramatica.y"
 {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un FOR mal declarado, falta la palabra UP o DOWN");}
 break;
 case 71:
-//#line 258 "gramatica.y"
+//#line 259 "gramatica.y"
 {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un FOR mal declarado, falta una constante CTE_UINT");}
 break;
 case 72:
-//#line 259 "gramatica.y"
+//#line 260 "gramatica.y"
 {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un FOR mal declarado, falta ')'");}
 break;
 case 73:
-//#line 260 "gramatica.y"
+//#line 261 "gramatica.y"
 {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un FOR mal declarado, falta '{'");}
 break;
 case 74:
-//#line 261 "gramatica.y"
+//#line 262 "gramatica.y"
 {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un FOR mal declarado, falta el bloque de sentencias");}
 break;
 case 75:
-//#line 262 "gramatica.y"
+//#line 263 "gramatica.y"
 {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un FOR mal declarado, falta '}'");}
 break;
 case 76:
-//#line 265 "gramatica.y"
+//#line 266 "gramatica.y"
 {Operando op1 = (Operando)val_peek(2).obj;
                                              Operando op2 = (Operando)val_peek(0).obj;
                                              if(op1 != null && op2 !=null){
@@ -1260,17 +1261,18 @@ case 76:
                                               	yyval = new ParserVal(null);}
 break;
 case 77:
-//#line 279 "gramatica.y"
+//#line 280 "gramatica.y"
 { yyval = new ParserVal((Operando)val_peek(0).obj);}
 break;
 case 78:
-//#line 280 "gramatica.y"
+//#line 281 "gramatica.y"
 {System.out.println("[Parser | Linea " + Lexico.linea + "] se realiz� una suma");
 				Operando op1 = (Operando)val_peek(2).obj;
 				Operando op2 = (Operando)val_peek(0).obj;
 				if(op1 != null && op2 !=null){
 					if(op1.getTipo().equals(op2.getTipo())){
 						Terceto t = new Terceto("+", op1.getValor(), op2.getValor());
+						t.setTipo(op1.getTipo());
 						adminTerceto.agregarTerceto(t);
 						yyval = new ParserVal(new Operando(op1.getTipo(), "["+t.getNumero()+"]"));
 						}
@@ -1282,13 +1284,14 @@ case 78:
                                 	yyval = new ParserVal(null);}
 break;
 case 79:
-//#line 295 "gramatica.y"
+//#line 297 "gramatica.y"
 { System.out.println("[Parser | Linea " + Lexico.linea + "] se realiz� una resta");
 	  			Operando op1 = (Operando)val_peek(2).obj;
                                 Operando op2 = (Operando)val_peek(0).obj;
                                 if(op1 != null && op2 !=null){
 					if(op1.getTipo().equals(op2.getTipo())){
 						Terceto t = new Terceto("-", op1.getValor(), op2.getValor());
+						t.setTipo(op1.getTipo());
 						adminTerceto.agregarTerceto(t);
 						yyval = new ParserVal(new Operando(op1.getTipo(),"["+t.getNumero()+"]"));
 						}
@@ -1299,7 +1302,7 @@ case 79:
                                         yyval = new ParserVal(null);}
 break;
 case 80:
-//#line 309 "gramatica.y"
+//#line 312 "gramatica.y"
 { System.out.println("[Parser | Linea " + Lexico.linea + "] se realiz� una conversi�n");
 	  			Operando op = (Operando)val_peek(1).obj;
 	  			if(op != null)
@@ -1316,13 +1319,14 @@ case 80:
 	  			}
 break;
 case 81:
-//#line 325 "gramatica.y"
+//#line 328 "gramatica.y"
 { System.out.println("[Parser | Linea " + Lexico.linea + "] se realiz� una multiplicacion");
 				Operando op1 = (Operando)val_peek(2).obj;
 				Operando op2 = (Operando)val_peek(0).obj;
 				if(op1 != null && op2 !=null){
 					if(op1.getTipo().equals(op2.getTipo())){
 						Terceto t = new Terceto("*", op1.getValor(), op2.getValor());
+						t.setTipo(op1.getTipo());
 						adminTerceto.agregarTerceto(t);
 						yyval = new ParserVal(new Operando(op1.getTipo(), "["+t.getNumero()+"]"));
 						}
@@ -1334,13 +1338,14 @@ case 81:
                                 }
 break;
 case 82:
-//#line 340 "gramatica.y"
+//#line 344 "gramatica.y"
 { System.out.println("[Parser | Linea " + Lexico.linea + "] se realiz� una division");
 				Operando op1 = (Operando)val_peek(2).obj;
                                 Operando op2 = (Operando)val_peek(0).obj;
                                 if(op1 != null && op2 !=null){
 					if (op1.getTipo().equals(op2.getTipo())){
 						Terceto t = new Terceto("/", op1.getValor(), op2.getValor());
+						t.setTipo(op1.getTipo());
 						adminTerceto.agregarTerceto(t);
 						yyval = new ParserVal(new Operando(op1.getTipo(), "["+t.getNumero()+"]"));
 					} else{
@@ -1351,30 +1356,30 @@ case 82:
                                }
 break;
 case 83:
-//#line 354 "gramatica.y"
+//#line 359 "gramatica.y"
 { yyval = new ParserVal((Operando)val_peek(0).obj);}
 break;
 case 84:
-//#line 357 "gramatica.y"
+//#line 362 "gramatica.y"
 {System.out.println("[Parser | Linea " + Lexico.linea + "] se ley� la constante double -> " + val_peek(0).sval);
 			yyval = new ParserVal(new Operando("DOUBLE", val_peek(0).sval));
 			}
 break;
 case 85:
-//#line 360 "gramatica.y"
+//#line 365 "gramatica.y"
 {System.out.println("[Parser | Linea " + Lexico.linea + "] se ley� la constante uint -> " + val_peek(0).sval);
                      	yyval = new ParserVal(new Operando("UINT", val_peek(0).sval));
                         }
 break;
 case 86:
-//#line 363 "gramatica.y"
+//#line 368 "gramatica.y"
 {	if(chequearFactorNegado()){
         			Operando op = (Operando)val_peek(0).obj;
         			yyval = new ParserVal(new Operando(op.getTipo(), "-" + op.getValor()));
         			}}
 break;
 case 87:
-//#line 367 "gramatica.y"
+//#line 372 "gramatica.y"
 { System.out.println("[Parser | Linea " + Lexico.linea + "] se ley� el identificador -> " + val_peek(0).sval);
 		String ambitoVariable = Main.tSimbolos.verificarAmbito(val_peek(0).sval, ambito);
 		if(ambitoVariable != null)
@@ -1385,39 +1390,39 @@ case 87:
                 }}
 break;
 case 88:
-//#line 377 "gramatica.y"
+//#line 382 "gramatica.y"
 {yyval = new ParserVal("<");}
 break;
 case 89:
-//#line 378 "gramatica.y"
+//#line 383 "gramatica.y"
 {yyval = new ParserVal(">");}
 break;
 case 90:
-//#line 379 "gramatica.y"
+//#line 384 "gramatica.y"
 {yyval = new ParserVal("==");}
 break;
 case 91:
-//#line 380 "gramatica.y"
+//#line 385 "gramatica.y"
 {yyval = new ParserVal(">=");}
 break;
 case 92:
-//#line 381 "gramatica.y"
+//#line 386 "gramatica.y"
 {yyval = new ParserVal("<=");}
 break;
 case 93:
-//#line 382 "gramatica.y"
+//#line 387 "gramatica.y"
 {yyval = new ParserVal("!=");}
 break;
 case 94:
-//#line 385 "gramatica.y"
+//#line 390 "gramatica.y"
 {yyval = new ParserVal("+");}
 break;
 case 95:
-//#line 386 "gramatica.y"
+//#line 391 "gramatica.y"
 {yyval = new ParserVal("-");}
 break;
 case 96:
-//#line 389 "gramatica.y"
+//#line 394 "gramatica.y"
 {System.out.println("[Parser | Linea " + Lexico.linea + "] se ley� una sentencia IF");
 						   if(val_peek(3).sval != null)
 						   	{adminTerceto.desapilar();
@@ -1426,7 +1431,7 @@ case 96:
                                                         }
 break;
 case 97:
-//#line 395 "gramatica.y"
+//#line 400 "gramatica.y"
 {if(val_peek(2).sval != null){
 	  					Terceto t = new Terceto("BI", null, null);
                                             	adminTerceto.agregarTerceto(t);
@@ -1438,7 +1443,7 @@ case 97:
                                             }
 break;
 case 98:
-//#line 403 "gramatica.y"
+//#line 408 "gramatica.y"
 {System.out.println("[Parser | Linea " + Lexico.linea + "] se ley� una sentencia IF con ELSE");
 	  			                                   if(val_peek(6).sval != null) {
 	  			                                   adminTerceto.desapilar();
@@ -1446,7 +1451,7 @@ case 98:
 	  			                                   adminTerceto.agregarTerceto(t);}}
 break;
 case 100:
-//#line 418 "gramatica.y"
+//#line 423 "gramatica.y"
 {if(val_peek(0).sval != null){
 				Terceto t = new Terceto("BF", val_peek(0).sval, null);
 				adminTerceto.agregarTerceto(t);
@@ -1456,65 +1461,65 @@ case 100:
 				yyval = new ParserVal(null);}
 break;
 case 101:
-//#line 427 "gramatica.y"
+//#line 432 "gramatica.y"
 {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un IF mal declarado, falta '('");}
 break;
 case 102:
-//#line 428 "gramatica.y"
+//#line 433 "gramatica.y"
 {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un IF mal declarado, falta la condicion");}
 break;
 case 103:
-//#line 429 "gramatica.y"
+//#line 434 "gramatica.y"
 {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un IF mal declarado, falta ')'");}
 break;
 case 104:
-//#line 430 "gramatica.y"
+//#line 435 "gramatica.y"
 {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un IF mal declarado, falta el bloque de sentencias");}
 break;
 case 105:
-//#line 431 "gramatica.y"
+//#line 436 "gramatica.y"
 {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un IF mal declarado, falta el END_IF o ELSE");}
 break;
 case 106:
-//#line 434 "gramatica.y"
+//#line 439 "gramatica.y"
 {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un IF mal declarado, falta '('");}
 break;
 case 107:
-//#line 435 "gramatica.y"
+//#line 440 "gramatica.y"
 {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un IF mal declarado, falta la condicion");}
 break;
 case 108:
-//#line 436 "gramatica.y"
+//#line 441 "gramatica.y"
 {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un IF mal declarado, falta ')'");}
 break;
 case 109:
-//#line 441 "gramatica.y"
+//#line 446 "gramatica.y"
 {System.out.println("[Parser | Linea " + Lexico.linea + "] se realiz� una sentencia OUT");
 			Terceto t = new Terceto("OUT", val_peek(1).sval, null);
 			adminTerceto.agregarTerceto(t);}
 break;
 case 111:
-//#line 447 "gramatica.y"
+//#line 452 "gramatica.y"
 {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un OUT mal declarado, falta '('");}
 break;
 case 112:
-//#line 448 "gramatica.y"
+//#line 453 "gramatica.y"
 {System.out.println("Error sint�ctico: Linea " + Lexico.linea + "  se detect� un OUT mal declarado, falta ')'");}
 break;
 case 113:
-//#line 449 "gramatica.y"
+//#line 454 "gramatica.y"
 {System.out.println("Error sint�ctico: Linea " + Lexico.linea + "  se detect� un OUT mal declarado, faltan '(' y ')'");}
 break;
 case 114:
-//#line 450 "gramatica.y"
+//#line 455 "gramatica.y"
 {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un OUT mal declarado, entre los par�ntesis debe ir una cadena");}
 break;
 case 115:
-//#line 451 "gramatica.y"
+//#line 456 "gramatica.y"
 {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un OUT mal declarado, falta la cadena entre los parent�sis en el OUT");}
 break;
 case 116:
-//#line 454 "gramatica.y"
+//#line 459 "gramatica.y"
 {System.out.println("[Parser | Linea " + Lexico.linea + "] se realiz� una asignaci�n al identificador -> " + val_peek(2).sval);
 				String ambitoVariable = Main.tSimbolos.verificarAmbito(val_peek(2).sval, ambito);
 				if(ambitoVariable != null){
@@ -1523,6 +1528,7 @@ case 116:
 					if(op != null)
 						if(tipoIde.equals(op.getTipo())){
 							Terceto t = new Terceto("=", ambitoVariable, op.getValor());
+							t.setTipo(op.getTipo());
 							adminTerceto.agregarTerceto(t);
 							yyval = new ParserVal(new Operando(tipoIde, "[" + t.getNumero()+ "]"));
 						} else
@@ -1533,19 +1539,19 @@ case 116:
 				}}
 break;
 case 118:
-//#line 473 "gramatica.y"
+//#line 479 "gramatica.y"
 {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " falta '=' en la asignaci�n");}
 break;
 case 119:
-//#line 474 "gramatica.y"
+//#line 480 "gramatica.y"
 {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " falta el identificador del lado izquierdo de la asignaci�n");}
 break;
 case 120:
-//#line 475 "gramatica.y"
+//#line 481 "gramatica.y"
 {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " falta una expresi�n aritm�tica del lado derecho de la asignaci�n");}
 break;
 case 121:
-//#line 479 "gramatica.y"
+//#line 485 "gramatica.y"
 {System.out.println("[Parser | Linea " + Lexico.linea + "] se realiz� una invocacion al procedimiento -> " + val_peek(3).sval );
 				   lista_param_invocacion = (ArrayList<Pair<String, String>>)val_peek(1).obj;
 			  	   if(lista_param_invocacion!= null && !lista_param_invocacion.isEmpty()){ /* Hubo un error mas abajo*/
@@ -1555,7 +1561,7 @@ case 121:
 							if (verificarParametros(val_peek(3).sval)){
 								if(Main.tSimbolos.getDatosTabla(ambitoProc).getLlamadosActuales() < Main.tSimbolos.getDatosTabla(ambitoProc).getLlamadosMax()){
 									for(Pair p : lista_param_invocacion){
-										Terceto t = new Terceto("=" ,p.getKey()+"&"+val_peek(3).sval, (String)p.getValue());
+										Terceto t = new Terceto("=" ,p.getKey()+"@"+val_peek(3).sval, (String)p.getValue());
 										adminTerceto.agregarTerceto(t);
 									}
 									Terceto t = new Terceto("INV", ambitoProc, null); /*ver como guardar linea inicial de procedimiento.*/
@@ -1571,23 +1577,23 @@ case 121:
 			  	   }
 break;
 case 123:
-//#line 505 "gramatica.y"
+//#line 511 "gramatica.y"
 {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� una invocaci�n mal declarada, falta el identificador");}
 break;
 case 124:
-//#line 506 "gramatica.y"
+//#line 512 "gramatica.y"
 {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� una invocaci�n mal declarada, falta el '('");}
 break;
 case 125:
-//#line 507 "gramatica.y"
+//#line 513 "gramatica.y"
 {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� una invocaci�n mal declarada, faltan los par�metros");}
 break;
 case 126:
-//#line 508 "gramatica.y"
+//#line 514 "gramatica.y"
 {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� una invocaci�n mal declarada, falta el ')'");}
 break;
 case 127:
-//#line 511 "gramatica.y"
+//#line 517 "gramatica.y"
 {/*System.out.println("[Parser | Linea " + Lexico.linea + "] se leyeron los par�metros -> " + $1.sval +" y " +$3.sval);*/
 			  if(lista_param_invocacion!=null){
 				  lista_param_invocacion.clear();
@@ -1600,7 +1606,7 @@ case 127:
 				  }}
 break;
 case 128:
-//#line 521 "gramatica.y"
+//#line 527 "gramatica.y"
 {/*System.out.println("[Parser | Linea " + Lexico.linea + "] se leyeron los par�metros -> " + $3.sval +" y " +$5.sval);*/
                                	lista_param_invocacion = (ArrayList<Pair<String, String>>)val_peek(4).obj;
                                	if(lista_param_invocacion != null && !lista_param_invocacion.isEmpty()){
@@ -1613,22 +1619,22 @@ case 128:
                                 }}
 break;
 case 130:
-//#line 534 "gramatica.y"
+//#line 540 "gramatica.y"
 {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detectaron par�metros mal declarados, falta el identificador de la izquierda");}
 break;
 case 131:
-//#line 535 "gramatica.y"
+//#line 541 "gramatica.y"
 {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detectaron par�metros mal declarados, falta ':' entre los identificadores");}
 break;
 case 132:
-//#line 536 "gramatica.y"
+//#line 542 "gramatica.y"
 {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detectaron par�metros mal declarados, falta la ',' que separa los identificadores");}
 break;
 case 133:
-//#line 537 "gramatica.y"
+//#line 543 "gramatica.y"
 {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detectaron par�metros mal declarados, falta el identificador de la derecha");}
 break;
-//#line 1555 "Parser.java"
+//#line 1561 "Parser.java"
 //########## END OF USER-SUPPLIED ACTIONS ##########
     }//switch
     //#### Now let's reduce... ####

@@ -37,7 +37,7 @@ declaracion : tipo lista_de_variables';'{//System.out.println("[Parser | Linea "
 					String tipoVar = $1.sval;
 					lista_variables = (ArrayList<String>)$2.obj; //controlar si ya est� en la tabla
 					for(String lexema : lista_variables){
-						String nuevoLexema = lexema + "&" + ambito;
+						String nuevoLexema = lexema + "@" + ambito;
 						if(!Main.tSimbolos.existeLexema(nuevoLexema)){
 							Main.tSimbolos.reemplazarLexema(lexema, nuevoLexema);
 							DatosTabla dt = Main.tSimbolos.getDatosTabla(nuevoLexema);
@@ -77,14 +77,14 @@ error_lista_de_variables: lista_de_variables IDE {System.out.println("Error sint
 
 procedimiento : declaracion_proc '{'bloque_sentencias'}'{System.out.println("[Parser | Linea " + Lexico.linea + "]se declar� un procedimiento");
 							if($1.sval != null){ // se declaro todo bien
-								ambito = ambito.substring(0,ambito.lastIndexOf("&"));
+								ambito = ambito.substring(0,ambito.lastIndexOf("@"));
 								Terceto t = new Terceto("FinProc", $1.sval, null);
 								adminTerceto.agregarTerceto(t);
 								}
 							}
 	     | error_proc {System.out.println("[Parser | Linea " + Lexico.linea + "]se declar? un procedimiento");
                             if($1.sval != null){ // se declaro todo bien
-                 		ambito = ambito.substring(0,ambito.lastIndexOf("&"));
+                 		ambito = ambito.substring(0,ambito.lastIndexOf("@"));
 				Terceto t = new Terceto("FinProc", $1.sval, null);
                           	adminTerceto.agregarTerceto(t);
                           	}
@@ -100,7 +100,7 @@ error_proc:  declaracion_proc    bloque_sentencias'}' {System.out.println("Error
 declaracion_proc: PROC IDE'('lista_de_parametros')'NI'='CTE_UINT {
 			lista_parametros = (ArrayList<String>)$4.obj;
 			if(!lista_parametros.isEmpty()){
-				String nuevoLexema = $2.sval + "&" + ambito;
+				String nuevoLexema = $2.sval + "@" + ambito;
 				if(!Main.tSimbolos.existeLexema(nuevoLexema)){
 					Main.tSimbolos.reemplazarLexema($2.sval, nuevoLexema);
 					DatosTabla dt = Main.tSimbolos.getDatosTabla(nuevoLexema);
@@ -111,11 +111,11 @@ declaracion_proc: PROC IDE'('lista_de_parametros')'NI'='CTE_UINT {
 
 					int posicion = 1;
 					for(String parametro : lista_parametros){
-						Main.tSimbolos.reemplazarLexema(parametro, parametro +"&"+$2.sval);
-						Main.tSimbolos.getDatosTabla(parametro +"&"+$2.sval).setOrden(posicion);
+						Main.tSimbolos.reemplazarLexema(parametro, parametro +"@"+$2.sval);
+						Main.tSimbolos.getDatosTabla(parametro +"@"+$2.sval).setOrden(posicion);
 						posicion++;
 					}
-					ambito = ambito + "&"+ $2.sval;
+					ambito = ambito + "@"+ $2.sval;
 					Terceto t = new Terceto("ComienzaProc", nuevoLexema, null);
 					adminTerceto.agregarTerceto(t);
 					adminTerceto.agregarProcedimiento(nuevoLexema);
@@ -233,6 +233,7 @@ asignacion_for: IDE '=' CTE_UINT { System.out.println("[Parser | Linea " + Lexic
                                 		Terceto t = new Terceto("=", ambitoVariable, $3.sval);
                                 		adminTerceto.agregarTerceto(t);
                                 		t = new Terceto("Label"+adminTerceto.cantTercetos(), null, null);
+
                                 		adminTerceto.agregarTerceto(t);
                                 		adminTerceto.apilar(t.getNumero());
                                 		$$ = new ParserVal(ambitoVariable);
@@ -283,6 +284,7 @@ expresion : termino { $$ = new ParserVal((Operando)$1.obj);}
 				if(op1 != null && op2 !=null){
 					if(op1.getTipo().equals(op2.getTipo())){
 						Terceto t = new Terceto("+", op1.getValor(), op2.getValor());
+						t.setTipo(op1.getTipo());
 						adminTerceto.agregarTerceto(t);
 						$$ = new ParserVal(new Operando(op1.getTipo(), "["+t.getNumero()+"]"));
 						}
@@ -298,6 +300,7 @@ expresion : termino { $$ = new ParserVal((Operando)$1.obj);}
                                 if(op1 != null && op2 !=null){
 					if(op1.getTipo().equals(op2.getTipo())){
 						Terceto t = new Terceto("-", op1.getValor(), op2.getValor());
+						t.setTipo(op1.getTipo());
 						adminTerceto.agregarTerceto(t);
 						$$ = new ParserVal(new Operando(op1.getTipo(),"["+t.getNumero()+"]"));
 						}
@@ -328,6 +331,7 @@ termino : termino '*' factor { System.out.println("[Parser | Linea " + Lexico.li
 				if(op1 != null && op2 !=null){
 					if(op1.getTipo().equals(op2.getTipo())){
 						Terceto t = new Terceto("*", op1.getValor(), op2.getValor());
+						t.setTipo(op1.getTipo());
 						adminTerceto.agregarTerceto(t);
 						$$ = new ParserVal(new Operando(op1.getTipo(), "["+t.getNumero()+"]"));
 						}
@@ -343,6 +347,7 @@ termino : termino '*' factor { System.out.println("[Parser | Linea " + Lexico.li
                                 if(op1 != null && op2 !=null){
 					if (op1.getTipo().equals(op2.getTipo())){
 						Terceto t = new Terceto("/", op1.getValor(), op2.getValor());
+						t.setTipo(op1.getTipo());
 						adminTerceto.agregarTerceto(t);
 						$$ = new ParserVal(new Operando(op1.getTipo(), "["+t.getNumero()+"]"));
 					} else{
@@ -459,6 +464,7 @@ asignacion : IDE '=' expresion {System.out.println("[Parser | Linea " + Lexico.l
 					if(op != null)
 						if(tipoIde.equals(op.getTipo())){
 							Terceto t = new Terceto("=", ambitoVariable, op.getValor());
+							t.setTipo(op.getTipo());
 							adminTerceto.agregarTerceto(t);
 							$$ = new ParserVal(new Operando(tipoIde, "[" + t.getNumero()+ "]"));
 						} else
@@ -485,7 +491,7 @@ invocacion : IDE '(' parametros ')'{System.out.println("[Parser | Linea " + Lexi
 							if (verificarParametros($1.sval)){
 								if(Main.tSimbolos.getDatosTabla(ambitoProc).getLlamadosActuales() < Main.tSimbolos.getDatosTabla(ambitoProc).getLlamadosMax()){
 									for(Pair p : lista_param_invocacion){
-										Terceto t = new Terceto("=" ,p.getKey()+"&"+$1.sval, (String)p.getValue());
+										Terceto t = new Terceto("=" ,p.getKey()+"@"+$1.sval, (String)p.getValue());
 										adminTerceto.agregarTerceto(t);
 									}
 									Terceto t = new Terceto("INV", ambitoProc, null); //ver como guardar linea inicial de procedimiento.
@@ -594,7 +600,7 @@ public boolean chequearFactorNegado(){
 public boolean verificarParametros(String proc){
 	int orden = 1;
 	for(Pair p : lista_param_invocacion){
-		String parametroFormal = p.getKey() + "&" + proc;
+		String parametroFormal = p.getKey() + "@" + proc;
 		String parametroReal = (String)p.getValue();
 		if(!Main.tSimbolos.existeLexema(parametroFormal)){ //el usuario lo escribio mal en la invocacion
 			System.out.println("No se reconoce el parametro formal "+ p.getKey());

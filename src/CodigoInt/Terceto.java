@@ -6,12 +6,14 @@ public class Terceto {
     private String op2;
     private String operador;
     private String resultado;
+    private String tipo;
 
     public Terceto(String operador, String op1, String op2) {
         this.operador = operador;
         this.op1 = op1;
         this.op2 = op2;
         this.resultado = null;
+        this.tipo = null;
     }
 
     public int getNumero() {
@@ -50,10 +52,22 @@ public class Terceto {
         this.resultado = resultado;
     }
 
-    public boolean esVariable(int op){
-        if(op == 1)
-            return !this.op1.contains("[");
+    public int nroTerceto(int op){
+        if(op == 1) {
+            if (op1.contains("["))
+                return Integer.parseInt(op1.substring(1,op1.lastIndexOf("]")));
+        }
         else
-            return !this.op2.contains("[");
+            if (op2.contains("["))
+                return Integer.parseInt(op2.substring(1,op2.lastIndexOf("]")));
+        return -1;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
     }
 }

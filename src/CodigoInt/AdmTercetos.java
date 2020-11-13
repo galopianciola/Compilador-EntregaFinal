@@ -12,82 +12,87 @@ public class AdmTercetos {
     private Hashtable<String, Integer> procedimientos = new Hashtable<String, Integer>();
     private ArrayList<ArrayList<Terceto>> codigoIntermedio = new ArrayList<>(5);
 
-    public AdmTercetos(){}
+    public AdmTercetos() {
+    }
 
-    public void agregarTerceto(Terceto t){
+    public void agregarTerceto(Terceto t) {
         t.setNumero(tercetos.size());
         tercetos.add(t);
     }
 
-    public int cantTercetos(){
+    public int cantTercetos() {
         return tercetos.size();
     }
 
-    public void apilar(int nroTerceto){
+    public void apilar(int nroTerceto) {
         pila.add(nroTerceto);
     }
 
-    public void desapilar(){
-        int tercetoIncompleto = pila.get(pila.size()-1);
-        pila.remove(pila.size()-1);
+    public void desapilar() {
+        int tercetoIncompleto = pila.get(pila.size() - 1);
+        pila.remove(pila.size() - 1);
         Terceto nuevoTerceto = tercetos.get(tercetoIncompleto);
-        if(nuevoTerceto.getOperador() == "BF")
+        if (nuevoTerceto.getOperador() == "BF")
             nuevoTerceto.setOp2(Integer.toString(tercetos.size()));
         else
             nuevoTerceto.setOp1(Integer.toString(tercetos.size()));
         tercetos.set(tercetoIncompleto, nuevoTerceto);
     }
 
-    public void desapilarFor(){
-        int nroTerceto = pila.get(pila.size()-1);
-        pila.remove(pila.size()-1);
-        Terceto nuevoTerceto = tercetos.get(tercetos.size()-1);
+    public void desapilarFor() {
+        int nroTerceto = pila.get(pila.size() - 1);
+        pila.remove(pila.size() - 1);
+        Terceto nuevoTerceto = tercetos.get(tercetos.size() - 1);
         nuevoTerceto.setOp1(Integer.toString(nroTerceto));
-        tercetos.set(tercetos.size()-1, nuevoTerceto);
+        tercetos.set(tercetos.size() - 1, nuevoTerceto);
     }
 
-    public void agregarProcedimiento(String proc){
-        procedimientos.put(proc, tercetos.size()-1);
+    public void agregarProcedimiento(String proc) {
+        procedimientos.put(proc, tercetos.size() - 1);
     }
 
-    public void generarCodigoIntermedio(int inicio, int finalProc, String proc, int index){
+    public void generarCodigoIntermedio(int inicio, int finalProc, String proc, int index) {
         ArrayList<Terceto> aux = new ArrayList<>();
         ArrayList<String> invocados = new ArrayList<>();
-        codigoIntermedio.add(index,new ArrayList<>());
-        for(int i = inicio; i <= finalProc; i++){
+        codigoIntermedio.add(index, new ArrayList<>());
+        for (int i = inicio; i <= finalProc; i++) {
             Terceto t = tercetos.get(i);
-            if(t.getOperador().equals("INV") && !invocados.contains(t.getOp1())){
+            if (t.getOperador().equals("INV") && !invocados.contains(t.getOp1())) {
                 String procInvocado = t.getOp1();
-                generarCodigoIntermedio(procedimientos.get(procInvocado), this.buscarFinProc(procInvocado), procInvocado, index+1);
+                generarCodigoIntermedio(procedimientos.get(procInvocado), this.buscarFinProc(procInvocado), procInvocado, index + 1);
                 invocados.add(procInvocado);
             }
-            while((t.getOperador().equals("ComienzaProc") && !t.getOp1().equals(proc)) && (i <= finalProc)) {
-                i = this.buscarFinProc(t.getOp1())+1;
-                if(i <= finalProc)
+            while ((t.getOperador().equals("ComienzaProc") && !t.getOp1().equals(proc)) && (i <= finalProc)) {
+                i = this.buscarFinProc(t.getOp1()) + 1;
+                if (i <= finalProc)
                     t = tercetos.get(i);
             }
-            if(i <= finalProc) {   // Por si en el if de arriba me da un numero mayor a el tama�o de finProc
+            if (i <= finalProc) {   // Por si en el if de arriba me da un numero mayor a el tama�o de finProc
                 aux.add(t);
             }
         }
-        codigoIntermedio.set(index,aux);
+        codigoIntermedio.set(index, aux);
     }
 
-    public void printTercetos(){
-        this.generarCodigoIntermedio(0,tercetos.size()-1,"main", 0);
+    public void printTercetos() {
+        this.generarCodigoIntermedio(0, tercetos.size() - 1, "main", 0);
         int i = 0;
-        for(ArrayList<Terceto> a : codigoIntermedio){
-            System.out.println("procedimiento "+i);
-            for(Terceto t : a){
-                System.out.println(t.getNumero() + ". (" + t.getOperador()+", "+t.getOp1()+ ", "+t.getOp2()+")");
+        for (ArrayList<Terceto> a : codigoIntermedio) {
+            System.out.println("procedimiento " + i);
+            for (Terceto t : a) {
+                System.out.println(t.getNumero() + ". (" + t.getOperador() + ", " + t.getOp1() + ", " + t.getOp2() + ")" + t.getResultado());
             }
             i++;
         }
     }
 
-    public void printCodigoIntermedio(){
-        for(Terceto t: tercetos)
-            System.out.println(t.getNumero() + ". (" + t.getOperador()+", "+t.getOp1()+ ", "+t.getOp2()+")");
+    public void printCodigoIntermedio() {
+        for (Terceto t : tercetos)
+            System.out.println(t.getNumero() + ". (" + t.getOperador() + ", " + t.getOp1() + ", " + t.getOp2() + ")");
+    }
+
+    public ArrayList<ArrayList<Terceto>> getCodigoIntermedio() {
+        return codigoIntermedio;
     }
 
     public void printProcedimientos() {
@@ -95,15 +100,39 @@ public class AdmTercetos {
         System.out.println(procedimientos);
     }
 
-    public int buscarFinProc(String procedimiento){
-        for(Terceto t : tercetos){
-            if(t.getOperador().equals("FinProc") && t.getOp1().equals(procedimiento)){
-                return t.getNumero();}
+    public int buscarFinProc(String procedimiento) {
+        for (Terceto t : tercetos) {
+            if (t.getOperador().equals("FinProc") && t.getOp1().equals(procedimiento)) {
+                return t.getNumero();
+            }
         }
         return 0;
     }
 
-    public Terceto getTerceto(int nroTerceto){
+    public Terceto getTerceto(int nroTerceto) {
         return tercetos.get(nroTerceto);
+    }
+
+    public boolean esVariable(int nroTerceto) {
+        if (nroTerceto == -1)
+            return true;
+        return tercetos.get(nroTerceto).getResultado().contains("_var");
+    }
+
+    public String getOp1Asm(Terceto t) {
+        if (t.getOp1().contains("[")){
+            Terceto t1 = tercetos.get(Integer.parseInt(t.getOp1().substring(1, t.getOp1().lastIndexOf("]"))));
+            return t1.getResultado().substring(1);}
+        else{
+            return t.getOp1();
+        }
+    }
+    public String getOp2Asm(Terceto t) {
+        if (t.getOp2().contains("[")){
+            Terceto t1 = tercetos.get(Integer.parseInt(t.getOp2().substring(1, t.getOp2().lastIndexOf("]"))));
+            return t1.getResultado().substring(1);}
+        else{
+            return t.getOp2();
+        }
     }
 }

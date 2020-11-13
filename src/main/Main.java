@@ -2,45 +2,44 @@
 package main;
 
 import java.io.*;
+
 import Parser.*;
 import CodigoInt.*;
 
-public class Main{
+public class Main {
 
     private static BufferedReader codigo;
     public static TablaSimbolos tSimbolos = new TablaSimbolos();
 
-    private static StringBuilder getCodigo(BufferedReader ubicacion){
+    private static StringBuilder getCodigo(BufferedReader ubicacion) {
         StringBuilder buffer = new StringBuilder();
 
-        try{
+        try {
             codigo = new BufferedReader(new FileReader(ubicacion.readLine()));
             String readLine;
 
-            while ((readLine = codigo.readLine())!= null) {
+            while ((readLine = codigo.readLine()) != null) {
                 buffer.append(readLine + "\n");
             }
 
-            buffer.deleteCharAt(buffer.length()-1);
+            buffer.deleteCharAt(buffer.length() - 1);
             //System.out.println(buffer);
             buffer.append("$");
-        }
-        catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return buffer;
     }
 
-    public static void main(String[]args) throws IOException {
+    public static void main(String[] args) throws IOException {
         //-------------- CARGA DE ARCHIVO --------------
 
         InputStreamReader leer = new InputStreamReader(System.in);
         BufferedReader buffer = new BufferedReader(leer);
         //System.out.print("Ingrese la direccion del archivo: ");
-       // String direccion = buffer.readLine();
+        // String direccion = buffer.readLine();
 
         String direccion = "test.txt";
         InputStream is = new ByteArrayInputStream(direccion.getBytes());
@@ -59,16 +58,22 @@ public class Main{
         Parser p = new Parser(l1, adminTercetos);
         p.run();
 
-        System.out.println("\n********* TABLA DE SIMBOLOS *********");
-        tSimbolos.printTablaSimbolos();
 
-        System.out.println("\n********* CODIGO INTERMEDIO *********");
-        adminTercetos.printCodigoIntermedio();
+        //System.out.println("\n********* CODIGO INTERMEDIO *********");
+        //adminTercetos.printCodigoIntermedio();
+        tSimbolos.printTablaSimbolos();
+        adminTercetos.printTercetos();
+        adminTercetos.printProcedimientos();
+
+        Assembler assembler = new Assembler(adminTercetos);
+        assembler.generarAssembler();
 
         System.out.println("\n********* TERCETOS *********");
         adminTercetos.printTercetos();
 
-        adminTercetos.printProcedimientos();
+        System.out.println("\n********* TABLA DE SIMBOLOS *********");
+        tSimbolos.printTablaSimbolos();
+
 
     }
 }
