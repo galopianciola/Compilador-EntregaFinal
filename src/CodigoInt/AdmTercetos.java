@@ -74,8 +74,11 @@ public class AdmTercetos {
         codigoIntermedio.set(index, aux);
     }
 
-    public void printTercetos() {
+    public void generarCodigoIntermedio(){
         this.generarCodigoIntermedio(0, tercetos.size() - 1, "main", 0);
+}
+
+    public void printTercetos() {
         int i = 0;
         for (ArrayList<Terceto> a : codigoIntermedio) {
             System.out.println("procedimiento " + i);
@@ -113,7 +116,7 @@ public class AdmTercetos {
         return tercetos.get(nroTerceto);
     }
 
-    public boolean esVariable(int nroTerceto) {
+    /*public boolean esVariable(int nroTerceto) {
         if (nroTerceto == -1)
             return true;
         return tercetos.get(nroTerceto).getResultado().contains("_var");
@@ -134,5 +137,5 @@ public class AdmTercetos {
         else{
             return t.getOp2();
         }
-    }
+    }*/
 }

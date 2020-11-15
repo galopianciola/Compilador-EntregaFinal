@@ -66,7 +66,7 @@ public class TablaSimbolos {
         Enumeration iterador = tSimbolos.keys();
         while (iterador.hasMoreElements()) {
             String lexema = (String) iterador.nextElement();
-            if(lexema.contains("@") || (!lexema.contains("@") && tSimbolos.get(lexema).getId() != 257))
+            if(lexema.contains("@") || (!lexema.contains("@") && tSimbolos.get(lexema).getId() != 257) || lexema.contains("var"))
                 System.out.println("Lexema: " + lexema + ", id: " + tSimbolos.get(lexema).getId() +
                         ", tipo: " + tSimbolos.get(lexema).getTipo() + ", uso: " + tSimbolos.get(lexema).getUso()
                         + "");

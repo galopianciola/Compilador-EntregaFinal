@@ -62,6 +62,8 @@ public class Main {
         //System.out.println("\n********* CODIGO INTERMEDIO *********");
         //adminTercetos.printCodigoIntermedio();
         tSimbolos.printTablaSimbolos();
+
+        adminTercetos.generarCodigoIntermedio();
         adminTercetos.printTercetos();
         adminTercetos.printProcedimientos();
 

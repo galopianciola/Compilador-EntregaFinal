@@ -1,3 +1,6 @@
-{UINT a,b,c;
-a = b/c;
+{UINT a,z,y;
+UINT x;
+IF ( a != y + z) { UINT c; c = x;} END_IF;
 }
+
+

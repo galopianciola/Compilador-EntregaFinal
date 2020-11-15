@@ -268,6 +268,7 @@ condicion :  expresion comparador expresion {Operando op1 = (Operando)$1.obj;
                                              if(op1 != null && op2 !=null){
 						if(op1.getTipo().equals(op2.getTipo())){
 							Terceto t = new Terceto($2.sval, op1.getValor(), op2.getValor());
+							t.setTipo(op1.getTipo());
 							adminTerceto.agregarTerceto(t);
 							$$ = new ParserVal("["+t.getNumero()+"]");
 						}

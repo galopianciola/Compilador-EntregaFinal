@@ -131,8 +131,7 @@ public class Assembler {
         return data;
     }
 
-    private String getRegistroVacio(String operacion) {
-        if (operacion == "+" || operacion == "-" || operacion == "=") {
+    private String getRegistroVacio() {
             if (BX) {
                 BX = false;
                 return "BX";
@@ -146,6 +145,7 @@ public class Assembler {
                 DX = false;
                 return "DX";
             }
+            return null;
         }
         /*if(operacion == "*" || operacion == "/"){
             if(AX) {
@@ -156,8 +156,7 @@ public class Assembler {
                 return "DX";
             }
         }*/
-        return null;
-    }
+
 
     public void marcarRegLibre(String registro) {
         if (registro.equals("AX"))
@@ -177,9 +176,9 @@ public class Assembler {
                 switch (t.getOperador()) {
                     case ("+"):
                         //situacion 1: (operador, var/cte, var/cte)
-                        if (adminTerceto.esVariable(t.nroTerceto(1)) && adminTerceto.esVariable(t.nroTerceto(1))) {
+                        if (t.esVariable(1) && t.esVariable(2)) {
                             if (t.getTipo().equals("UINT")) {
-                                String reg = this.getRegistroVacio("+");
+                                String reg = this.getRegistroVacio();
                                 code += "MOV " + reg + ", _" + t.getOp1() + '\n';
                                 code += "ADD " + reg + ", _" + t.getOp2() + '\n';
                                 t.setResultado(reg);
@@ -189,7 +188,7 @@ public class Assembler {
                             }
                         }
                         //situacion 2: (operador, registro, var/cte)
-                        if (!adminTerceto.esVariable(t.nroTerceto(1)) && adminTerceto.esVariable(t.nroTerceto(2))) {
+                        if (!t.esVariable(1) && t.esVariable(2)) {
                             if (t.getTipo().equals("UINT")) {
                                 String nroTerceto = t.getOp1().substring(1, t.getOp1().lastIndexOf("]"));
                                 Terceto t1 = adminTerceto.getTerceto(Integer.parseInt(nroTerceto));
@@ -201,13 +200,13 @@ public class Assembler {
                             }
                         }
                         //situacion 3: (operador, registro, registro)
-                        if (!adminTerceto.esVariable(t.nroTerceto(1)) && !adminTerceto.esVariable(t.nroTerceto(2))) {
+                        if (!t.esVariable(1) && !t.esVariable(2)) {
 
                             if (t.getTipo().equals("UINT")) {
                                 String nroTerceto1 = t.getOp1().substring(1, t.getOp1().lastIndexOf("]"));
                                 Terceto t1 = adminTerceto.getTerceto(Integer.parseInt(nroTerceto1));
 
-                                String nroTerceto2 = t.getOp2().substring(1, t.getOp1().lastIndexOf("]"));
+                                String nroTerceto2 = t.getOp2().substring(1, t.getOp2().lastIndexOf("]"));
                                 Terceto t2 = adminTerceto.getTerceto(Integer.parseInt(nroTerceto2));
 
                                 code += "ADD " + t1.getResultado() + ", " + t2.getResultado() + '\n';
@@ -219,9 +218,9 @@ public class Assembler {
                             }
                         }
                         //situacion 4a: (OP, var/cte, registro) conmutativa
-                        if (adminTerceto.esVariable(t.nroTerceto(1)) && !adminTerceto.esVariable(t.nroTerceto(2))) {
+                        if (t.esVariable(1) && !t.esVariable(2)) {
                             if (t.getTipo().equals("UINT")) {
-                                String nroTerceto = t.getOp2().substring(1, t.getOp1().lastIndexOf("]"));
+                                String nroTerceto = t.getOp2().substring(1, t.getOp2().lastIndexOf("]"));
                                 Terceto t1 = adminTerceto.getTerceto(Integer.parseInt(nroTerceto));
                                 code += "ADD " + t1.getResultado() + ", _" + t.getOp1() + '\n';
                                 t.setResultado(t1.getResultado());
@@ -235,9 +234,9 @@ public class Assembler {
 
                     case ("-"):
                         //situacion 1: (operador, var/cte, var/cte)
-                        if (adminTerceto.esVariable(t.nroTerceto(1)) && adminTerceto.esVariable(t.nroTerceto(2))) {
+                        if (t.esVariable(1) && t.esVariable(2)) {
                             if (t.getTipo().equals("UINT")) {
-                                String reg = this.getRegistroVacio("+");
+                                String reg = this.getRegistroVacio();
                                 code += "MOV " + reg + ", _" + t.getOp1() + '\n';
                                 code += "SUB " + reg + ", _" + t.getOp2() + '\n';
                                 t.setResultado(reg);
@@ -248,7 +247,7 @@ public class Assembler {
                         }
 
                         //situacion 2: (operador, registro, var/cte)
-                        if (!adminTerceto.esVariable(t.nroTerceto(1)) && adminTerceto.esVariable(t.nroTerceto(2))) {
+                        if (!t.esVariable(1) && t.esVariable(2)) {
                             if (t.getTipo().equals("UINT")) {
                                 String nroTerceto = t.getOp1().substring(1, t.getOp1().lastIndexOf("]"));
                                 Terceto t1 = adminTerceto.getTerceto(Integer.parseInt(nroTerceto));
@@ -260,12 +259,12 @@ public class Assembler {
                             }
                         }
                         //situacion 3: (operador, registro, registro)
-                        if (!adminTerceto.esVariable(t.nroTerceto(1)) && !adminTerceto.esVariable(t.nroTerceto(2))) {
+                        if (!t.esVariable(1) && !t.esVariable(2)) {
                             if (t.getTipo().equals("UINT")) {
                                 String nroTerceto1 = t.getOp1().substring(1, t.getOp1().lastIndexOf("]"));
                                 Terceto t1 = adminTerceto.getTerceto(Integer.parseInt(nroTerceto1));
 
-                                String nroTerceto2 = t.getOp2().substring(1, t.getOp1().lastIndexOf("]"));
+                                String nroTerceto2 = t.getOp2().substring(1, t.getOp2().lastIndexOf("]"));
                                 Terceto t2 = adminTerceto.getTerceto(Integer.parseInt(nroTerceto2));
 
                                 code += "SUB " + t1.getResultado() + ", " + t2.getResultado() + '\n';
@@ -277,11 +276,11 @@ public class Assembler {
                             }
                         }
                         //situacion 4b: (OP, var/cte, registro) no conmutativa
-                        if (adminTerceto.esVariable(t.nroTerceto(1)) && !adminTerceto.esVariable(t.nroTerceto(2))) {
+                        if (t.esVariable(1) && !t.esVariable(2)) {
                             if (t.getTipo().equals("UINT")) {
-                                String reg = this.getRegistroVacio("-");
+                                String reg = this.getRegistroVacio();
                                 code += "MOV " + reg + ", _" + t.getOp1() + '\n';
-                                String nroTerceto = t.getOp2().substring(1, t.getOp1().lastIndexOf("]"));
+                                String nroTerceto = t.getOp2().substring(1, t.getOp2().lastIndexOf("]"));
                                 Terceto t1 = adminTerceto.getTerceto(Integer.parseInt(nroTerceto));
                                 code += "SUB " + reg + ", " + t1.getResultado() + '\n';
                                 t.setResultado(reg);
@@ -295,56 +294,56 @@ public class Assembler {
 
                     case ("*"):
                         //situacion 1: (operador, var/cte, var/cte)
-                        if (adminTerceto.esVariable(t.nroTerceto(1)) && adminTerceto.esVariable(t.nroTerceto(2))) {
+                        if (t.esVariable(1) && t.esVariable(2)) {
                             if (t.getTipo().equals("UINT")) {
                                 AX = false;
                                 code += "MOV AX, _" + t.getOp1() + '\n';
-                                code += "MUL _" + t.getOp2() + '\n';
-                                code += "MOV _var" + t.getNumero() + ", AX" + '\n';
-                                t.setResultado("_var" + t.getNumero());
+                                code += "MUL _" + t.getOp2()+ '\n';
+                                String reg = this.getRegistroVacio();
+                                code += "MOV " + reg + ", AX" + '\n';
                                 AX = true;
-                                Main.tSimbolos.agregarSimbolo("var" + t.getNumero(), Lexico.IDE, "UINT");
+                                t.setResultado(reg);
                             }
                             if (t.getTipo().equals("DOUBLE")) {
 
                             }
                         }
                         //situacion 2: (operador, registro, var/cte)
-                        if (!adminTerceto.esVariable(t.nroTerceto(1)) && adminTerceto.esVariable(t.nroTerceto(2))) {
+                        if (!t.esVariable(1) && t.esVariable(2)) {
                             if (t.getTipo().equals("UINT")) {
                                 String nroTerceto = t.getOp1().substring(1, t.getOp1().lastIndexOf("]"));
                                 Terceto t1 = adminTerceto.getTerceto(Integer.parseInt(nroTerceto));
                                 AX = false;
-                                code += "MOV AX, _" + t1.getResultado() + '\n';
-                                code += "MUL _" + t.getOp2() + '\n';
-                                code += "MOV _var" + t.getNumero() + ", AX" + '\n';
-                                t.setResultado("_var" + t.getNumero());
-                                AX = true;
+                                code += "MOV AX, " + t1.getResultado() + '\n';
                                 this.marcarRegLibre(t1.getResultado());
-                                Main.tSimbolos.agregarSimbolo("var" + t.getNumero(), Lexico.IDE, "UINT");
+                                code += "MUL _" + t.getOp2() + '\n';
+                                String reg = this.getRegistroVacio();
+                                code += "MOV " + reg + ", AX" + '\n';
+                                t.setResultado(reg);
+                                AX = true;
                             }
                             if (t.getTipo().equals("DOUBLE")) {
 
                             }
                         }
                         //situacion 3: (operador, registro, registro)
-                        if (!adminTerceto.esVariable(t.nroTerceto(1)) && !adminTerceto.esVariable(t.nroTerceto(2))) {
+                        if (!t.esVariable(1) && !t.esVariable(2)) {
                             if (t.getTipo().equals("UINT")) {
                                 String nroTerceto1 = t.getOp1().substring(1, t.getOp1().lastIndexOf("]"));
                                 Terceto t1 = adminTerceto.getTerceto(Integer.parseInt(nroTerceto1));
 
-                                String nroTerceto2 = t.getOp2().substring(1, t.getOp1().lastIndexOf("]"));
+                                String nroTerceto2 = t.getOp2().substring(1, t.getOp2().lastIndexOf("]"));
                                 Terceto t2 = adminTerceto.getTerceto(Integer.parseInt(nroTerceto2));
 
                                 AX = false;
                                 code += "MOV AX, _" + t1.getResultado() + '\n';
                                 code += "MUL _" + t2.getResultado() + '\n';
-                                code += "MOV _var" + t.getNumero() + ", AX" + '\n';
-                                t.setResultado("_var" + t.getNumero());
-                                AX = true;
                                 this.marcarRegLibre(t1.getResultado());
                                 this.marcarRegLibre(t2.getResultado());
-                                Main.tSimbolos.agregarSimbolo("var" + t.getNumero(), Lexico.IDE, "UINT");
+                                String reg = this.getRegistroVacio();
+                                code += "MOV " + reg + ", AX" + '\n';
+                                t.setResultado(reg);
+                                AX = true;
 
                             } // Que pasa si no hay registros libres ???
                             if (t.getTipo().equals("DOUBLE")) {
@@ -352,18 +351,18 @@ public class Assembler {
                             }
                         }
                         //situacion 4b: (OP, var/cte, registro) no conmutativa
-                        if (adminTerceto.esVariable(t.nroTerceto(1)) && !adminTerceto.esVariable(t.nroTerceto(2))) {
+                        if (t.esVariable(1) && !t.esVariable(2)) {
                             if (t.getTipo().equals("UINT")) {
-                                String nroTerceto = t.getOp2().substring(1, t.getOp1().lastIndexOf("]"));
+                                String nroTerceto = t.getOp2().substring(1, t.getOp2().lastIndexOf("]"));
                                 Terceto t1 = adminTerceto.getTerceto(Integer.parseInt(nroTerceto));
                                 AX = false;
                                 code += "MOV AX, _" + t1.getResultado() + '\n';
-                                code += "MUL _" + t.getOp1() + '\n';
-                                code += "MOV _var" + t.getNumero() + ", AX" + '\n';
-                                t.setResultado("_var" + t.getNumero());
-                                AX = true;
                                 this.marcarRegLibre(t1.getResultado());
-                                Main.tSimbolos.agregarSimbolo("var" + t.getNumero(), Lexico.IDE, "UINT");
+                                code += "MUL _" + t.getOp1() + '\n';
+                                String reg = this.getRegistroVacio();
+                                code += "MOV" + reg + ", AX" + '\n';
+                                t.setResultado(reg);
+                                AX = true;
                             } // Que pasa si no hay registros libres ???
                             if (t.getTipo().equals("DOUBLE")) {
 
@@ -373,51 +372,52 @@ public class Assembler {
 
                     case ("/"):
                         //situacion 1: (operador, var/cte, var/cte)
-                        if (adminTerceto.esVariable(t.nroTerceto(1)) && adminTerceto.esVariable(t.nroTerceto(2))) {
+                        if (t.esVariable(1) && t.esVariable(2)) {
                             if (t.getTipo().equals("UINT")) {
                                 AX = false;
                                 DX = false;
                                 code += "MOV AX, _" + t.getOp1() + '\n';
                                 code += "MOV DX, 0" + '\n';
                                 code += "DIV _" + t.getOp2() + '\n';
-                                code += "MOV _var" + t.getNumero() + ", AX" + '\n';
-                                t.setResultado("_var" + t.getNumero());
+                                String reg = this.getRegistroVacio();
+                                code += "MOV " + reg + ", AX" + '\n';
+                                t.setResultado(reg);
                                 AX = true;
                                 DX = true;
-                                Main.tSimbolos.agregarSimbolo("var" + t.getNumero(), Lexico.IDE, "UINT");
                             }
                             if (t.getTipo().equals("DOUBLE")) {
 
                             }
                         }
                         //situacion 2: (operador, registro, var/cte)
-                        if (!adminTerceto.esVariable(t.nroTerceto(1)) && adminTerceto.esVariable(t.nroTerceto(2))) {
+                        if (!t.esVariable(1) && t.esVariable(2)) {
                             if (t.getTipo().equals("UINT")) {
                                 String nroTerceto = t.getOp1().substring(1, t.getOp1().lastIndexOf("]"));
                                 Terceto t1 = adminTerceto.getTerceto(Integer.parseInt(nroTerceto));
                                 AX = false;
                                 DX = false;
-                                code += "MOV AX, _" + t1.getResultado() + '\n';
+                                code += "MOV AX, " + t1.getResultado() + '\n';
+                                this.marcarRegLibre(t1.getResultado());
                                 code += "MOV DX, 0" + '\n';
                                 code += "DIV _" + t.getOp2() + '\n';
-                                code += "MOV _var" + t.getNumero() + ", AX" + '\n';
-                                t.setResultado("_var" + t.getNumero());
+                                String reg = this.getRegistroVacio();
+                                code += "MOV " + reg + ", AX" + '\n';
                                 AX = true;
                                 DX = true;
-                                this.marcarRegLibre(t1.getResultado());
-                                Main.tSimbolos.agregarSimbolo("var" + t.getNumero(), Lexico.IDE, "UINT");
+                                t.setResultado(reg);
+
                             }
                             if (t.getTipo().equals("DOUBLE")) {
 
                             }
                         }
                         //situacion 3: (operador, registro, registro)
-                        if (!adminTerceto.esVariable(t.nroTerceto(1)) && !adminTerceto.esVariable(t.nroTerceto(2))) {
+                        if (!t.esVariable(1) && !t.esVariable(2)) {
                             if (t.getTipo().equals("UINT")) {
                                 String nroTerceto1 = t.getOp1().substring(1, t.getOp1().lastIndexOf("]"));
                                 Terceto t1 = adminTerceto.getTerceto(Integer.parseInt(nroTerceto1));
 
-                                String nroTerceto2 = t.getOp2().substring(1, t.getOp1().lastIndexOf("]"));
+                                String nroTerceto2 = t.getOp2().substring(1, t.getOp2().lastIndexOf("]"));
                                 Terceto t2 = adminTerceto.getTerceto(Integer.parseInt(nroTerceto2));
 
                                 AX = false;
@@ -425,36 +425,35 @@ public class Assembler {
                                 code += "MOV AX, _" + t1.getResultado() + '\n';
                                 code += "MOV DX, 0" + '\n';
                                 code += "DIV _" + t2.getResultado() + '\n';
-                                code += "MOV _var" + t.getNumero() + ", AX" + '\n';
-                                t.setResultado("_var" + t.getNumero());
-                                AX = true;
-                                DX = true;
                                 this.marcarRegLibre(t1.getResultado());
                                 this.marcarRegLibre(t2.getResultado());
-                                Main.tSimbolos.agregarSimbolo("var" + t.getNumero(), Lexico.IDE, "UINT");
-
+                                String reg = this.getRegistroVacio();
+                                code += "MOV " + reg + ", AX" + '\n';
+                                AX = true;
+                                DX = true;
+                                t.setResultado(reg);
                             } // Que pasa si no hay registros libres ???
                             if (t.getTipo().equals("DOUBLE")) {
 
                             }
                         }
                         //situacion 4b: (OP, var/cte, registro) no conmutativa
-                        if (adminTerceto.esVariable(t.nroTerceto(1)) && !adminTerceto.esVariable(t.nroTerceto(2))) {
+                        if (t.esVariable(1) && !t.esVariable(2)) {
                             if (t.getTipo().equals("UINT")) {
-                                String nroTerceto = t.getOp2().substring(1, t.getOp1().lastIndexOf("]"));
+                                String nroTerceto = t.getOp2().substring(1, t.getOp2().lastIndexOf("]"));
                                 Terceto t1 = adminTerceto.getTerceto(Integer.parseInt(nroTerceto));
                                 AX = false;
                                 DX = false;
                                 code += "MOV AX, _" + t.getOp1() + '\n';
                                 code += "MOV DX, 0" + '\n';
                                 code += "DIV _" + t1.getResultado() + '\n';
-                                code += "MOV _var" + t.getNumero() + ", AX" + '\n';
-                                t.setResultado("_var" + t.getNumero());
+                                this.marcarRegLibre(t1.getResultado());
+                                String reg = this.getRegistroVacio();
+                                code += "MOV " + reg + ", AX" + '\n';
                                 AX = true;
                                 DX = true;
-                                this.marcarRegLibre(t1.getResultado());
-                                Main.tSimbolos.agregarSimbolo("var" + t.getNumero(), Lexico.IDE, "UINT");
-                            } //
+                                t.setResultado(reg);
+                            }
                             if (t.getTipo().equals("DOUBLE")) {
 
                             }
@@ -463,7 +462,7 @@ public class Assembler {
 
                     case ("="):
                         // Situacion a ( = , vble , reg )
-                        if (adminTerceto.esVariable(t.nroTerceto(1)) && !adminTerceto.esVariable(t.nroTerceto(2))) {
+                        if (t.esVariable(1) && !t.esVariable(2)) {
                             if (t.getTipo().equals("UINT")) {
                                 String nroTerceto = t.getOp2().substring(1, t.getOp2().lastIndexOf("]"));
                                 Terceto t1 = adminTerceto.getTerceto(Integer.parseInt(nroTerceto));
@@ -475,11 +474,11 @@ public class Assembler {
                             }
                         }
                         // Situacion b ( = , vble , vble )
-                        if (adminTerceto.esVariable(t.nroTerceto(1)) && adminTerceto.esVariable(t.nroTerceto(2))) {
+                        if (t.esVariable(1) && t.esVariable(2)) {
                             if (t.getTipo().equals("UINT")) {
-                                String reg = this.getRegistroVacio("=");
-                                code += "MOV " + reg +  ", _" + adminTerceto.getOp2Asm(t) + '\n';
-                                code += "MOV _" + adminTerceto.getOp1Asm(t) + ", " + reg + '\n';
+                                String reg = this.getRegistroVacio();
+                                code += "MOV " + reg +  ", _" + t.getOp2()+ '\n';
+                                code += "MOV _" + t.getOp1() + ", " + reg + '\n';
                                 this.marcarRegLibre(reg);
                             } // Que pasa si no hay registros libres ???
                             if (t.getTipo().equals("DOUBLE")) {
@@ -487,10 +486,107 @@ public class Assembler {
                             }
                         }
                         break;
+
+                    case "<":
+                    case ">":
+                    case "==":
+                    case ">=":
+                    case "<=":
+                    case "!=":
+                        //situacion 1: (operador, var/cte, var/cte)
+                        if (t.esVariable(1) && t.esVariable(2)) {
+                            if (t.getTipo().equals("UINT")) {
+                                String reg = this.getRegistroVacio();
+                                code += "MOV "+ reg + ", _"+t.getOp2() + '\n';
+                                code += "CMP _" + t.getOp1() + ", " + reg + '\n';
+                                this.marcarRegLibre(reg);
+                            }
+                            if (t.getTipo().equals("DOUBLE")) {
+
+                            }
+                        }
+                        //situacion 2: (operador, registro, var/cte)
+                        if (!t.esVariable(1) && t.esVariable(2)) {
+                            if (t.getTipo().equals("UINT")) {
+                                String nroTerceto = t.getOp1().substring(1, t.getOp1().lastIndexOf("]"));
+                                Terceto t1 = adminTerceto.getTerceto(Integer.parseInt(nroTerceto));
+
+                                code += "CMP " + t1.getResultado() + ", _" + t.getOp2() + '\n';
+                                this.marcarRegLibre(t1.getResultado());
+                            }
+                            if (t.getTipo().equals("DOUBLE")) {
+
+                            }
+                        }
+                        //situacion 3: (operador, registro, registro)
+                        if (!t.esVariable(1) && !t.esVariable(2)) {
+                            if (t.getTipo().equals("UINT")) {
+                                String nroTerceto = t.getOp1().substring(1, t.getOp1().lastIndexOf("]"));
+                                Terceto t1 = adminTerceto.getTerceto(Integer.parseInt(nroTerceto));
+
+                                String nroTerceto2 = t.getOp2().substring(1, t.getOp2().lastIndexOf("]"));
+                                Terceto t2 = adminTerceto.getTerceto(Integer.parseInt(nroTerceto2));
+                                code += "CMP " + t1.getResultado() + ", " + t2.getResultado() + '\n';
+
+                                this.marcarRegLibre(t1.getResultado());
+                                this.marcarRegLibre(t2.getResultado());
+                            }
+                            if (t.getTipo().equals("DOUBLE")) {
+
+                            }
+                        }
+                        //situacion 3: (operador, var/cte, registro)
+                        if (t.esVariable(1) && !t.esVariable(2)) {
+                            if (t.getTipo().equals("UINT")) {
+                                String nroTerceto = t.getOp2().substring(1, t.getOp2().lastIndexOf("]"));
+                                Terceto t1 = adminTerceto.getTerceto(Integer.parseInt(nroTerceto));
+
+                                code += "CMP _" + t.getOp1() + ", " + t1.getResultado() + '\n';
+
+                                this.marcarRegLibre(t1.getResultado());
+                            }
+                            if (t.getTipo().equals("DOUBLE")) {
+
+                            }
+                        }
+                        break;
+
+                    case "BF":
+                        String nroTerceto = t.getOp1().substring(1, t.getOp1().lastIndexOf("]"));
+                        Terceto t1 = adminTerceto.getTerceto(Integer.parseInt(nroTerceto));
+                        code += this.tipoSalto(t1.getOperador()) + " Label" + t.getOp2() +'\n';
+
+                        break;
+
+                    case "BI":
+                        code += "JMP Label" + t.getOp1() + '\n';
+                        break;
+
+                    default: //Para terceto (Label..., , )
+                        code += t.getOperador() +": \n";
+                        break;
                 }
 
             }
         }
         return code;
+    }
+
+    private String tipoSalto(String comparador) {
+        switch (comparador){
+            case "==":
+                return "JE";
+            case "!=":
+                return "JNE";
+            case "<":
+                return "JB";
+            case"<=":
+                return "JBE";
+            case">":
+                return "JA";
+            case">=":
+                return "JAE";
+        }
+        return null;
     }
 }

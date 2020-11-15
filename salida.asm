@@ -9,17 +9,19 @@ includelib \masm32\lib\user32.lib
 
 .data
 _c@main DW ?
-_b@main DW ?
+_z@main DW ?
 _a@main DW ?
-_var0 DW ?
+_x@main DW ?
+_y@main DW ?
 
 .code
 start:
-MOV AX, _b@main
-MOV DX, 0
-DIV _c@main
-MOV _var0, AX
-MOV BX, _var0
-MOV _a@main, BX
+MOV BX, _y@main
+ADD BX, _z@main
+CMP _a@main, BX
+JNE Label4
+MOV BX, _x@main
+MOV _c@main, BX
+Label4:
 invoke ExitProcess, 0
 end start
