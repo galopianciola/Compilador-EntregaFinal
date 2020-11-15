@@ -117,7 +117,7 @@ public class Assembler {
                         data = data + "_" + lexema + " DQ ?" + '\n';
                     break;
                 case (Lexico.CADENA):
-                    data = data + "_" + lexema + " DQ ?" + '\n';
+                    data = data + "_" + lexema.substring(1,lexema.length()-1) + " DB " + lexema + ", 0 \n";
                     break;
                 // faltan las constantes
                 case (Lexico.CTE_DOUBLE):
@@ -562,11 +562,15 @@ public class Assembler {
                         code += "JMP Label" + t.getOp1() + '\n';
                         break;
 
+                    case "OUT":
+                        String cadena = t.getOp1().substring(1,t.getOp1().length()-1);
+                        code += "invoke MessageBox, NULL, addr _" + cadena + ", addr _"+ cadena + ", MB_OK \n";
+                        break;
+
                     default: //Para terceto (Label..., , )
                         code += t.getOperador() +": \n";
                         break;
                 }
-
             }
         }
         return code;

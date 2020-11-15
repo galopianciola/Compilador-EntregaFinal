@@ -206,6 +206,7 @@ error_ejecucion  : control error{System.out.println("Error sint�ctico: Linea "
 control : FOR'('asignacion_for';'condicion_for';'inc_decr CTE_UINT')''{'bloque_sentencias'}'{ System.out.println("[Parser | Linea " + Lexico.linea + "] se ley� una sentencia FOR");
 							if(($3.sval != null) && ($5.sval != null)){
 								Terceto t = new Terceto($7.sval,$3.sval,$8.sval);
+								t.setTipo("UINT");
 								adminTerceto.agregarTerceto(t);
 								t = new Terceto("BI", null, null);
 								adminTerceto.agregarTerceto(t);
@@ -231,9 +232,10 @@ asignacion_for: IDE '=' CTE_UINT { System.out.println("[Parser | Linea " + Lexic
                             		String tipoIde = Main.tSimbolos.getDatosTabla(ambitoVariable).getTipo();
                                         if(tipoIde.equals("UINT")){
                                 		Terceto t = new Terceto("=", ambitoVariable, $3.sval);
+                                		t.setTipo("UINT");
                                 		adminTerceto.agregarTerceto(t);
                                 		t = new Terceto("Label"+adminTerceto.cantTercetos(), null, null);
-
+						t.setTipo("UINT");
                                 		adminTerceto.agregarTerceto(t);
                                 		adminTerceto.apilar(t.getNumero());
                                 		$$ = new ParserVal(ambitoVariable);
