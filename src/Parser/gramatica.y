@@ -319,6 +319,7 @@ expresion : termino { $$ = new ParserVal((Operando)$1.obj);}
 	  					$$ = new ParserVal(new Operando("DOUBLE",op.getValor()));
 	  					Terceto t = new Terceto("CONV", op.getValor(), null);
 	  					adminTerceto.agregarTerceto(t);
+	  					$$ = new ParserVal(new Operando("DOUBLE","["+t.getNumero()+"]"));
 	  					}
 	  				else{
 	  					System.out.println("Error: no se permite convertir un double");
@@ -495,6 +496,7 @@ invocacion : IDE '(' parametros ')'{System.out.println("[Parser | Linea " + Lexi
 								if(Main.tSimbolos.getDatosTabla(ambitoProc).getLlamadosActuales() < Main.tSimbolos.getDatosTabla(ambitoProc).getLlamadosMax()){
 									for(Pair p : lista_param_invocacion){
 										Terceto t = new Terceto("=" ,p.getKey()+"@"+$1.sval, (String)p.getValue());
+										t.setTipo(Main.tSimbolos.getDatosTabla(p.getKey()+"@"+$1.sval).getTipo());
 										adminTerceto.agregarTerceto(t);
 									}
 									Terceto t = new Terceto("INV", ambitoProc, null); //ver como guardar linea inicial de procedimiento.

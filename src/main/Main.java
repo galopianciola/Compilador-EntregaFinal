@@ -49,7 +49,6 @@ public class Main {
         StringBuilder codigo = new StringBuilder(getCodigo(br));
 
         System.out.println("Contenido del archivo: " + codigo);
-        //-------------- ///// // /////// --------------
 
         AdmTercetos adminTercetos = new AdmTercetos();
         Lexico l1 = new Lexico(codigo);
@@ -58,9 +57,6 @@ public class Main {
         Parser p = new Parser(l1, adminTercetos);
         p.run();
 
-
-        //System.out.println("\n********* CODIGO INTERMEDIO *********");
-        //adminTercetos.printCodigoIntermedio();
         tSimbolos.printTablaSimbolos();
 
         adminTercetos.generarCodigoIntermedio();

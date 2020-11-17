@@ -39,6 +39,18 @@ public class TablaSimbolos {
         }
     }
 
+    public void agregarSimbolo(String lexema, Integer id, String tipo, String uso) {
+        if (!tSimbolos.containsKey(lexema)) {
+            DatosTabla dt = new DatosTabla();
+            dt.setId(id);
+            dt.setTipo(tipo);
+            dt.setUso(uso);
+            tSimbolos.put(lexema, dt);
+        } else {
+            // System.out.println("El identificador " + lexema + " ya existe");
+        }
+    }
+
     public void modificarSimbolo(String lexemaviejo, String lexemaNuevo) {
         tSimbolos.remove(lexemaviejo);
         DatosTabla dt = new DatosTabla();

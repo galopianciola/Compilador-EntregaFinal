@@ -1,4 +1,6 @@
 {
-OUT("abc-
-dc");
+DOUBLE t;
+UINT r,s;
+PROC f1 (UINT a, REF UINT b,REF DOUBLE c) NI = 2_ui { DOUBLE x,y; x=y;};
+f1(a:r, b:s, c:t);
 }
