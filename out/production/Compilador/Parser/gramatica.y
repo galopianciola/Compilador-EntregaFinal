@@ -525,7 +525,7 @@ parametros : IDE ':' IDE {//System.out.println("[Parser | Linea " + Lexico.linea
 				  String ambitoVariable = Main.tSimbolos.verificarAmbito($3.sval, ambito);
 				  if(ambitoVariable != null){
 					lista_param_invocacion.add(new Pair<String,String>($1.sval, ambitoVariable));
-					$$ = new ParserVal(lista_param_invocacion);} // esto no se si como seria pq hay 2 listas :'(
+					$$ = new ParserVal(lista_param_invocacion);}
 				  else
 					System.out.println("La variable "+$3.sval+ "no se encuentra en el ambito");
 				  }}

@@ -1,6 +1,9 @@
 {
-DOUBLE t;
 UINT r,s;
-PROC f1 (UINT a, REF UINT b,REF DOUBLE c) NI = 2_ui { DOUBLE x,y; x=y;};
-f1(a:r, b:s, c:t);
+DOUBLE t,j;
+r=5_ui;
+s=5_ui;
+PROC f1 (UINT a, REF UINT b, REF DOUBLE c) NI = 2_ui { b=5_ui*2_ui;};
+f1(a:r,b:s,c:t);
+IF ( r != s ) { OUT("hola");} ELSE {OUT("distinto");} END_IF;
 }
