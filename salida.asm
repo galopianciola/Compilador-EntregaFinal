@@ -13,25 +13,27 @@ _limiteInferiorUint DD 0
 _OverflowSuma DB "Overflow en suma", 0 
 _ResNegativoRestaUint DB "Resultado negativo en resta entero sin signo", 0 
 _t@main DQ ?
-_hola DB "hola", 0 
-_distinto DB "distinto", 0 
 _a@f1 DD ?
 _b@f1 DD ?
+_iguales DB "iguales", 0 
 _j@main DQ ?
 _r@main DD ?
 _c@f1 DQ ?
 _var8 DD ?
 _5 DD 5
+_distintos DB "distintos", 0 
 _s@main DD ?
+_var10_2bytes DW ?
 _2 DD 2
+_5_0 DQ 5.0
 
 .code
 start: 
 FINIT 
-MOV ECX, _5
-MOV _r@main, ECX
-MOV ECX, _5
-MOV _s@main, ECX
+FLD _5_0
+FST _t@main
+FLD _5_0
+FST _j@main
 MOV ECX, _r@main
 MOV _a@f1, ECX
 MOV EBX, offset _s@main
@@ -41,13 +43,16 @@ MOV _var8, EBX
 FILD _var8
 FST _c@f1
 CALL f1@main
-MOV ECX, _s@main
-CMP _r@main, ECX
+FLD _t@main
+FCOM _j@main
+FSTSW _var10_2bytes
+MOV AX , _var10_2bytes
+SAHF
 JE Label14
-invoke MessageBox, NULL, addr _hola, addr _hola, MB_OK 
+invoke MessageBox, NULL, addr _distintos, addr _distintos, MB_OK 
 JMP Label16
 Label14: 
-invoke MessageBox, NULL, addr _distinto, addr _distinto, MB_OK 
+invoke MessageBox, NULL, addr _iguales, addr _iguales, MB_OK 
 Label16: 
 f1@main: 
 MOV EAX, _5
