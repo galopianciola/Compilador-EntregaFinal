@@ -12,54 +12,59 @@ _limiteSuperiorUint DD 65535
 _limiteInferiorUint DD 0
 _OverflowSuma DB "Overflow en suma", 0 
 _ResNegativoRestaUint DB "Resultado negativo en resta entero sin signo", 0 
+_igual_a_2 DB "igual_a_2", 0 
 _t@main DQ ?
+_igual_a_5 DB "igual_a_5", 0 
+_g@main@f1 DD ?
+_y@main@f1 DD ?
 _a@f1 DD ?
+_distinto_de_5 DB "distinto_de_5", 0 
 _b@f1 DD ?
-_iguales DB "iguales", 0 
-_j@main DQ ?
+_x@main@f1 DD ?
 _r@main DD ?
 _c@f1 DQ ?
-_var8 DD ?
 _5 DD 5
-_distintos DB "distintos", 0 
+_3 DD 3
 _s@main DD ?
-_var10_2bytes DW ?
 _2 DD 2
-_5_0 DQ 5.0
 
 .code
 start: 
 FINIT 
-FLD _5_0
-FST _t@main
-FLD _5_0
-FST _j@main
 MOV ECX, _r@main
 MOV _a@f1, ECX
 MOV EBX, offset _s@main
 MOV _b@f1, EBX 
-MOV EBX, offset _t@main
-MOV _var8, EBX 
-FILD _var8
+FLD _t@main
 FST _c@f1
 CALL f1@main
-FLD _t@main
-FCOM _j@main
-FSTSW _var10_2bytes
-MOV AX , _var10_2bytes
-SAHF
-JE Label14
-invoke MessageBox, NULL, addr _distintos, addr _distintos, MB_OK 
-JMP Label16
-Label14: 
-invoke MessageBox, NULL, addr _iguales, addr _iguales, MB_OK 
-Label16: 
+MOV ECX, _2
+CMP _s@main, ECX
+JNE Label20
+invoke MessageBox, NULL, addr _igual_a_2, addr _igual_a_2, MB_OK 
+Label20: 
+FINIT
+invoke ExitProcess, 0 
 f1@main: 
-MOV EAX, _5
-MUL _2
-MOV ECX, EAX
+MOV ECX, _3
+MOV _g@main@f1, ECX
 MOV EBX, _b@f1
+MOV ECX, _2
 MOV dword ptr [EBX], ECX
+MOV EBX, _b@f1
+MOV ECX, dword ptr [EBX] 
+ADD ECX, _g@main@f1
+CMP ECX, _limiteSuperiorUint
+JA LabelOverflowSuma
+MOV _x@main@f1, ECX
+MOV ECX, _5
+CMP _x@main@f1, ECX
+JNE Label9
+invoke MessageBox, NULL, addr _igual_a_5, addr _igual_a_5, MB_OK 
+JMP Label11
+Label9: 
+invoke MessageBox, NULL, addr _distinto_de_5, addr _distinto_de_5, MB_OK 
+Label11: 
 RET 
 FINIT
 invoke ExitProcess, 0 

@@ -1,9 +1,14 @@
 {
 UINT r,s;
-DOUBLE t,j;
-t=5.0;
-j=5.0;
-PROC f1 (UINT a, REF UINT b, REF DOUBLE c) NI = 2_ui { b=5_ui*2_ui;};
+DOUBLE t;
+PROC f1 (UINT a, REF UINT b, DOUBLE c) NI = 2_ui {
+ UINT g,x,y;
+ g = 3_ui;
+ b = 2_ui;
+ x = g+b;
+ IF(x == 5_ui) {OUT("igual_a_5");} ELSE {OUT("distinto_de_5");} END_IF; };
+
 f1(a:r,b:s,c:t);
-IF ( t != j ) { OUT("distintos");} ELSE {OUT("iguales");} END_IF;
+IF(s == 2_ui) {OUT("igual_a_2");} END_IF;
+
 }

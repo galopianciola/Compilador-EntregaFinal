@@ -77,7 +77,7 @@ public class Assembler {
                     break;
 
                 case (Lexico.CTE_DOUBLE):
-                    data = data + "_" + lexema + " DQ " + lexema + '\n';
+                    data = data + "_" + lexema.replace('.','_') + " DQ " + lexema + '\n';
                     break;
                 case (Lexico.CTE_UINT):
                     data = data + "_" + lexema + " DD " + lexema + '\n';
@@ -115,6 +115,10 @@ public class Assembler {
             EDX = true;
     }
 
+    private boolean esUnPuntero(String variable){
+        return Main.tSimbolos.getDatosTabla(variable).isParametroRef();
+    }
+
     public String generarCodeAssembler() {
         String code = "FINIT \n";
         String procActual = "main";
@@ -126,15 +130,33 @@ public class Assembler {
                         if (t.esVariable(1) && t.esVariable(2)) {
                             if (t.getTipo().equals("UINT")) {
                                 String reg = this.getRegistroVacio();
-                                code += "MOV " + reg + ", _" + t.getOp1() + '\n';
-                                code += "ADD " + reg + ", _" + t.getOp2() + '\n';
+                                if(esUnPuntero(t.getOp1())){
+                                    code += "MOV EBX, _" + t.getOp1() + '\n';
+                                    code += "MOV " + reg + ", dword ptr [EBX] \n";
+                                    code += "ADD " + reg + ", _" + t.getOp2() + '\n';
+                                } else
+                                    if(esUnPuntero(t.getOp2())){
+                                        code += "MOV EBX, _" + t.getOp2() + '\n';
+                                        code += "MOV " + reg + ", dword ptr [EBX] \n";
+                                        code += "ADD " + reg + ", _" + t.getOp1() + '\n';
+                                    } else {
+                                            code += "MOV " + reg + ", _" + t.getOp1() + '\n';
+                                            code += "ADD " + reg + ", _" + t.getOp2() + '\n';
+                                            }
+
                                 code += "CMP " + reg + ", _limiteSuperiorUint" + '\n';
                                 code += "JA " + "LabelOverflowSuma" + '\n';
                                 t.setResultado(reg);
                             }
                             if (t.getTipo().equals("DOUBLE")) {
-                                code += "FLD _" + t.getOp1() + '\n';
-                                code += "FADD _" + t.getOp2() + '\n';
+                                String op1 = t.getOp1();
+                                String op2 = t.getOp2();
+                                if(t.getOp1().contains("."))
+                                    op1 = t.getOp1().replace('.','_');
+                                if(t.getOp2().contains("."))
+                                    op2 = t.getOp2().replace('.','_');
+                                code += "FLD _" + op1 + '\n';
+                                code += "FADD _" + op2 + '\n';
                                 code += "FST _" + "var" + t.getNumero() + '\n';
                                 t.setResultado("var" + t.getNumero());
                                 Main.tSimbolos.agregarSimbolo("var" + t.getNumero(), Lexico.IDE, "DOUBLE", "variable");
@@ -151,10 +173,13 @@ public class Assembler {
                                 t.setResultado(t1.getResultado());
                             }
                             if (t.getTipo().equals("DOUBLE")) {
+                                String op2 = t.getOp2();
+                                if(t.getOp2().contains("."))
+                                    op2 = t.getOp2().replace('.','_');
                                 String nroTerceto = t.getOp1().substring(1, t.getOp1().lastIndexOf("]"));
                                 Terceto t1 = adminTerceto.getTerceto(Integer.parseInt(nroTerceto));
                                 code += "FLD _" + t1.getResultado() + '\n';
-                                code += "FADD _" + t.getOp2() + '\n';
+                                code += "FADD _" + op2 + '\n';
                                 code += "FST _" + "var" + t.getNumero() + '\n';
                                 t.setResultado("var" + t.getNumero());
                                 Main.tSimbolos.agregarSimbolo("var" + t.getNumero(), Lexico.IDE, "DOUBLE", "variable");
@@ -201,9 +226,12 @@ public class Assembler {
                                 t.setResultado(t1.getResultado());
                             }
                             if (t.getTipo().equals("DOUBLE")) {
+                                String op1 = t.getOp1();
+                                if(t.getOp1().contains("."))
+                                    op1 = t.getOp1().replace('.','_');
                                 String nroTerceto = t.getOp2().substring(1, t.getOp2().lastIndexOf("]"));
                                 Terceto t1 = adminTerceto.getTerceto(Integer.parseInt(nroTerceto));
-                                code += "FLD _" + t.getOp1() + '\n';
+                                code += "FLD _" + op1 + '\n';
                                 code += "FADD _" + t1.getResultado() + '\n';
                                 code += "FST _" + "var" + t.getNumero() + '\n';
                                 t.setResultado("var" + t.getNumero());
@@ -225,8 +253,14 @@ public class Assembler {
                                 t.setResultado(reg);
                             }
                             if (t.getTipo().equals("DOUBLE")) {
-                                code += "FLD _" + t.getOp1() + '\n';
-                                code += "FSUB _" + t.getOp2() + '\n';
+                                String op1 = t.getOp1();
+                                String op2 = t.getOp2();
+                                if(t.getOp1().contains("."))
+                                    op1 = t.getOp1().replace('.','_');
+                                if(t.getOp2().contains("."))
+                                    op2 = t.getOp2().replace('.','_');
+                                code += "FLD _" + op1 + '\n';
+                                code += "FSUB _" + op2 + '\n';
                                 code += "FST _" + "var" + t.getNumero() + '\n';
                                 t.setResultado("var" + t.getNumero());
                                 Main.tSimbolos.agregarSimbolo("var" + t.getNumero(), Lexico.IDE, "DOUBLE", "variable");
@@ -244,10 +278,13 @@ public class Assembler {
                                 t.setResultado(t1.getResultado());
                             }
                             if (t.getTipo().equals("DOUBLE")) {
+                                String op2 = t.getOp2();
+                                if(t.getOp2().contains("."))
+                                    op2 = t.getOp2().replace('.','_');
                                 String nroTerceto = t.getOp1().substring(1, t.getOp1().lastIndexOf("]"));
                                 Terceto t1 = adminTerceto.getTerceto(Integer.parseInt(nroTerceto));
                                 code += "FLD _" + t1.getResultado() + '\n';
-                                code += "FSUB _" + t.getOp2() + '\n';
+                                code += "FSUB _" + op2 + '\n';
                                 code += "FST _" + "var" + t.getNumero() + '\n';
                                 t.setResultado("var" + t.getNumero());
                                 Main.tSimbolos.agregarSimbolo("var" + t.getNumero(), Lexico.IDE, "DOUBLE", "variable");
@@ -296,9 +333,12 @@ public class Assembler {
                                 this.marcarRegLibre(t1.getResultado());
                             }
                             if (t.getTipo().equals("DOUBLE")) {
+                                String op1 = t.getOp1();
+                                if(t.getOp1().contains("."))
+                                    op1 = t.getOp1().replace('.','_');
                                 String nroTerceto = t.getOp2().substring(1, t.getOp2().lastIndexOf("]"));
                                 Terceto t1 = adminTerceto.getTerceto(Integer.parseInt(nroTerceto));
-                                code += "FLD _" + t.getOp1() + '\n';
+                                code += "FLD _" + op1 + '\n';
                                 code += "FSUB _" + t1.getResultado() + '\n';
                                 code += "FST _" + "var" + t.getNumero() + '\n';
                                 t.setResultado("var" + t.getNumero());
@@ -320,8 +360,14 @@ public class Assembler {
                                 t.setResultado(reg);
                             }
                             if (t.getTipo().equals("DOUBLE")) {
-                                code += "FLD _" + t.getOp1() + '\n';
-                                code += "FMUL _" + t.getOp2() + '\n';
+                                String op1 = t.getOp1();
+                                String op2 = t.getOp2();
+                                if(t.getOp1().contains("."))
+                                    op1 = t.getOp1().replace('.','_');
+                                if(t.getOp2().contains("."))
+                                    op2 = t.getOp2().replace('.','_');
+                                code += "FLD _" + op1 + '\n';
+                                code += "FMUL _" + op2 + '\n';
                                 code += "FST _" + "var" + t.getNumero() + '\n';
                                 t.setResultado("var" + t.getNumero());
                                 Main.tSimbolos.agregarSimbolo("var" + t.getNumero(), Lexico.IDE, "DOUBLE", "variable");
@@ -342,10 +388,13 @@ public class Assembler {
                                 EAX = true;
                             }
                             if (t.getTipo().equals("DOUBLE")) {
+                                String op2 = t.getOp2();
+                                if(t.getOp2().contains("."))
+                                    op2 = t.getOp2().replace('.','_');
                                 String nroTerceto = t.getOp1().substring(1, t.getOp1().lastIndexOf("]"));
                                 Terceto t1 = adminTerceto.getTerceto(Integer.parseInt(nroTerceto));
                                 code += "FLD _" + t1.getResultado() + '\n';
-                                code += "FMUL _" + t.getOp2() + '\n';
+                                code += "FMUL _" + op2 + '\n';
                                 code += "FST _" + "var" + t.getNumero() + '\n';
                                 t.setResultado("var" + t.getNumero());
                                 Main.tSimbolos.agregarSimbolo("var" + t.getNumero(), Lexico.IDE, "DOUBLE", "variable");
@@ -400,6 +449,9 @@ public class Assembler {
                                 EAX = true;
                             }
                             if (t.getTipo().equals("DOUBLE")) {
+                                String op1 = t.getOp1();
+                                if(t.getOp1().contains("."))
+                                    op1 = t.getOp1().replace('.','_');
                                 String nroTerceto = t.getOp2().substring(1, t.getOp2().lastIndexOf("]"));
                                 Terceto t1 = adminTerceto.getTerceto(Integer.parseInt(nroTerceto));
                                 code += "FLD _" + t.getOp1() + '\n';
@@ -427,8 +479,14 @@ public class Assembler {
                                 EDX = true;
                             }
                             if (t.getTipo().equals("DOUBLE")) {
-                                code += "FLD _" + t.getOp1() + '\n';
-                                code += "FDIV _" + t.getOp2() + '\n';
+                                String op1 = t.getOp1();
+                                String op2 = t.getOp2();
+                                if(t.getOp1().contains("."))
+                                    op1 = t.getOp1().replace('.','_');
+                                if(t.getOp2().contains("."))
+                                    op2 = t.getOp2().replace('.','_');
+                                code += "FLD _" + op1 + '\n';
+                                code += "FDIV _" + op2 + '\n';
                                 code += "FST _" + "var" + t.getNumero() + '\n';
                                 t.setResultado("var" + t.getNumero());
                                 Main.tSimbolos.agregarSimbolo("var" + t.getNumero(), Lexico.IDE, "DOUBLE", "variable");
@@ -452,10 +510,13 @@ public class Assembler {
                                 t.setResultado(reg);
                             }
                             if (t.getTipo().equals("DOUBLE")) {
+                                String op2 = t.getOp2();
+                                if(t.getOp2().contains("."))
+                                    op2 = t.getOp2().replace('.','_');
                                 String nroTerceto = t.getOp1().substring(1, t.getOp1().lastIndexOf("]"));
                                 Terceto t1 = adminTerceto.getTerceto(Integer.parseInt(nroTerceto));
                                 code += "FLD _" + t1.getResultado() + '\n';
-                                code += "FDIV _" + t.getOp2() + '\n';
+                                code += "FDIV _" + op2 + '\n';
                                 code += "FST _" + "var" + t.getNumero() + '\n';
                                 t.setResultado("var" + t.getNumero());
                                 Main.tSimbolos.agregarSimbolo("var" + t.getNumero(), Lexico.IDE, "DOUBLE", "variable");
@@ -514,9 +575,12 @@ public class Assembler {
                                 t.setResultado(reg);
                             }
                             if (t.getTipo().equals("DOUBLE")) {
+                                String op1 = t.getOp1();
+                                if(t.getOp1().contains("."))
+                                    op1 = t.getOp1().replace('.','_');
                                 String nroTerceto = t.getOp2().substring(1, t.getOp2().lastIndexOf("]"));
                                 Terceto t1 = adminTerceto.getTerceto(Integer.parseInt(nroTerceto));
-                                code += "FLD _" + t.getOp1() + '\n';
+                                code += "FLD _" + op1 + '\n';
                                 code += "FDIV _" + t1.getResultado() + '\n';
                                 code += "FST _" + "var" + t.getNumero() + '\n';
                                 t.setResultado("var" + t.getNumero());
@@ -545,10 +609,13 @@ public class Assembler {
                                 }
                             }
                             if (t.getTipo().equals("DOUBLE")) {
+                                String op1 = t.getOp1();
+                                if(t.getOp1().contains("."))
+                                    op1 = t.getOp1().replace('.','_');
                                 String nroTerceto = t.getOp2().substring(1, t.getOp2().lastIndexOf("]"));
                                 Terceto t1 = adminTerceto.getTerceto(Integer.parseInt(nroTerceto));
                                 code += "FLD _" + t1.getResultado() + '\n';
-                                code += "FST _" + t.getOp1() + '\n';
+                                code += "FST _" + op1 + '\n';
                             }
                         }
                         // Situacion b ( = , vble , vble )
@@ -576,18 +643,24 @@ public class Assembler {
                                         }
                             }
                             if (t.getTipo().equals("DOUBLE")) {
+                                String op1 = t.getOp1();
+                                String op2 = t.getOp2();
+                                if(t.getOp1().contains("."))
+                                    op1 = t.getOp1().replace('.','_');
+                                if(t.getOp2().contains("."))
+                                    op2 = t.getOp2().replace('.','_');
                                 String paramProc = t.getOp1().substring(t.getOp1().indexOf("@")+ 1);
                                 if (Main.tSimbolos.getDatosTabla(t.getOp1()).isParametroRef() && !paramProc.equals(procActual)) {
                                     EBX = false;
-                                    code += "MOV EBX, offset _" + t.getOp2() + '\n';
+                                    code += "MOV EBX, offset _" + op2 + '\n';
                                     code += "MOV _var" + t.getNumero() + ", EBX \n";
                                     EBX = true;
                                     code += "FILD _var" + t.getNumero() + '\n';
-                                    code += "FST _" + t.getOp1() + '\n';
+                                    code += "FST _" + op1 + '\n';
                                     Main.tSimbolos.agregarSimbolo("var" + t.getNumero(), Lexico.IDE, "UINT", "variable");
                                 } else {
-                                    code += "FLD _" + t.getOp2() + '\n';
-                                    code += "FST _" + t.getOp1() + '\n';
+                                    code += "FLD _" + op2 + '\n';
+                                    code += "FST _" + op1 + '\n';
                                 }
                             }
                         }
@@ -608,8 +681,14 @@ public class Assembler {
                                 this.marcarRegLibre(reg);
                             }
                             if (t.getTipo().equals("DOUBLE")) {
-                                code += "FLD _" + t.getOp1() + '\n';
-                                code += "FCOM _" + t.getOp2() + '\n';
+                                String op1 = t.getOp1();
+                                String op2 = t.getOp2();
+                                if(t.getOp1().contains("."))
+                                    op1 = t.getOp1().replace('.','_');
+                                if(t.getOp2().contains("."))
+                                    op2 = t.getOp2().replace('.','_');
+                                code += "FLD _" + op1 + '\n';
+                                code += "FCOM _" + op2 + '\n';
                                 code += "FSTSW _" + "var" + t.getNumero() + "_2bytes" + '\n';
                                 code += "MOV AX , _" + "var" + t.getNumero() + "_2bytes" + '\n';
                                 code += "SAHF" + '\n';
@@ -626,6 +705,9 @@ public class Assembler {
                                 this.marcarRegLibre(t1.getResultado());
                             }
                             if (t.getTipo().equals("DOUBLE")) {
+                                String op2 = t.getOp2();
+                                if(t.getOp2().contains("."))
+                                    op2 = t.getOp2().replace('.','_');
                                 String nroTerceto = t.getOp1().substring(1, t.getOp1().lastIndexOf("]"));
                                 Terceto t1 = adminTerceto.getTerceto(Integer.parseInt(nroTerceto));
 
@@ -676,10 +758,14 @@ public class Assembler {
                                 this.marcarRegLibre(t1.getResultado());
                             }
                             if (t.getTipo().equals("DOUBLE")) {
+                                String op1 = t.getOp1();
+                                if(t.getOp1().contains("."))
+                                    op1 = t.getOp1().replace('.','_');
+
                                 String nroTerceto = t.getOp2().substring(1, t.getOp2().lastIndexOf("]"));
                                 Terceto t1 = adminTerceto.getTerceto(Integer.parseInt(nroTerceto));
 
-                                code += "FLD _" + t.getOp1() + '\n';
+                                code += "FLD _" + op1 + '\n';
                                 code += "FCOM _" + t1.getResultado() + '\n';
                                 code += "FSTSW _" + "var" + t.getNumero() + "_2bytes" + '\n';
                                 code += "MOV AX , _" + "var" + t.getNumero() + "_2bytes" + '\n';
@@ -705,6 +791,10 @@ public class Assembler {
                         break;
 
                     case "ComienzaProc":
+                        if(procActual.equals("main")){
+                            code += "FINIT\n";
+                            code += "invoke ExitProcess, 0 \n";
+                        }
                         code += t.getOp1() + ": \n";
                         procActual = t.getOp1().substring(0, t.getOp1().indexOf("@"));
                         break;
