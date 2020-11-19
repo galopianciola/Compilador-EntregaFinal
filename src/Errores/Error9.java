@@ -5,7 +5,7 @@ import main.*;
 public class Error9 extends AccionSemantica {
     @Override
     public Token run() {
-        System.out.println("Error léxico: Linea " + Lexico.linea + " la constante se encuentra fuera de rango ");
+        Main.listaErrores.add("Error léxico: Linea " + Lexico.linea + " la constante se encuentra fuera de rango ");
         return null;
     }
 }

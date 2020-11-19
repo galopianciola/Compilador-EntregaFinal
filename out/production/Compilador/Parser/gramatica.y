@@ -17,12 +17,12 @@ programa: bloque
 
 bloque : sentencia
        | '{'bloque_sentencias'}'
-       | error_bloque {Main.huboError = true;}
+       | error_bloque
        ;
 
 
-error_bloque : bloque_sentencias '}' {System.out.println("Error sin�ctico: Linea " + Lexico.linea + " se detect� un bloque de sentencias mal declarado, falta '{'");}
-      	     | '{' bloque_sentencias  {System.out.println("Error sint�ctico: Linea "+ Lexico.linea+ " se detect� un bloque de sentencias mal declarado, falta '}'");}
+error_bloque : bloque_sentencias '}' {Main.listaErrores.add("Error sin�ctico: Linea " + Lexico.linea + " se detect� un bloque de sentencias mal declarado, falta '{'");}
+      	     | '{' bloque_sentencias {Main.listaErrores.add("Error sint�ctico: Linea "+ Lexico.linea+ " se detect� un bloque de sentencias mal declarado, falta '}'");}
              ;
 
 bloque_sentencias  :  sentencia
@@ -46,8 +46,7 @@ declaracion : tipo lista_de_variables';'{//System.out.println("[Parser | Linea "
 							dt.setDeclarada(true);
 							Main.tSimbolos.setDatosTabla(nuevoLexema, dt);
 						} else {
-							System.out.println("Error semántico: Linea " + Lexico.linea+ "La variable " + lexema + " ya fue declarada en este ambito");
-							Main.huboError = true;
+							Main.listaErrores.add("Error semántico: Linea " + Lexico.linea+ " la variable " + lexema + " ya fue declarada en este ambito");
 							Main.tSimbolos.eliminarSimbolo(lexema);
 							}
 					}
@@ -55,11 +54,11 @@ declaracion : tipo lista_de_variables';'{//System.out.println("[Parser | Linea "
 					}
 
     	     | procedimiento';'
-    	     | error_declaracion{Main.huboError = true;}
+    	     | error_declaracion
              ;
 
-error_declaracion : tipo lista_de_variables error {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� una sentencia mal declarada, falta ';'");}
-           	  | procedimiento error{System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� una sentencia mal declarada, falta ';'");}
+error_declaracion : tipo lista_de_variables error {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� una sentencia mal declarada, falta ';'");}
+           	  | procedimiento error{Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� una sentencia mal declarada, falta ';'");}
            	  ;
 
 lista_de_variables : lista_de_variables ',' IDE {System.out.println("[Parser | Linea " + Lexico.linea + "] se leyo el identificador -> " + $3.sval);
@@ -71,10 +70,10 @@ lista_de_variables : lista_de_variables ',' IDE {System.out.println("[Parser | L
                           lista_variables.add($1.sval);
                           $$ = new ParserVal(lista_variables);
                                 }
-      		   | error_lista_de_variables{Main.huboError = true;}
+      		   | error_lista_de_variables
                    ;
 
-error_lista_de_variables: lista_de_variables IDE {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� una sentencia mal declarada, falta ',' entre los identificadores");}
+error_lista_de_variables: lista_de_variables IDE {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� una sentencia mal declarada, falta ',' entre los identificadores");}
 
 procedimiento : declaracion_proc '{'bloque_sentencias'}'{System.out.println("[Parser | Linea " + Lexico.linea + "]se declar� un procedimiento");
 							if($1.sval != null){ // se declaro todo bien
@@ -83,20 +82,13 @@ procedimiento : declaracion_proc '{'bloque_sentencias'}'{System.out.println("[Pa
 								adminTerceto.agregarTerceto(t);
 								}
 							}
-	     | error_proc {System.out.println("[Parser | Linea " + Lexico.linea + "]se declar? un procedimiento");
-                            if($1.sval != null){ // se declaro todo bien
-                 		ambito = ambito.substring(0,ambito.lastIndexOf("@"));
-				Terceto t = new Terceto("FinProc", $1.sval, null);
-                          	adminTerceto.agregarTerceto(t);
-                          	}
-                            else {Main.huboError = true;};
-                          }
+	     | error_proc
 	     ;
 
 
-error_proc:  declaracion_proc    bloque_sentencias'}' {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un procedimiento mal declarado, falta '{' que abre el bloque de sentecias ");}
-             | declaracion_proc '{'                 '}' {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un procedimiento mal declarado, falta el bloque de sentencias");}
-             | declaracion_proc '{'bloque_sentencias    {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un procedimiento mal declarado, falta '}' que cierra el bloque de sentencias");}
+error_proc:    declaracion_proc    bloque_sentencias'}' {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� un procedimiento mal declarado, falta '{' que abre el bloque de sentecias ");}
+             | declaracion_proc '{'                 '}' {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� un procedimiento mal declarado, falta el bloque de sentencias");}
+             | declaracion_proc '{'bloque_sentencias    {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� un procedimiento mal declarado, falta '}' que cierra el bloque de sentencias");}
              ;
 
 declaracion_proc: PROC IDE'('lista_de_parametros')'NI'='CTE_UINT {
@@ -123,21 +115,20 @@ declaracion_proc: PROC IDE'('lista_de_parametros')'NI'='CTE_UINT {
 					adminTerceto.agregarProcedimiento(nuevoLexema);
 					$$ = new ParserVal(nuevoLexema); // para corroborar q el proc se declaro bien (no se si va)
 				} else {
-					System.out.println("Error semántico: Linea " + Lexico.linea +"El procedimiento "+ $2.sval + " ya fue declarado en este ambito");
-					Main.huboError = true;
+					Main.listaErrores.add("Error semántico: Linea " + Lexico.linea + " el procedimiento "+ $2.sval + " ya fue declarado en este ambito");
 					$$ = new ParserVal(null);
 					}
 			}}
-		| error_declaracion_proc{Main.huboError = true;}
+		| error_declaracion_proc
 		;
 
-error_declaracion_proc: PROC    '('lista_de_parametros')'NI'='CTE_UINT {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un procedimiento mal declarado, falta el identificador");}
-                      | PROC IDE   lista_de_parametros')'NI'='CTE_UINT {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un procedimiento mal declarado, falta '('");}
-                      | PROC IDE'('                   ')'NI'='CTE_UINT {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un procedimiento mal declarado, falta lista de parametros");}
-                      | PROC IDE'('lista_de_parametros   NI'='CTE_UINT {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un procedimiento mal declarado, falta ')'");}
-                      | PROC IDE'('lista_de_parametros')'  '='CTE_UINT {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un procedimiento mal declarado, falta la palabra reservada NI ");}
-                      | PROC IDE'('lista_de_parametros')'NI   CTE_UINT {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un procedimiento mal declarado, '=' despues de NI ");}
-                      | PROC IDE'('lista_de_parametros')'NI'=' error   {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un procedimiento mal declarado, falta la constante UINT ");}
+error_declaracion_proc: PROC    '('lista_de_parametros')'NI'='CTE_UINT {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� un procedimiento mal declarado, falta el identificador");}
+                      | PROC IDE   lista_de_parametros')'NI'='CTE_UINT {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� un procedimiento mal declarado, falta '('");}
+                      | PROC IDE'('                   ')'NI'='CTE_UINT {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� un procedimiento mal declarado, falta lista de parametros");}
+                      | PROC IDE'('lista_de_parametros   NI'='CTE_UINT {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� un procedimiento mal declarado, falta ')'");}
+                      | PROC IDE'('lista_de_parametros')'  '='CTE_UINT {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� un procedimiento mal declarado, falta la palabra reservada NI ");}
+                      | PROC IDE'('lista_de_parametros')'NI   CTE_UINT {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� un procedimiento mal declarado, '=' despues de NI ");}
+                      | PROC IDE'('lista_de_parametros')'NI'=' error   {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� un procedimiento mal declarado, falta la constante UINT ");}
                	      ;
 
 lista_de_parametros : param {lista_parametros.clear();
@@ -148,7 +139,7 @@ lista_de_parametros : param {lista_parametros.clear();
 						lista_parametros.add($1.sval);
 						lista_parametros.add($3.sval);
 					} else
-						System.out.println("Error semántico: Linea " + Lexico.linea + "No puede haber dos parametros con el mismo IDE");
+						Main.listaErrores.add("Error semántico: Linea " + Lexico.linea + " no puede haber dos parametros con el mismo IDE");
 					$$ = new ParserVal(lista_parametros);}
 		    | param ',' param ',' param {lista_parametros.clear();
 		    				 if(!$1.sval.equals($3.sval) && !$1.sval.equals($5.sval) && !$3.sval.equals($5.sval)){
@@ -156,18 +147,17 @@ lista_de_parametros : param {lista_parametros.clear();
 							lista_parametros.add($3.sval);
 							lista_parametros.add($5.sval);
 						 } else {
-							System.out.println("Error semántico: Linea " + Lexico.linea + "No puede haber dos parametros con el mismo IDE");}
+							Main.listaErrores.add("Error semántico: Linea " + Lexico.linea + " no puede haber dos parametros con el mismo IDE");}
 		    				 $$ = new ParserVal(lista_parametros);}
 		    | error_lista_de_parametros {lista_parametros.clear();
-		    				 Main.huboError = true;
 		    				 $$ = new ParserVal(lista_parametros);}
 	            ;
 
-error_lista_de_parametros : param ',' param ',' param ',' lista_de_parametros {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detectaron m�s parametros de los permitidos (3)");}
-			  | param param {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detectaron parametros mal declarados, falta ','");}
-			  | param param param {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detectaron parametros mal declarados, falta ','");}
-			  | param ',' param param {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detectaron parametros mal declarados, falta ','");}
-			  | param param ',' param {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detectaron parametros mal declarados, falta ','");}
+error_lista_de_parametros : param ',' param ',' param ',' lista_de_parametros {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detectaron m�s parametros de los permitidos (3)");}
+			  | param param {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detectaron parametros mal declarados, falta ','");}
+			  | param param param {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detectaron parametros mal declarados, falta ','");}
+			  | param ',' param param {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detectaron parametros mal declarados, falta ','");}
+			  | param param ',' param {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detectaron parametros mal declarados, falta ','");}
 			  ;
 
 param : tipo IDE {System.out.println("[Parser | Linea " + Lexico.linea + "] se ley� el parametro -> " + $2.sval);
@@ -197,14 +187,14 @@ ejecucion : control';'
 	  | salida ';'
 	  | asignacion ';'
 	  | invocacion';'
-	  | error_ejecucion{Main.huboError = true;}
+	  | error_ejecucion
 	  ;
 
-error_ejecucion  : control error{System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� una sentencia mal declarada, falta ';'");}
-               	 | seleccion error{System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� una sentencia mal declarada, falta ';'");}
-                 | salida error{System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� una sentencia mal declarada, falta ';'");}
-           	 | asignacion error{System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� una sentencia mal declarada, falta ';'");}
-             	 | invocacion error{System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� una sentencia mal declarada, falta ';'");}
+error_ejecucion  : control error{Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� una sentencia mal declarada, falta ';'");}
+               	 | seleccion error{Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� una sentencia mal declarada, falta ';'");}
+                 | salida error{Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� una sentencia mal declarada, falta ';'");}
+           	 | asignacion error{Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� una sentencia mal declarada, falta ';'");}
+             	 | invocacion error{Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� una sentencia mal declarada, falta ';'");}
                	 ;
 
 control : FOR'('asignacion_for';'condicion_for';'inc_decr CTE_UINT')''{'bloque_sentencias'}'{ System.out.println("[Parser | Linea " + Lexico.linea + "] se ley� una sentencia FOR");
@@ -226,10 +216,10 @@ condicion_for: condicion {if($1.sval != null){
 				Terceto t = new Terceto("BF", $1.sval, null);
                           	adminTerceto.agregarTerceto(t);
                           	adminTerceto.apilar(t.getNumero());}
-                          else{
-                          	Main.huboError = true;
-                          	$$ = new ParserVal(null);}
+                          else
+                          	$$ = new ParserVal(null);
                           }
+
 
 asignacion_for: IDE '=' CTE_UINT { System.out.println("[Parser | Linea " + Lexico.linea + "] se realiz? una asignaci?n al identificador -> " + $1.sval);
                                   String ambitoVariable = Main.tSimbolos.verificarAmbito($1.sval, ambito);
@@ -244,21 +234,18 @@ asignacion_for: IDE '=' CTE_UINT { System.out.println("[Parser | Linea " + Lexic
                                 		adminTerceto.agregarTerceto(t);
                                 		adminTerceto.apilar(t.getNumero());
                                 		$$ = new ParserVal(ambitoVariable);
-                                	} else{
-                                		System.out.println("Error semántico: Linea " + Lexico.linea + "los tipos son incompatibles");
-                                		Main.huboError = true;}
+                                	} else
+                                		Main.listaErrores.add("Error semántico: Linea " + Lexico.linea + " los tipos son incompatibles");
                                   } else {
-                                	System.out.println("Error semántico: Linea " + Lexico.linea + "La variable " + $1.sval +" no fue declarada");
-                                	Main.huboError = true;
+                                	Main.listaErrores.add("Error semántico: Linea " + Lexico.linea + " la variable " + $1.sval +" no fue declarada");
                                 	$$ = new ParserVal(null);}
                               	  }
-             | error_asignacion_for {	Main.huboError = true;
-             				$$ = new ParserVal(null);}
+             | error_asignacion_for {	$$ = new ParserVal(null);}
              ;
 
-error_asignacion_for:     '=' CTE_UINT {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un FOR mal declarado, falta el identificador");}
-		    | IDE     CTE_UINT {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un FOR mal declarado, falta '='");}
-		    | IDE '=' error    {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un FOR mal declarado, falta una constante UINT");}
+error_asignacion_for:     '=' CTE_UINT {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� un FOR mal declarado, falta el identificador");}
+		    | IDE     CTE_UINT {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� un FOR mal declarado, falta '='");}
+		    | IDE '=' error    {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� un FOR mal declarado, falta una constante UINT");}
 		    ;
 
 error_for:   FOR    asignacion_for ';'condicion_for';'inc_decr CTE_UINT')''{'bloque_sentencias'}'{System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un FOR mal declarado, falta '('");}
@@ -282,13 +269,12 @@ condicion :  expresion comparador expresion {Operando op1 = (Operando)$1.obj;
 							adminTerceto.agregarTerceto(t);
 							$$ = new ParserVal("["+t.getNumero()+"]");
 						}
-						else{
-							System.out.println("Error semántico: Linea " + Lexico.linea +" los tipos son incompatibles");
-							Main.huboError = true;}
+						else
+							Main.listaErrores.add("Error semántico: Linea " + Lexico.linea +" los tipos son incompatibles");
+
                                              }
-                                             else{
-                                             	Main.huboError = true;
-                                              	$$ = new ParserVal(null);}
+                                             else
+                                              	$$ = new ParserVal(null);
                                              }
 
 expresion : termino { $$ = new ParserVal((Operando)$1.obj);}
@@ -303,12 +289,10 @@ expresion : termino { $$ = new ParserVal((Operando)$1.obj);}
 						$$ = new ParserVal(new Operando(op1.getTipo(), "["+t.getNumero()+"]"));
 						}
 					else {
-						System.out.println("Error semántico: Linea " + Lexico.linea +" los tipos son incompatibles");
-						Main.huboError = true;
+						Main.listaErrores.add("Error semántico: Linea " + Lexico.linea +" los tipos son incompatibles");
 						$$ = new ParserVal(null);
 						}
                                 } else
-                                	Main.huboError = true;
                                 	$$ = new ParserVal(null);
                                 	}
 	  | expresion '-' termino { System.out.println("[Parser | Linea " + Lexico.linea + "] se realiz� una resta");
@@ -322,11 +306,9 @@ expresion : termino { $$ = new ParserVal((Operando)$1.obj);}
 						$$ = new ParserVal(new Operando(op1.getTipo(),"["+t.getNumero()+"]"));
 						}
 					else{
-						System.out.println("Error semántico: Linea " + Lexico.linea +" los tipos son incompatibles");
-						Main.huboError = true;
+						Main.listaErrores.add("Error semántico: Linea " + Lexico.linea +" los tipos son incompatibles");
 						$$ = new ParserVal(null);}
                                 } else
-                                        Main.huboError = true;
                                         $$ = new ParserVal(null);
                                 	}
 	  | DOUBLE '(' expresion ')'{ System.out.println("[Parser | Linea " + Lexico.linea + "] se realiz� una conversi�n");
@@ -339,11 +321,9 @@ expresion : termino { $$ = new ParserVal((Operando)$1.obj);}
 	  					$$ = new ParserVal(new Operando("DOUBLE","["+t.getNumero()+"]"));
 	  					}
 	  				else{
-	  					System.out.println("Error semántico: Linea " + Lexico.linea + " no se permite convertir un double");
-	  					Main.huboError = true;
+	  					Main.listaErrores.add("Error semántico: Linea " + Lexico.linea + " no se permite convertir un double");
 	  					$$ = new ParserVal(null);}
 	  			else
-	  				Main.huboError = true;
 	  				$$ = new ParserVal(null);
 	  			}
          ;
@@ -359,11 +339,9 @@ termino : termino '*' factor { System.out.println("[Parser | Linea " + Lexico.li
 						$$ = new ParserVal(new Operando(op1.getTipo(), "["+t.getNumero()+"]"));
 						}
 					else{
-						System.out.println("Error semántico: Linea " + Lexico.linea + "los tipos son incompatibles");
-						Main.huboError = true;
+						Main.listaErrores.add("Error semántico: Linea " + Lexico.linea + " los tipos son incompatibles");
 						$$ = new ParserVal(null);}
 				} else
-					Main.huboError = true;
                                  	$$ = new ParserVal(null);
                                 }
 	| termino '/' factor  { System.out.println("[Parser | Linea " + Lexico.linea + "] se realiz� una division");
@@ -376,11 +354,9 @@ termino : termino '*' factor { System.out.println("[Parser | Linea " + Lexico.li
 						adminTerceto.agregarTerceto(t);
 						$$ = new ParserVal(new Operando(op1.getTipo(), "["+t.getNumero()+"]"));
 					} else{
-						System.out.println("Error semántico: Linea " + Lexico.linea + "los tipos son incompatibles");
-						Main.huboError = true;
+						Main.listaErrores.add("Error semántico: Linea " + Lexico.linea + " los tipos son incompatibles");
 						$$ = new ParserVal(null);}
                                 } else
-                                	Main.huboError = true;
                                 	$$ = new ParserVal(null);
                                }
 	| factor { $$ = new ParserVal((Operando)$1.obj);}
@@ -401,8 +377,7 @@ factor 	: CTE_DOUBLE {System.out.println("[Parser | Linea " + Lexico.linea + "] 
 		if(ambitoVariable != null)
                 	$$ = new ParserVal(new Operando(Main.tSimbolos.getDatosTabla(ambitoVariable).getTipo(), ambitoVariable));
                 else {
-                       	System.out.println("Error semántico: Linea " + Lexico.linea + "La variable " + $1.sval +" no fue declarada");
-                       	Main.huboError = true;
+                       	Main.listaErrores.add("Error semántico: Linea " + Lexico.linea + " la variable " + $1.sval +" no fue declarada");
                        	$$ = new ParserVal(null);
                 }}
         ;
@@ -438,7 +413,7 @@ seleccion : IF '(' if_condicion ')' bloque END_IF {System.out.println("[Parser |
 	  			                                   adminTerceto.desapilar();
 	  			                                   Terceto t = new Terceto("Label"+Integer.toString(adminTerceto.cantTercetos()), null, null);
 	  			                                   adminTerceto.agregarTerceto(t);}}
-	  | error_if{Main.huboError = true;}
+	  | error_if
 	  ;
 
 if_condicion: condicion {if($1.sval != null){
@@ -447,35 +422,35 @@ if_condicion: condicion {if($1.sval != null){
 				adminTerceto.apilar(t.getNumero());
 			}
 			else
-				Main.huboError = true;
-				$$ = new ParserVal(null);}
+				$$ = new ParserVal(null);
+			}
 	     ;
 
-error_if: IF     if_condicion ')' bloque END_IF {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un IF mal declarado, falta '('");}
-	| IF '('              ')' bloque END_IF {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un IF mal declarado, falta la condicion");}
-	| IF '(' if_condicion     bloque END_IF {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un IF mal declarado, falta ')'");}
-	| IF '(' if_condicion ')'        END_IF {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un IF mal declarado, falta el bloque de sentencias");}
-	| IF '(' if_condicion ')' bloque        {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un IF mal declarado, falta el END_IF o ELSE");}
+error_if: IF     if_condicion ')' bloque END_IF {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� un IF mal declarado, falta '('");}
+	| IF '('              ')' bloque END_IF {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� un IF mal declarado, falta la condicion");}
+	| IF '(' if_condicion     bloque END_IF {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� un IF mal declarado, falta ')'");}
+	| IF '(' if_condicion ')'        END_IF {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� un IF mal declarado, falta el bloque de sentencias");}
+	| IF '(' if_condicion ')' bloque        {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� un IF mal declarado, falta el END_IF o ELSE");}
 	// el de arriba si falta ELSE no se recuper bien, revisar.
-//	| IF '(' if_condicion ')' bloque      bloque END_IF{System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un IF mal declarado, falta el ELSE");}
-	| IF     if_condicion ')' bloque ELSE bloque END_IF {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un IF mal declarado, falta '('");}
-	| IF '('              ')' bloque ELSE bloque END_IF {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un IF mal declarado, falta la condicion");}
-	| IF '(' if_condicion     bloque ELSE bloque END_IF {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un IF mal declarado, falta ')'");}
-//	| IF '(' if_condicion ')' bloque ELSE        END_IF {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un IF mal declarado, falta el bloque de sentencias del ELSE");}
-//	| IF '(' if_condicion ')' bloque ELSE bloque        {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un IF mal declarado, falta el END_IF");}
+//	| IF '(' if_condicion ')' bloque      bloque END_IF {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� un IF mal declarado, falta el ELSE");}
+	| IF     if_condicion ')' bloque ELSE bloque END_IF {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� un IF mal declarado, falta '('");}
+	| IF '('              ')' bloque ELSE bloque END_IF {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� un IF mal declarado, falta la condicion");}
+	| IF '(' if_condicion     bloque ELSE bloque END_IF {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� un IF mal declarado, falta ')'");}
+//	| IF '(' if_condicion ')' bloque ELSE        END_IF {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� un IF mal declarado, falta el bloque de sentencias del ELSE");}
+//	| IF '(' if_condicion ')' bloque ELSE bloque        {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� un IF mal declarado, falta el END_IF");}
 	;
 
 salida : OUT'('CADENA')'{System.out.println("[Parser | Linea " + Lexico.linea + "] se realiz� una sentencia OUT");
 			Terceto t = new Terceto("OUT", $3.sval, null);
 			adminTerceto.agregarTerceto(t);}
-       | error_salida{Main.huboError = true;}
+       | error_salida
        ;
 
-error_salida : OUT CADENA ')' {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un OUT mal declarado, falta '('");}
-	     | OUT '(' CADENA {System.out.println("Error sint�ctico: Linea " + Lexico.linea + "  se detect� un OUT mal declarado, falta ')'");}
-	     | OUT CADENA {System.out.println("Error sint�ctico: Linea " + Lexico.linea + "  se detect� un OUT mal declarado, faltan '(' y ')'");}
-	     | OUT '('error')' {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un OUT mal declarado, entre los par�ntesis debe ir una cadena");}
-	     | OUT '(' ')' {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� un OUT mal declarado, falta la cadena entre los parent�sis en el OUT");}
+error_salida : OUT CADENA ')' {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� un OUT mal declarado, falta '('");}
+	     | OUT '(' CADENA {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + "  se detect� un OUT mal declarado, falta ')'");}
+	     | OUT CADENA {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + "  se detect� un OUT mal declarado, faltan '(' y ')'");}
+	     | OUT '('error')' {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� un OUT mal declarado, entre los par�ntesis debe ir una cadena");}
+	     | OUT '(' ')' {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� un OUT mal declarado, falta la cadena entre los parent�sis en el OUT");}
 	     ;
 
 asignacion : IDE '=' expresion {System.out.println("[Parser | Linea " + Lexico.linea + "] se realiz� una asignaci�n al identificador -> " + $1.sval);
@@ -490,19 +465,18 @@ asignacion : IDE '=' expresion {System.out.println("[Parser | Linea " + Lexico.l
 							adminTerceto.agregarTerceto(t);
 							$$ = new ParserVal(new Operando(tipoIde, "[" + t.getNumero()+ "]"));
 						} else{
-							System.out.println("Error semántico: Linea " + Lexico.linea + "Los tipos son incompatibles");
-							Main.huboError = true;}
+							Main.listaErrores.add("Error semántico: Linea " + Lexico.linea + " los tipos son incompatibles");
 				} else {
-					System.out.println("Error semántico: Linea " + Lexico.linea + "La variable " + $1.sval +" no fue declarada");
-					Main.huboError = true;
-					// ver si devolver null}
+					Main.listaErrores.add("Error semántico: Linea " + Lexico.linea + "La variable " + $1.sval +" no fue declarada");
+					// ver si devolver null
+					}
 				}}
-	   | error_asignacion{Main.huboError = true;}
+	   | error_asignacion
 	   ;
 
-error_asignacion : IDE expresion {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " falta '=' en la asignaci�n");}
-		 | '=' expresion {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " falta el identificador del lado izquierdo de la asignaci�n");}
-		 | IDE '=' {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " falta una expresi�n aritm�tica del lado derecho de la asignaci�n");}
+error_asignacion : IDE expresion {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " falta '=' en la asignaci�n");}
+		 | '=' expresion {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " falta el identificador del lado izquierdo de la asignaci�n");}
+		 | IDE '=' {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " falta una expresi�n aritm�tica del lado derecho de la asignaci�n");}
 		 ;
 
 
@@ -522,24 +496,21 @@ invocacion : IDE '(' parametros ')'{System.out.println("[Parser | Linea " + Lexi
 									Terceto t = new Terceto("INV", ambitoProc, null); //ver como guardar linea inicial de procedimiento.
 									Main.tSimbolos.getDatosTabla(ambitoProc).incrementarLlamados();
 									adminTerceto.agregarTerceto(t);
-								} else{
-									System.out.println("Error semántico: Linea " + Lexico.linea+ "Supero la cantidad maxima de llamados a "+$1.sval);
-									Main.huboError = true;}
+								} else
+									Main.listaErrores.add("Error semántico: Linea " + Lexico.linea+ " supero la cantidad maxima de llamados a "+$1.sval);
 							}
 						}else
-							System.out.println("Error semántico: Linea " + Lexico.linea + "Faltan parametros para invocar al procedimiento "+$1.sval);
-							Main.huboError = true;}
-			  	    	}else{
-			  	    		System.out.println("Error semántico: Linea " + Lexico.linea+ "El procedimiento "+$1.sval+" esta fuera de alcance");
-			  	    		Main.huboError = true;}
-			  	   }
-	   | error_invocacion{Main.huboError = true;}
+							Main.listaErrores.add("Error semántico: Linea " + Lexico.linea + " faltan parametros para invocar al procedimiento "+$1.sval);
+			  	    	}else
+			  	    		Main.listaErrores.add("Error semántico: Linea " + Lexico.linea+ " el procedimiento "+$1.sval+" esta fuera de alcance");
+			  	   }}
+	   | error_invocacion
 	   ;
 
-error_invocacion: '(' parametros ')' {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� una invocaci�n mal declarada, falta el identificador");}
-		| IDE parametros ')' {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� una invocaci�n mal declarada, falta el '('");}
-		| IDE '(' ')' {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� una invocaci�n mal declarada, faltan los par�metros");}
-		| IDE'('parametros {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� una invocaci�n mal declarada, falta el ')'");}
+error_invocacion: '(' parametros ')' {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� una invocaci�n mal declarada, falta el identificador");}
+		| IDE parametros ')' {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� una invocaci�n mal declarada, falta el '('");}
+		| IDE '(' ')' {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� una invocaci�n mal declarada, faltan los par�metros");}
+		| IDE'('parametros {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� una invocaci�n mal declarada, falta el ')'");}
 		;
 
 parametros : IDE ':' IDE {//System.out.println("[Parser | Linea " + Lexico.linea + "] se leyeron los par�metros -> " + $1.sval +" y " +$3.sval);
@@ -549,10 +520,10 @@ parametros : IDE ':' IDE {//System.out.println("[Parser | Linea " + Lexico.linea
 				  if(ambitoVariable != null){
 					lista_param_invocacion.add(new Pair<String,String>($1.sval, ambitoVariable));
 					$$ = new ParserVal(lista_param_invocacion);}
-				  else{
-					System.out.println("Error semántico: Linea " + Lexico.linea+ "La variable "+$3.sval+ "no se encuentra en el ambito");
-					Main.huboError = true;}
-				  }}
+				  else
+					Main.listaErrores.add("Error semántico: Linea " + Lexico.linea+ " la variable "+$3.sval+ "no se encuentra en el ambito");
+				  }
+				  }
 	   | parametros ',' IDE ':' IDE {//System.out.println("[Parser | Linea " + Lexico.linea + "] se leyeron los par�metros -> " + $3.sval +" y " +$5.sval);
                                	lista_param_invocacion = (ArrayList<Pair<String, String>>)$1.obj;
                                	if(lista_param_invocacion != null && !lista_param_invocacion.isEmpty()){
@@ -560,17 +531,16 @@ parametros : IDE ':' IDE {//System.out.println("[Parser | Linea " + Lexico.linea
                                         if(ambitoVariable != null){
                                         	lista_param_invocacion.add(new Pair<String,String>($3.sval, ambitoVariable));
                                     		$$ = new ParserVal(lista_param_invocacion);
-                                     	} else{
-                                        	System.out.println("Error semántico: Linea " + Lexico.linea+ "La variable "+$5.sval+ " no se encuentra en el ambito");
-                                        	Main.huboError = true;}
+                                     	} else
+                                        	Main.listaErrores.add("Error semántico: Linea " + Lexico.linea+ " la variable "+$5.sval+ " no se encuentra en el ambito");
                                 }}
-	   | error_parametros{Main.huboError = true;}
+	   | error_parametros
 	   ;
 
-error_parametros : ':' IDE {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detectaron par�metros mal declarados, falta el identificador de la izquierda");}
-		 | IDE IDE {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detectaron par�metros mal declarados, falta ':' entre los identificadores");}
-		 | parametros IDE ':' IDE {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detectaron par�metros mal declarados, falta la ',' que separa los identificadores");}
-		 | IDE ':' error {System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detectaron par�metros mal declarados, falta el identificador de la derecha");}
+error_parametros : ':' IDE {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detectaron par�metros mal declarados, falta el identificador de la izquierda");}
+		 | IDE IDE {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detectaron par�metros mal declarados, falta ':' entre los identificadores");}
+		 | parametros IDE ':' IDE {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detectaron par�metros mal declarados, falta la ',' que separa los identificadores");}
+		 | IDE ':' error {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detectaron par�metros mal declarados, falta el identificador de la derecha");}
 		 ;
 %%
 
@@ -610,8 +580,7 @@ public boolean chequearFactorNegado(){
 	String lexema = yylval.sval;
 	int id = Main.tSimbolos.getId(lexema);
 	if(id == Lexico.CTE_UINT){
-		System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� una constante UINT fuera de rango");
-		Main.huboError = true;
+		Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� una constante UINT fuera de rango");
 		Main.tSimbolos.eliminarSimbolo(lexema);
 	}
 	else if (id == Lexico.CTE_DOUBLE) {
@@ -621,8 +590,7 @@ public boolean chequearFactorNegado(){
                 	return true;
                 	}
                 else {
-                	System.out.println("Error sint�ctico: Linea " + Lexico.linea + " se detect� una constante DOUBLE fuera de rango");
-	               	Main.huboError = true;
+                	Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� una constante DOUBLE fuera de rango");
 	               	Main.tSimbolos.eliminarSimbolo(lexema);
 	 	}
 	}
@@ -635,16 +603,13 @@ public boolean verificarParametros(String proc){
 		String parametroFormal = p.getKey() + "@" + proc;
 		String parametroReal = (String)p.getValue();
 		if(!Main.tSimbolos.existeLexema(parametroFormal)){ //el usuario lo escribio mal en la invocacion
-			System.out.println("Error semántico: Linea " + Lexico.linea + "No se reconoce el parametro formal "+ p.getKey());
-			Main.huboError = true;
+			Main.listaErrores.add("Error semántico: Linea " + Lexico.linea + "no se reconoce el parametro formal "+ p.getKey());
 			return false;}
 		if(Main.tSimbolos.getDatosTabla(parametroFormal).getOrden() != orden){
-			System.out.println("Error semántico: Linea " + Lexico.linea + "los parametros no estan en el orden correcto");
-			Main.huboError = true;
+			Main.listaErrores.add("Error semántico: Linea " + Lexico.linea + " los parametros no estan en el orden correcto");
 			return false;}
 		if(Main.tSimbolos.getDatosTabla(parametroFormal).getTipo() != Main.tSimbolos.getDatosTabla(parametroReal).getTipo()){
-			System.out.println("Error semántico: Linea " + Lexico.linea +"los tipos de los parametros reales y formales no son iguales");
-			Main.huboError = true;
+			Main.listaErrores.add("Error semántico: Linea " + Lexico.linea + " los tipos de los parametros reales y formales no son iguales");
 			return false;}
 		orden++;
 	}

@@ -2,6 +2,7 @@
 package main;
 
 import java.io.*;
+import java.util.ArrayList;
 
 import Parser.*;
 import CodigoInt.*;
@@ -10,6 +11,7 @@ public class Main {
 
     private static BufferedReader codigo;
     public static TablaSimbolos tSimbolos = new TablaSimbolos();
+    public static ArrayList<String> listaErrores = new ArrayList<>();
 
     private static StringBuilder getCodigo(BufferedReader ubicacion) {
         StringBuilder buffer = new StringBuilder();
@@ -63,15 +65,22 @@ public class Main {
         adminTercetos.printTercetos();
         adminTercetos.printProcedimientos();
 
-        Assembler assembler = new Assembler(adminTercetos);
-        assembler.generarAssembler();
+        if (listaErrores.isEmpty()) {
+            Assembler assembler = new Assembler(adminTercetos);
+            assembler.generarAssembler();
+        } else {
+            listaErrores.add("No se generó el código assembler por haber errores en la generación de código intermedio");
+        }
+
+        System.out.println("\n********* ERRORES *********");
+        for (String s : listaErrores) {
+            System.out.println(s);
+        }
 
         System.out.println("\n********* TERCETOS *********");
         adminTercetos.printTercetos();
 
         System.out.println("\n********* TABLA DE SIMBOLOS *********");
         tSimbolos.printTablaSimbolos();
-
-
     }
 }

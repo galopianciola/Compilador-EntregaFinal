@@ -135,15 +135,14 @@ public class Assembler {
                                     code += "MOV " + reg + ", dword ptr [EBX] \n";
                                     code += "ADD " + reg + ", _" + t.getOp2() + '\n';
                                 } else
-                                    if(esUnPuntero(t.getOp2())){
-                                        code += "MOV EBX, _" + t.getOp2() + '\n';
-                                        code += "MOV " + reg + ", dword ptr [EBX] \n";
-                                        code += "ADD " + reg + ", _" + t.getOp1() + '\n';
-                                    } else {
-                                            code += "MOV " + reg + ", _" + t.getOp1() + '\n';
-                                            code += "ADD " + reg + ", _" + t.getOp2() + '\n';
-                                            }
-
+                                if(esUnPuntero(t.getOp2())){
+                                    code += "MOV EBX, _" + t.getOp2() + '\n';
+                                    code += "MOV " + reg + ", dword ptr [EBX] \n";
+                                    code += "ADD " + reg + ", _" + t.getOp1() + '\n';
+                                } else {
+                                    code += "MOV " + reg + ", _" + t.getOp1() + '\n';
+                                    code += "ADD " + reg + ", _" + t.getOp2() + '\n';
+                                }
                                 code += "CMP " + reg + ", _limiteSuperiorUint" + '\n';
                                 code += "JA " + "LabelOverflowSuma" + '\n';
                                 t.setResultado(reg);
@@ -167,7 +166,12 @@ public class Assembler {
                             if (t.getTipo().equals("UINT")) {
                                 String nroTerceto = t.getOp1().substring(1, t.getOp1().lastIndexOf("]"));
                                 Terceto t1 = adminTerceto.getTerceto(Integer.parseInt(nroTerceto));
-                                code += "ADD " + t1.getResultado() + ", _" + t.getOp2() + '\n';
+                                if(esUnPuntero(t.getOp2())){
+                                    code += "MOV EBX, _" + t.getOp2() +'\n';
+                                    code += "ADD " + t1.getResultado() + ", dword ptr [EBX] \n";
+                                } else {
+                                    code += "ADD " + t1.getResultado() + ", _" + t.getOp2() + '\n';
+                                }
                                 code += "CMP " + t1.getResultado() + ", _limiteSuperiorUint" + '\n';
                                 code += "JA " + "LabelOverflowSuma" + '\n';
                                 t.setResultado(t1.getResultado());
@@ -220,7 +224,12 @@ public class Assembler {
                             if (t.getTipo().equals("UINT")) {
                                 String nroTerceto = t.getOp2().substring(1, t.getOp2().lastIndexOf("]"));
                                 Terceto t1 = adminTerceto.getTerceto(Integer.parseInt(nroTerceto));
-                                code += "ADD " + t1.getResultado() + ", _" + t.getOp1() + '\n';
+                                if(esUnPuntero(t.getOp1())){
+                                    code += "MOV EBX, _" + t.getOp1() +'\n';
+                                    code += "ADD " + t1.getResultado() + ", dword ptr [EBX] \n";
+                                } else {
+                                    code += "ADD " + t1.getResultado() + ", _" + t.getOp1() + '\n';
+                                }
                                 code += "CMP " + t1.getResultado() + ", _limiteSuperiorUint" + '\n';
                                 code += "JA " + "LabelOverflowSuma" + '\n';
                                 t.setResultado(t1.getResultado());
@@ -246,8 +255,20 @@ public class Assembler {
                         if (t.esVariable(1) && t.esVariable(2)) {
                             if (t.getTipo().equals("UINT")) {
                                 String reg = this.getRegistroVacio();
-                                code += "MOV " + reg + ", _" + t.getOp1() + '\n';
-                                code += "SUB " + reg + ", _" + t.getOp2() + '\n';
+
+                                if(esUnPuntero(t.getOp1())){
+                                    code += "MOV EBX, _" + t.getOp1() + '\n';
+                                    code += "MOV " + reg + ", dword ptr [EBX] \n";
+                                    code += "SUB " + reg + ", _" + t.getOp2() + '\n';
+                                } else if(esUnPuntero(t.getOp2())){
+                                    code += "MOV EBX, _" + t.getOp2() + '\n';
+                                    code += "MOV " + reg + ", _" + t.getOp1() + "\n";
+                                    code += "SUB " + reg + ", dword ptr [EBX] \n";
+                                } else {
+                                    code += "MOV " + reg + ", _" + t.getOp1() + '\n';
+                                    code += "ADD " + reg + ", _" + t.getOp2() + '\n';
+                                }
+
                                 code += "CMP " + reg + ", _limiteInferiorUint" + '\n';
                                 code += "JS " + "LabelRestaNegativa" + '\n';
                                 t.setResultado(reg);
@@ -272,7 +293,14 @@ public class Assembler {
                             if (t.getTipo().equals("UINT")) {
                                 String nroTerceto = t.getOp1().substring(1, t.getOp1().lastIndexOf("]"));
                                 Terceto t1 = adminTerceto.getTerceto(Integer.parseInt(nroTerceto));
-                                code += "SUB " + t1.getResultado() + ", _" + t.getOp2() + '\n';
+
+                                if(esUnPuntero(t.getOp2())){
+                                    code += "MOV EBX, _" + t.getOp2() +'\n';
+                                    code += "SUB " + t1.getResultado() + ", dword ptr [EBX] \n";
+                                } else {
+                                    code += "SUB " + t1.getResultado() + ", _" + t.getOp2() + '\n';
+                                }
+
                                 code += "CMP " + t1.getResultado() + ", _limiteInferiorUint" + '\n';
                                 code += "JS " + "LabelRestaNegativa" + '\n';
                                 t.setResultado(t1.getResultado());
@@ -323,9 +351,17 @@ public class Assembler {
                         if (t.esVariable(1) && !t.esVariable(2)) {
                             if (t.getTipo().equals("UINT")) {
                                 String reg = this.getRegistroVacio();
-                                code += "MOV " + reg + ", _" + t.getOp1() + '\n';
+
                                 String nroTerceto = t.getOp2().substring(1, t.getOp2().lastIndexOf("]"));
                                 Terceto t1 = adminTerceto.getTerceto(Integer.parseInt(nroTerceto));
+
+                                if(esUnPuntero(t.getOp1())){
+                                    code += "MOV EBX, _" + t.getOp1() +'\n';
+                                    code += "MOV " + reg + ", dword ptr [EBX] \n";
+                                } else {
+                                    code += "MOV " + reg + ", _" + t.getOp1() + '\n';
+                                }
+
                                 code += "SUB " + reg + ", " + t1.getResultado() + '\n';
                                 code += "CMP " + reg + ", _limiteInferiorUint" + '\n';
                                 code += "JS " + "LabelRestaNegativa" + '\n';
@@ -352,8 +388,20 @@ public class Assembler {
                         if (t.esVariable(1) && t.esVariable(2)) {
                             if (t.getTipo().equals("UINT")) {
                                 EAX = false;
-                                code += "MOV EAX, _" + t.getOp1() + '\n';
-                                code += "MUL _" + t.getOp2() + '\n';
+                                if(esUnPuntero(t.getOp1())){
+                                    code += "MOV EBX, _" + t.getOp1() + '\n';
+                                    code += "MOV EAX, dword ptr [EBX] \n";
+                                    code += "MUL _" + t.getOp2() + '\n';
+                                } else
+                                if(esUnPuntero(t.getOp2())){
+                                    code += "MOV EBX, _" + t.getOp2() + '\n';
+                                    code += "MOV EAX, dword ptr [EBX] \n";
+                                    code += "MUL _" + t.getOp1() + '\n';
+                                } else {
+                                    code += "MOV EAX, _" + t.getOp1() + '\n';
+                                    code += "MUL _" + t.getOp2() + '\n';
+                                }
+
                                 String reg = this.getRegistroVacio();
                                 code += "MOV " + reg + ", EAX" + '\n';
                                 EAX = true;
@@ -379,9 +427,17 @@ public class Assembler {
                                 String nroTerceto = t.getOp1().substring(1, t.getOp1().lastIndexOf("]"));
                                 Terceto t1 = adminTerceto.getTerceto(Integer.parseInt(nroTerceto));
                                 EAX = false;
-                                code += "MOV EAX, " + t1.getResultado() + '\n';
+
+                                if(esUnPuntero(t.getOp2())){
+                                    code += "MOV EBX, _" + t.getOp2() +'\n';
+                                    code += "MOV EAX, " + t1.getResultado() + '\n';
+                                    code += "MUL dword ptr [EBX] \n";
+                                } else {
+                                    code += "MOV EAX, " + t1.getResultado() + '\n';
+                                    code += "MUL _" + t.getOp2() + '\n';
+                                }
+
                                 this.marcarRegLibre(t1.getResultado());
-                                code += "MUL _" + t.getOp2() + '\n';
                                 String reg = this.getRegistroVacio();
                                 code += "MOV " + reg + ", EAX" + '\n';
                                 t.setResultado(reg);
@@ -440,9 +496,17 @@ public class Assembler {
                                 String nroTerceto = t.getOp2().substring(1, t.getOp2().lastIndexOf("]"));
                                 Terceto t1 = adminTerceto.getTerceto(Integer.parseInt(nroTerceto));
                                 EAX = false;
-                                code += "MOV EAX, _" + t1.getResultado() + '\n';
+
+                                if(esUnPuntero(t.getOp1())){
+                                    code += "MOV EBX, _" + t.getOp1() +'\n';
+                                    code += "MOV EAX, _" + t1.getResultado() + '\n';
+                                    code += "MUL dword ptr [EBX] \n";
+                                } else {
+                                    code += "MOV EAX, _" + t1.getResultado() + '\n';
+                                    code += "MUL _" + t.getOp1() + '\n';
+                                }
+
                                 this.marcarRegLibre(t1.getResultado());
-                                code += "MUL _" + t.getOp1() + '\n';
                                 String reg = this.getRegistroVacio();
                                 code += "MOV" + reg + ", EAX" + '\n';
                                 t.setResultado(reg);
@@ -469,9 +533,23 @@ public class Assembler {
                             if (t.getTipo().equals("UINT")) {
                                 EAX = false;
                                 EDX = false;
-                                code += "MOV EAX, _" + t.getOp1() + '\n';
-                                code += "MOV EDX, 0" + '\n';
-                                code += "DIV _" + t.getOp2() + '\n';
+
+                                if(esUnPuntero(t.getOp1())){
+                                    code += "MOV EBX, _" + t.getOp1() + '\n';
+                                    code += "MOV EAX, dword ptr [EBX] \n";
+                                    code += "MOV EDX, 0" + '\n';
+                                    code += "DIV _" + t.getOp2() + '\n';
+                                } else if(esUnPuntero(t.getOp2())){
+                                    code += "MOV EBX, _" + t.getOp2() + '\n';
+                                    code += "MOV EAX, _" + t.getOp1() + '\n';
+                                    code += "MOV EDX, 0" + '\n';
+                                    code += "DIV dword ptr [EBX] \n";
+                                } else {
+                                    code += "MOV EAX, _" + t.getOp1() + '\n';
+                                    code += "MOV EDX, 0" + '\n';
+                                    code += "DIV _" + t.getOp2() + '\n';
+                                }
+
                                 String reg = this.getRegistroVacio();
                                 code += "MOV " + reg + ", EAX" + '\n';
                                 t.setResultado(reg);
@@ -499,10 +577,19 @@ public class Assembler {
                                 Terceto t1 = adminTerceto.getTerceto(Integer.parseInt(nroTerceto));
                                 EAX = false;
                                 EDX = false;
-                                code += "MOV EAX, " + t1.getResultado() + '\n';
+
+                                if(esUnPuntero(t.getOp2())){
+                                    code += "MOV EBX, _" + t.getOp2() +'\n';
+                                    code += "SUB EAX, " + t1.getResultado() + '\n';
+                                    code += "MOV EDX, 0 \n";
+                                    code += "DIV dword ptr [EBX] \n";
+                                } else {
+                                    code += "MOV EAX, " + t1.getResultado() + '\n';
+                                    code += "MOV EDX, 0" + '\n';
+                                    code += "DIV _" + t.getOp2() + '\n';
+                                }
+
                                 this.marcarRegLibre(t1.getResultado());
-                                code += "MOV EDX, 0" + '\n';
-                                code += "DIV _" + t.getOp2() + '\n';
                                 String reg = this.getRegistroVacio();
                                 code += "MOV " + reg + ", EAX" + '\n';
                                 EAX = true;
@@ -628,19 +715,19 @@ public class Assembler {
                                     code += "MOV _" + t.getOp1() + ", EBX \n";
                                     EBX = true;
                                 } else if(Main.tSimbolos.getDatosTabla(t.getOp1()).isParametroRef() && paramProc.equals(procActual)) {
-                                        EBX = false;
-                                        String reg = this.getRegistroVacio();
-                                        code += "MOV EBX, _" + t.getOp1() + '\n';
-                                        code += "MOV " + reg + ", _" + t.getOp2() +'\n';
-                                        code += "MOV dword ptr [EBX], " + reg + '\n';
-                                        EBX = true;
-                                        this.marcarRegLibre(reg);
-                                    } else {
-                                            String reg = this.getRegistroVacio();
-                                            code += "MOV " + reg + ", _" + t.getOp2() + '\n';
-                                            code += "MOV _" + t.getOp1() + ", " + reg + '\n';
-                                            this.marcarRegLibre(reg);
-                                        }
+                                    EBX = false;
+                                    String reg = this.getRegistroVacio();
+                                    code += "MOV EBX, _" + t.getOp1() + '\n';
+                                    code += "MOV " + reg + ", _" + t.getOp2() +'\n';
+                                    code += "MOV dword ptr [EBX], " + reg + '\n';
+                                    EBX = true;
+                                    this.marcarRegLibre(reg);
+                                } else {
+                                    String reg = this.getRegistroVacio();
+                                    code += "MOV " + reg + ", _" + t.getOp2() + '\n';
+                                    code += "MOV _" + t.getOp1() + ", " + reg + '\n';
+                                    this.marcarRegLibre(reg);
+                                }
                             }
                             if (t.getTipo().equals("DOUBLE")) {
                                 String op1 = t.getOp1();
