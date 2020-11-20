@@ -3,7 +3,6 @@ package main;
 
 import java.io.*;
 import java.util.ArrayList;
-
 import Parser.*;
 import CodigoInt.*;
 
@@ -72,15 +71,19 @@ public class Main {
             listaErrores.add("No se generó el código assembler por haber errores en la generación de código intermedio");
         }
 
-        System.out.println("\n********* ERRORES *********");
-        for (String s : listaErrores) {
-            System.out.println(s);
-        }
-
-        System.out.println("\n********* TERCETOS *********");
+        System.out.println("\n********* Código intermedio *********");
         adminTercetos.printTercetos();
 
         System.out.println("\n********* TABLA DE SIMBOLOS *********");
         tSimbolos.printTablaSimbolos();
+
+        System.out.println("\n********* ERRORES *********");
+        if (listaErrores.isEmpty()) {
+            System.out.println("No hubo errores");
+        } else {
+            for (String s : listaErrores) {
+                System.out.println(s);
+            }
+        }
     }
 }

@@ -81,7 +81,6 @@ public class AdmTercetos {
     public void printTercetos() {
         int i = 0;
         for (ArrayList<Terceto> a : codigoIntermedio) {
-            System.out.println("procedimiento " + i);
             for (Terceto t : a) {
                 System.out.println(t.getNumero() + ". (" + t.getOperador() + ", " + t.getOp1() + ", " + t.getOp2() + ")" + t.getResultado());
             }

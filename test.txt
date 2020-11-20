@@ -1,7 +1,7 @@
 {
-UINT r,s,a;
 DOUBLE t;
-r=4_ui;
-s=r+3_ui;
-FOR( a = 10_ui ; a >= s ; UP 1_ui) { r = r+s; };
+DOUBLE s,j;
+s = 2.0;
+t = 3.0;
+j = s + t;
 }

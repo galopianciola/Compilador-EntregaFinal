@@ -7,7 +7,7 @@ public class AccionSemantica7 extends AccionSemantica {
 
     @Override
     public Token run() {
-        System.out.println("[Lexico | Linea " + Lexico.linea + "] Se detecto el token -> " + Lexico.caracter);
+        //System.out.println("[Lexico | Linea " + Lexico.linea + "] Se detecto el token -> " + Lexico.caracter);
         return new Token(Lexico.caracter);
     }
 }

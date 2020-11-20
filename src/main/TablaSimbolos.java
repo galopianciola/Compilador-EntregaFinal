@@ -81,7 +81,7 @@ public class TablaSimbolos {
             if(lexema.contains("@") || (!lexema.contains("@") && tSimbolos.get(lexema).getId() != 257) || lexema.contains("var"))
                 System.out.println("Lexema: " + lexema + ", id: " + tSimbolos.get(lexema).getId() +
                         ", tipo: " + tSimbolos.get(lexema).getTipo() + ", uso: " + tSimbolos.get(lexema).getUso()
-                        + "");
+                        + ", refencia" + tSimbolos.get(lexema).isParametroRef());
             else
                 tSimbolos.remove(lexema);
         }

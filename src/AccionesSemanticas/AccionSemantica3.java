@@ -11,7 +11,7 @@ public class AccionSemantica3 extends AccionSemantica {
         Lexico.cursor--; //vuelvo atras en el codigo fuente para devolver el ultimo caracter leido
 
         if (Lexico.palabrasReservadas.contains(buffer)) { //Buscar en tabla de Palabras Reservadas
-            System.out.println("[Lexico | Linea " + Lexico.linea + "] Se detecto un token de palabra reservada -> " + buffer);
+            //System.out.println("[Lexico | Linea " + Lexico.linea + "] Se detecto un token de palabra reservada -> " + buffer);
             return new Token(this.getID(buffer)); //devolver el id (onda nro del token) de la palabra reservada.
         }
 

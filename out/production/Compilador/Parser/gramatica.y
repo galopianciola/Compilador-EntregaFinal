@@ -586,7 +586,8 @@ public boolean chequearFactorNegado(){
 	else if (id == Lexico.CTE_DOUBLE) {
 		double valor = -1*Double.parseDouble(lexema.replace('d','e'));
 		if(( valor > 2.2250738585272014e-308 && valor < 1.7976931348623157e+308) || (valor > -1.7976931348623157e+308 && valor < -2.2250738585072014e-308) || (valor == 0.0))
-                	{Main.tSimbolos.modificarSimbolo(lexema, String.valueOf(valor));
+                	{ String lexemaNuevo = "-" + lexema;
+                	Main.tSimbolos.modificarSimbolo(lexema, lexemaNuevo);
                 	return true;
                 	}
                 else {

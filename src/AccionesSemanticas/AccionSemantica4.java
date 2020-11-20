@@ -16,7 +16,7 @@ public class AccionSemantica4 extends AccionSemantica {
         if (!Main.tSimbolos.existeLexema(buffer)) {
             Main.tSimbolos.agregarSimbolo(buffer, Lexico.IDE);
         }
-        System.out.println("[Lexico | Linea " + Lexico.linea + "] Se detecto un token de identificador -> " + buffer);
+        //System.out.println("[Lexico | Linea " + Lexico.linea + "] Se detecto un token de identificador -> " + buffer);
         return new Token(Lexico.IDE, buffer);
     }
 }
