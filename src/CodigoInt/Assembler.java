@@ -84,7 +84,8 @@ public class Assembler {
                     }
                     break;
                 case (Lexico.CADENA):
-                    data = data + "_" + lexema.substring(1, lexema.length() - 1) + " DB " + lexema + ", 0 \n";
+                    String nombreCadena = lexema.substring(1, lexema.length() - 1).replace(' ', '_');
+                    data = data + "_" + nombreCadena + " DB " + lexema + ", 0 \n";
                     break;
 
                 case (Lexico.CTE_DOUBLE):
@@ -99,38 +100,6 @@ public class Assembler {
             }
         }
         return data;
-    }
-
-    private String getRegistroVacio() {
-        if (ECX) {
-            ECX = false;
-            return "ECX";
-        } else if (EBX) {
-            EBX = false;
-            return "EBX";
-        } else if (EAX) {
-            EAX = false;
-            return "EAX";
-        } else if (EDX) {
-            EDX = false;
-            return "EDX";
-        }
-        return null;
-    }
-
-    public void marcarRegLibre(String registro) {
-        if (registro.equals("EAX"))
-            EAX = true;
-        if (registro.equals("EBX"))
-            EBX = true;
-        if (registro.equals("ECX"))
-            ECX = true;
-        if (registro.equals("EDX"))
-            EDX = true;
-    }
-
-    private boolean esUnPuntero(String variable){
-        return Main.tSimbolos.getDatosTabla(variable).isParametroRef();
     }
 
     public String generarCodeAssembler() {
@@ -183,7 +152,7 @@ public class Assembler {
                                     code += "FADD _" + op2 + '\n';
                                 }
 
-                                code += "FST _" + "var" + t.getNumero() + '\n';
+                                code += "FSTP _" + "var" + t.getNumero() + '\n';
                                 t.setResultado("var" + t.getNumero());
                                 Main.tSimbolos.agregarSimbolo("var" + t.getNumero(), Lexico.IDE, "DOUBLE", "variable");
                             }
@@ -220,7 +189,7 @@ public class Assembler {
                                     code += "FLD _" + t1.getResultado() + '\n';
                                     code += "FADD _" + op2 + '\n';
                                 }
-                                code += "FST _" + "var" + t.getNumero() + '\n';
+                                code += "FSTP _" + "var" + t.getNumero() + '\n';
                                 t.setResultado("var" + t.getNumero());
                                 Main.tSimbolos.agregarSimbolo("var" + t.getNumero(), Lexico.IDE, "DOUBLE", "variable");
                             }
@@ -250,7 +219,7 @@ public class Assembler {
 
                                 code += "FLD _" + t1.getResultado() + '\n';
                                 code += "FADD _" + t2.getResultado() + '\n';
-                                code += "FST _" + "var" + t.getNumero() + '\n';
+                                code += "FSTP _" + "var" + t.getNumero() + '\n';
                                 t.setResultado("var" + t.getNumero());
                                 Main.tSimbolos.agregarSimbolo("var" + t.getNumero(), Lexico.IDE, "DOUBLE", "variable");
                             }
@@ -286,7 +255,7 @@ public class Assembler {
                                     code += "FLD _" + op1 + '\n';
 
                                 code += "FADD _" + t1.getResultado() + '\n';
-                                code += "FST _" + "var" + t.getNumero() + '\n';
+                                code += "FSTP _" + "var" + t.getNumero() + '\n';
                                 t.setResultado("var" + t.getNumero());
                                 Main.tSimbolos.agregarSimbolo("var" + t.getNumero(), Lexico.IDE, "DOUBLE", "variable");
                             }
@@ -394,7 +363,7 @@ public class Assembler {
                                     code += "FSUB _" + op2 + '\n';
                                 }
 
-                                code += "FST _" + "var" + t.getNumero() + '\n';
+                                code += "FSTP _" + "var" + t.getNumero() + '\n';
                                 t.setResultado("var" + t.getNumero());
                                 Main.tSimbolos.agregarSimbolo("var" + t.getNumero(), Lexico.IDE, "DOUBLE", "variable");
                             }
@@ -435,7 +404,7 @@ public class Assembler {
                                     code += "FSUB _" + op2 + '\n';
                                 }
 
-                                code += "FST _" + "var" + t.getNumero() + '\n';
+                                code += "FSTP _" + "var" + t.getNumero() + '\n';
                                 t.setResultado("var" + t.getNumero());
                                 Main.tSimbolos.agregarSimbolo("var" + t.getNumero(), Lexico.IDE, "DOUBLE", "variable");
                             }
@@ -464,7 +433,7 @@ public class Assembler {
 
                                 code += "FLD _" + t1.getResultado() + '\n';
                                 code += "FSUB _" + t2.getResultado() + '\n';
-                                code += "FST _" + "var" + t.getNumero() + '\n';
+                                code += "FSTP _" + "var" + t.getNumero() + '\n';
                                 t.setResultado("var" + t.getNumero());
                                 Main.tSimbolos.agregarSimbolo("var" + t.getNumero(), Lexico.IDE, "DOUBLE", "variable");
                             }
@@ -506,7 +475,7 @@ public class Assembler {
                                     code += "FLD _" + op1 + '\n';
 
                                 code += "FSUB _" + t1.getResultado() + '\n';
-                                code += "FST _" + "var" + t.getNumero() + '\n';
+                                code += "FSTP _" + "var" + t.getNumero() + '\n';
                                 t.setResultado("var" + t.getNumero());
                                 Main.tSimbolos.agregarSimbolo("var" + t.getNumero(), Lexico.IDE, "DOUBLE", "variable");
                             }
@@ -560,7 +529,7 @@ public class Assembler {
                                     code += "FMUL _" + op2 + '\n';
                                 }
 
-                                code += "FST _" + "var" + t.getNumero() + '\n';
+                                code += "FSTP _" + "var" + t.getNumero() + '\n';
                                 t.setResultado("var" + t.getNumero());
                                 Main.tSimbolos.agregarSimbolo("var" + t.getNumero(), Lexico.IDE, "DOUBLE", "variable");
                             }
@@ -605,7 +574,7 @@ public class Assembler {
                                     code += "FMUL _" + op2 + '\n';
                                 }
 
-                                code += "FST _" + "var" + t.getNumero() + '\n';
+                                code += "FSTP _" + "var" + t.getNumero() + '\n';
                                 t.setResultado("var" + t.getNumero());
                                 Main.tSimbolos.agregarSimbolo("var" + t.getNumero(), Lexico.IDE, "DOUBLE", "variable");
                             }
@@ -639,7 +608,7 @@ public class Assembler {
 
                                 code += "FLD _" + t1.getResultado() + '\n';
                                 code += "FMUL _" + t2.getResultado() + '\n';
-                                code += "FST _" + "var" + t.getNumero() + '\n';
+                                code += "FSTP _" + "var" + t.getNumero() + '\n';
                                 t.setResultado("var" + t.getNumero());
                                 Main.tSimbolos.agregarSimbolo("var" + t.getNumero(), Lexico.IDE, "DOUBLE", "variable");
                             }
@@ -682,7 +651,7 @@ public class Assembler {
                                     code += "FLD _" + t.getOp1() + '\n';
 
                                 code += "FMUL _" + t1.getResultado() + '\n';
-                                code += "FST _" + "var" + t.getNumero() + '\n';
+                                code += "FSTP _" + "var" + t.getNumero() + '\n';
                                 t.setResultado("var" + t.getNumero());
                                 Main.tSimbolos.agregarSimbolo("var" + t.getNumero(), Lexico.IDE, "DOUBLE", "variable");
                             }
@@ -741,7 +710,7 @@ public class Assembler {
                                     code += "FDIV _" + op2 + '\n';
                                 }
 
-                                code += "FST _" + "var" + t.getNumero() + '\n';
+                                code += "FSTP _" + "var" + t.getNumero() + '\n';
                                 t.setResultado("var" + t.getNumero());
                                 Main.tSimbolos.agregarSimbolo("var" + t.getNumero(), Lexico.IDE, "DOUBLE", "variable");
                             }
@@ -790,7 +759,7 @@ public class Assembler {
                                     code += "FDIV _" + op2 + '\n';
                                 }
 
-                                code += "FST _" + "var" + t.getNumero() + '\n';
+                                code += "FSTP _" + "var" + t.getNumero() + '\n';
                                 t.setResultado("var" + t.getNumero());
                                 Main.tSimbolos.agregarSimbolo("var" + t.getNumero(), Lexico.IDE, "DOUBLE", "variable");
                             }
@@ -825,7 +794,7 @@ public class Assembler {
                                 Terceto t2 = adminTerceto.getTerceto(Integer.parseInt(nroTerceto2));
                                 code += "FLD _" + t1.getResultado() + '\n';
                                 code += "FDIV _" + t2.getResultado() + '\n';
-                                code += "FST _" + "var" + t.getNumero() + '\n';
+                                code += "FSTP _" + "var" + t.getNumero() + '\n';
                                 t.setResultado("var" + t.getNumero());
                                 Main.tSimbolos.agregarSimbolo("var" + t.getNumero(), Lexico.IDE, "DOUBLE", "variable");
                             }
@@ -871,7 +840,7 @@ public class Assembler {
                                     code += "FLD _" + op1 + '\n';
 
                                 code += "FDIV _" + t1.getResultado() + '\n';
-                                code += "FST _" + "var" + t.getNumero() + '\n';
+                                code += "FSTP _" + "var" + t.getNumero() + '\n';
                                 t.setResultado("var" + t.getNumero());
                                 Main.tSimbolos.agregarSimbolo("var" + t.getNumero(), Lexico.IDE, "DOUBLE", "variable");
                             }
@@ -906,7 +875,7 @@ public class Assembler {
                                 String nroTerceto = t.getOp2().substring(1, t.getOp2().lastIndexOf("]"));
                                 Terceto t1 = adminTerceto.getTerceto(Integer.parseInt(nroTerceto));
                                 code += "FLD _" + t1.getResultado() + '\n';
-                                code += "FST _" + op1 + '\n';
+                                code += "FSTP _" + op1 + '\n';
                             }
                         }
                         // Situacion b ( = , vble , vble )
@@ -959,17 +928,17 @@ public class Assembler {
                                 } else if(esUnPuntero(t.getOp1()) && paramProc.equals(procActual)) {
                                     code += "MOV EBX, _" + varAuxPunteros.get(t.getOp1()) + '\n';
                                     code += "FLD _" + op2 + '\n';
-                                    code += "FST qword ptr [EBX] \n";
+                                    code += "FSTP qword ptr [EBX] \n";
 
                                 } else if (esUnPuntero(t.getOp2())) {
                                     String reg = this.getRegistroVacio();
                                     code += "MOV EBX, _" + varAuxPunteros.get(t.getOp2()) + '\n';
                                     code += "FLD qword ptr [EBX] \n";
-                                    code += "FST _" + op1 + '\n';
+                                    code += "FSTP _" + op1 + '\n';
 
                                 } else {
                                     code += "FLD _" + op2 + '\n';
-                                    code += "FST _" + op1 + '\n';
+                                    code += "FSTP _" + op1 + '\n';
                                 }
                             }
                         }
@@ -1010,8 +979,19 @@ public class Assembler {
                                 op2 = op2.replace('-','_');
                                 op2 = op2.replace("+","__");
 
-                                code += "FLD _" + op1 + '\n';
-                                code += "FCOMP _" + op2 + '\n';
+                                if(esUnPuntero(t.getOp1())){
+                                    code += "MOV EBX, _" + varAuxPunteros.get(t.getOp1()) + '\n';
+                                    code += "FLD qword ptr [EBX] \n";
+                                    code += "FCOMP _" + op2 + '\n';
+                                } else if(esUnPuntero(t.getOp2())){
+                                    code += "MOV EBX, _" + varAuxPunteros.get(t.getOp2()) + '\n';
+                                    code += "FLD _" + op1 + "\n";
+                                    code += "FCOMP qword ptr [EBX] \n";
+                                } else {
+                                    code += "FLD _" + op1 + '\n';
+                                    code += "FCOMP _" + op2 + '\n';
+                                }
+
                                 code += "FSTSW _" + "var" + t.getNumero() + "_2bytes" + '\n';
                                 code += "MOV AX , _" + "var" + t.getNumero() + "_2bytes" + '\n';
                                 code += "SAHF" + '\n';
@@ -1041,8 +1021,15 @@ public class Assembler {
                                 String nroTerceto = t.getOp1().substring(1, t.getOp1().lastIndexOf("]"));
                                 Terceto t1 = adminTerceto.getTerceto(Integer.parseInt(nroTerceto));
 
-                                code += "FLD _" + t1.getResultado() + '\n';
-                                code += "FCOMP _" + t.getOp2() + '\n';
+                                if(esUnPuntero(t.getOp2())){
+                                    code += "MOV EBX, _" + varAuxPunteros.get(t.getOp2()) + '\n';
+                                    code += "FLD _" + t1.getResultado() + "\n";
+                                    code += "FCOMP qword ptr [EBX] \n";
+                                } else {
+                                    code += "FLD _" + t1.getResultado() + '\n';
+                                    code += "FCOMP _" + op2 + '\n';
+                                }
+
                                 code += "FSTSW _" + "var" + t.getNumero() + "_2bytes" + '\n';
                                 code += "MOV AX , _" + "var" + t.getNumero() + "_2bytes" + '\n';
                                 code += "SAHF" + '\n';
@@ -1101,7 +1088,12 @@ public class Assembler {
                                 String nroTerceto = t.getOp2().substring(1, t.getOp2().lastIndexOf("]"));
                                 Terceto t1 = adminTerceto.getTerceto(Integer.parseInt(nroTerceto));
 
-                                code += "FLD _" + op1 + '\n';
+                                if(esUnPuntero(t.getOp1())){
+                                    code += "MOV EBX, _" + varAuxPunteros.get(t.getOp1()) + '\n';
+                                    code += "FLD qword ptr [EBX] \n";
+                                } else
+                                    code += "FLD _" + op1 + '\n';
+
                                 code += "FCOMP _" + t1.getResultado() + '\n';
                                 code += "FSTSW _" + "var" + t.getNumero() + "_2bytes" + '\n';
                                 code += "MOV AX , _" + "var" + t.getNumero() + "_2bytes" + '\n';
@@ -1146,7 +1138,7 @@ public class Assembler {
                     case "CONV":
                         if (t.esVariable(1)) {
                             code += "FILD _" + t.getOp1() + '\n';
-                            code += "FST _var" + t.getNumero() + '\n';
+                            code += "FSTP _var" + t.getNumero() + '\n';
                             t.setResultado("var" + t.getNumero());
                             Main.tSimbolos.agregarSimbolo("var" + t.getNumero(), Lexico.IDE, "DOUBLE", "variable");
 
@@ -1155,7 +1147,7 @@ public class Assembler {
                             Terceto t2 = adminTerceto.getTerceto(Integer.parseInt(nroTerceto1));
                             code += "MOV _varAux" + t.getNumero() + ", " + t2.getResultado() + '\n';
                             code += "FILD _varAux" + t.getNumero() + '\n';
-                            code += "FST _var" + t.getNumero() + '\n';
+                            code += "FSTP _var" + t.getNumero() + '\n';
                             t.setResultado("var" + t.getNumero());
                             Main.tSimbolos.agregarSimbolo("varAux" + t.getNumero(), Lexico.IDE, "UINT", "variable");
                             Main.tSimbolos.agregarSimbolo("var" + t.getNumero(), Lexico.IDE, "DOUBLE", "variable");
@@ -1178,6 +1170,38 @@ public class Assembler {
         code += "invoke MessageBox, NULL, addr _OverflowSuma, addr _OverflowSuma, MB_OK \n";
         code += "FINIT\n";
         return code;
+    }
+
+    private String getRegistroVacio() {
+        if (ECX) {
+            ECX = false;
+            return "ECX";
+        } else if (EBX) {
+            EBX = false;
+            return "EBX";
+        } else if (EAX) {
+            EAX = false;
+            return "EAX";
+        } else if (EDX) {
+            EDX = false;
+            return "EDX";
+        }
+        return null;
+    }
+
+    private void marcarRegLibre(String registro) {
+        if (registro.equals("EAX"))
+            EAX = true;
+        if (registro.equals("EBX"))
+            EBX = true;
+        if (registro.equals("ECX"))
+            ECX = true;
+        if (registro.equals("EDX"))
+            EDX = true;
+    }
+
+    private boolean esUnPuntero(String variable){
+        return Main.tSimbolos.getDatosTabla(variable).isParametroRef();
     }
 
     private String tipoSalto(String comparador) {

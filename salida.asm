@@ -18,24 +18,21 @@ _limiteDoubleCero DQ 0.0
 _OverflowSuma DB "Overflow en suma", 0 
 _ResNegativoRestaUint DB "Resultado negativo en resta entero sin signo", 0 
 _t@main DQ ?
-_distinto_2_0 DB "distinto_2_0", 0 
 _distinto DB "distinto", 0 
 _y@main@f1 DQ ?
 _2_0 DQ 2.0
-_igual DB "igual", 0 
-_igual_2_0 DB "igual_2_0", 0 
-_var5_2bytes DW ?
-_var16_2bytes DW ?
+_var8_2bytes DW ?
 _b@f1 DD ?
 _x@main@f1 DQ ?
 _1_0 DQ 1.0
 _v@main@f1 DQ ?
+_var17 DD ?
 _c@f1 DQ ?
-_3_0 DQ 3.0
-_var14 DD ?
+_var7 DQ ?
+_igual_a_c_ DB "igual a c ", 0 
+_var5 DQ ?
 _s@main DD ?
 _2 DD 2
-_var3 DQ ?
 
 .code
 start: 
@@ -43,43 +40,40 @@ FINIT
 MOV ECX, _2
 MOV _s@main, ECX
 FLD _2_0
-FST _t@main
+FSTP _t@main
 MOV EBX, offset _s@main
 MOV _b@f1, EBX 
 MOV EBX, offset _t@main
-MOV _var14, EBX 
+MOV _var17, EBX 
 CALL f1@main
-FLD _t@main
-FCOM _3_0
-FSTSW _var16_2bytes
-MOV AX , _var16_2bytes
-SAHF
-JNE Label20
-invoke MessageBox, NULL, addr _igual_2_0, addr _igual_2_0, MB_OK 
-JMP Label22
-Label20: 
-invoke MessageBox, NULL, addr _distinto_2_0, addr _distinto_2_0, MB_OK 
-Label22: 
 FINIT
 invoke ExitProcess, 0 
 f1@main: 
-MOV EBX, _var14
 FLD _1_0
-FMUL qword ptr [EBX] 
-FST _var3
-FLD _var3
-FST _x@main@f1
-FLD _x@main@f1
-FCOM _2_0
-FSTSW _var5_2bytes
-MOV AX , _var5_2bytes
+FSTP _v@main@f1
+FLD _2_0
+FSTP _y@main@f1
+MOV EBX, _var17
+FLD _y@main@f1
+FDIV qword ptr [EBX] 
+FSTP _var5
+FLD _var5
+FSTP _x@main@f1
+FLD _y@main@f1
+FMUL _v@main@f1
+FSTP _var7
+MOV EBX, _var17
+FLD qword ptr [EBX] 
+FCOMP _var7
+FSTSW _var8_2bytes
+MOV AX , _var8_2bytes
 SAHF
-JNE Label9
-invoke MessageBox, NULL, addr _igual, addr _igual, MB_OK 
-JMP Label11
-Label9: 
+JNE Label12
+invoke MessageBox, NULL, addr _igual a c , addr _igual a c , MB_OK 
+JMP Label14
+Label12: 
 invoke MessageBox, NULL, addr _distinto, addr _distinto, MB_OK 
-Label11: 
+Label14: 
 RET 
 FINIT
 invoke ExitProcess, 0 
