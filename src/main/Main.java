@@ -54,15 +54,16 @@ public class Main {
         AdmTercetos adminTercetos = new AdmTercetos();
         Lexico l1 = new Lexico(codigo);
 
-        System.out.println("\n********* PARSER.RUN() *********");
+        //System.out.println("\n********* PARSER.RUN() *********");
         Parser p = new Parser(l1, adminTercetos);
         p.run();
 
-        tSimbolos.printTablaSimbolos();
+        tSimbolos.eliminarVariablesRepetidas();
 
         adminTercetos.generarCodigoIntermedio();
-        adminTercetos.printTercetos();
-        adminTercetos.printProcedimientos();
+
+        //adminTercetos.printTercetos();
+        //adminTercetos.printProcedimientos();
 
         if (listaErrores.isEmpty()) {
             Assembler assembler = new Assembler(adminTercetos);

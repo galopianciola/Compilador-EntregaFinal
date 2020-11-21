@@ -89,7 +89,6 @@ public class Assembler {
                     String nombre = lexema.replace('.', '_');
                     nombre = nombre.replace('-', '_');
                     nombre = nombre.replace("+", "__");
-                    System.out.println("nombre " + nombre + ", lexema " + lexema);
                     data = data + "_" + nombre + " DQ " + lexema + '\n';
                     break;
                 case (Lexico.CTE_UINT):

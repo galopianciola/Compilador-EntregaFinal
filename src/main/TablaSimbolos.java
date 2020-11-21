@@ -78,11 +78,20 @@ public class TablaSimbolos {
         Enumeration iterador = tSimbolos.keys();
         while (iterador.hasMoreElements()) {
             String lexema = (String) iterador.nextElement();
-            if(lexema.contains("@") || (!lexema.contains("@") && tSimbolos.get(lexema).getId() != 257) || lexema.contains("var"))
-                System.out.println("Lexema: " + lexema + ", id: " + tSimbolos.get(lexema).getId() +
-                        ", tipo: " + tSimbolos.get(lexema).getTipo() + ", uso: " + tSimbolos.get(lexema).getUso()
-                        + ", refencia" + tSimbolos.get(lexema).isParametroRef());
-            else
+            if(lexema.contains("@") || (!lexema.contains("@") && tSimbolos.get(lexema).getId() != 257) || lexema.contains("var")) {
+                DatosTabla dt = tSimbolos.get(lexema);
+                System.out.println("Lexema: " + lexema + ", id: " + dt.getId() +
+                        ", tipo: " + dt.getTipo() + ", uso: " + dt.getUso()
+                        + ", referencia " + dt.isParametroRef());
+            }
+        }
+    }
+
+    public void eliminarVariablesRepetidas(){
+        Enumeration iterador = tSimbolos.keys();
+        while (iterador.hasMoreElements()) {
+            String lexema = (String) iterador.nextElement();
+            if(!(lexema.contains("@") || (!lexema.contains("@") && tSimbolos.get(lexema).getId() != 257) || lexema.contains("var")))
                 tSimbolos.remove(lexema);
         }
     }

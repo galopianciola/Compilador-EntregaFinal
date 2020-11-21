@@ -30,8 +30,8 @@ _var2_2_2bytes DW ?
 _3_0 DQ 3.0
 
 .code
-start:
-FINIT
+start: 
+FINIT 
 FLD _2_0
 FST _s@main
 FLD _3_0
@@ -40,44 +40,44 @@ FLD _s@main
 FADD _t@main
 FST _var2
 FLD _var2
-FCOM _limiteInferiorDoublePositivo
+FCOM _limiteInferiorDoublePositivo 
 FSTSW _var1_2_2bytes
 MOV AX , _var1_2_2bytes
 SAHF
-JA LabelLimiteSupPositivo
-JBE LabelLimiteInfNegativo
-LabelLimiteSupPositivo:
+JA LabelLimiteSupPositivo 
+JBE LabelLimiteInfNegativo 
+LabelLimiteSupPositivo: 
 FLD _var2
-FCOM _limiteSuperiorDoublePositivo
+FCOM _limiteSuperiorDoublePositivo 
 FSTSW _var2_2_2bytes
 MOV AX , _var2_2_2bytes
 SAHF
-JB LabelNoOverflow
-JAE LabelOverflowSuma
-LabelLimiteInfNegativo:
+JB LabelNoOverflow 
+JAE LabelOverflowSuma 
+LabelLimiteInfNegativo: 
 FLD _var2
-FCOM _limiteInferiorDoubleNegativo
+FCOM _limiteInferiorDoubleNegativo 
 FSTSW _var3_2_2bytes
 MOV AX , _var3_2_2bytes
 SAHF
-JA LabelLimiteSupNegativo
-JBE LabelOverflowSuma
-LabelLimiteSupNegativo:
+JA LabelLimiteSupNegativo 
+JBE LabelOverflowSuma 
+LabelLimiteSupNegativo: 
 FLD _var2
-FCOM _limiteSuperiorDoubleNegativo
+FCOM _limiteSuperiorDoubleNegativo 
 FSTSW _var4_2_2bytes
 MOV AX , _var4_2_2bytes
 SAHF
-JB LabelNoOverflow
-JAE LabelCero
-LabelCero:
+JB LabelNoOverflow 
+JAE LabelCero 
+LabelCero: 
 FLD _var2
-FCOM _limiteDoubleCero
+FCOM _limiteDoubleCero 
 FSTSW _var5_2_2bytes
 MOV AX , _var5_2_2bytes
 SAHF
-JNE LabelOverflowSuma
-LabelNoOverflow:
+JNE LabelOverflowSuma 
+LabelNoOverflow: 
 FLD _var2
 FST _j@main
 FINIT
