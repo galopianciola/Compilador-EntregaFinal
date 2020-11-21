@@ -67,7 +67,7 @@ public class AdmTercetos {
                 if (i <= finalProc)
                     t = tercetos.get(i);
             }
-            if (i <= finalProc) {   // Por si en el if de arriba me da un numero mayor a el tama�o de finProc
+            if (i <= finalProc) {
                 aux.add(t);
             }
         }
@@ -78,28 +78,16 @@ public class AdmTercetos {
         this.generarCodigoIntermedio(0, tercetos.size() - 1, "main", 0);
 }
 
-    public void printTercetos() {
-        int i = 0;
+    public void printCodigoIntermedio() {
         for (ArrayList<Terceto> a : codigoIntermedio) {
             for (Terceto t : a) {
                 System.out.println(t.getNumero() + ". (" + t.getOperador() + ", " + t.getOp1() + ", " + t.getOp2() + ")" + t.getResultado());
             }
-            i++;
         }
-    }
-
-    public void printCodigoIntermedio() {
-        for (Terceto t : tercetos)
-            System.out.println(t.getNumero() + ". (" + t.getOperador() + ", " + t.getOp1() + ", " + t.getOp2() + ")");
     }
 
     public ArrayList<ArrayList<Terceto>> getCodigoIntermedio() {
         return codigoIntermedio;
-    }
-
-    public void printProcedimientos() {
-        System.out.println("\nProcedimientos:");
-        System.out.println(procedimientos);
     }
 
     public int buscarFinProc(String procedimiento) {
@@ -114,27 +102,4 @@ public class AdmTercetos {
     public Terceto getTerceto(int nroTerceto) {
         return tercetos.get(nroTerceto);
     }
-
-    /*public boolean esVariable(int nroTerceto) {
-        if (nroTerceto == -1)
-            return true;
-        return tercetos.get(nroTerceto).getResultado().contains("_var");
-    }
-
-    public String getOp1Asm(Terceto t) {
-        if (t.getOp1().contains("[")){
-            Terceto t1 = tercetos.get(Integer.parseInt(t.getOp1().substring(1, t.getOp1().lastIndexOf("]"))));
-            return t1.getResultado().substring(1);}
-        else{
-            return t.getOp1();
-        }
-    }
-    public String getOp2Asm(Terceto t) {
-        if (t.getOp2().contains("[")){
-            Terceto t1 = tercetos.get(Integer.parseInt(t.getOp2().substring(1, t.getOp2().lastIndexOf("]"))));
-            return t1.getResultado().substring(1);}
-        else{
-            return t.getOp2();
-        }
-    }*/
 }

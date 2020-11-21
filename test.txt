@@ -8,7 +8,7 @@ DOUBLE x,v,y;
 v = 1.0;
 y = 2.0;
 x = y/c;
-IF(c == y*v ) {OUT("igual a c ");} ELSE {OUT("distinto");} END_IF;
+IF(c == y*v ) {OUT("igual a c");} ELSE {OUT("distinto");} END_IF;
 };
 f1(b:s, c:t);
 

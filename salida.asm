@@ -29,10 +29,10 @@ _v@main@f1 DQ ?
 _var17 DD ?
 _c@f1 DQ ?
 _var7 DQ ?
-_igual_a_c_ DB "igual a c ", 0 
 _var5 DQ ?
 _s@main DD ?
 _2 DD 2
+_igual_a_c DB "igual a c", 0 
 
 .code
 start: 
@@ -69,7 +69,7 @@ FSTSW _var8_2bytes
 MOV AX , _var8_2bytes
 SAHF
 JNE Label12
-invoke MessageBox, NULL, addr _igual a c , addr _igual a c , MB_OK 
+invoke MessageBox, NULL, addr _igual_a_c, addr _igual_a_c, MB_OK 
 JMP Label14
 Label12: 
 invoke MessageBox, NULL, addr _distinto, addr _distinto, MB_OK 

@@ -24,7 +24,6 @@ public class Main {
             }
 
             buffer.deleteCharAt(buffer.length() - 1);
-            //System.out.println(buffer);
             buffer.append("$");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -35,7 +34,6 @@ public class Main {
     }
 
     public static void main(String[] args) throws IOException {
-        //-------------- CARGA DE ARCHIVO --------------
 
         InputStreamReader leer = new InputStreamReader(System.in);
         BufferedReader buffer = new BufferedReader(leer);
@@ -54,16 +52,11 @@ public class Main {
         AdmTercetos adminTercetos = new AdmTercetos();
         Lexico l1 = new Lexico(codigo);
 
-        //System.out.println("\n********* PARSER.RUN() *********");
         Parser p = new Parser(l1, adminTercetos);
         p.run();
 
         tSimbolos.eliminarVariablesRepetidas();
-
         adminTercetos.generarCodigoIntermedio();
-
-        //adminTercetos.printTercetos();
-        //adminTercetos.printProcedimientos();
 
         if (listaErrores.isEmpty()) {
             Assembler assembler = new Assembler(adminTercetos);
@@ -72,8 +65,8 @@ public class Main {
             listaErrores.add("No se generó el código assembler por haber errores en la generación de código intermedio");
         }
 
-        System.out.println("\n********* Código intermedio *********");
-        adminTercetos.printTercetos();
+        System.out.println("\n********* CÓDIGO INTERMEDIO *********");
+        adminTercetos.printCodigoIntermedio();
 
         System.out.println("\n********* TABLA DE SIMBOLOS *********");
         tSimbolos.printTablaSimbolos();

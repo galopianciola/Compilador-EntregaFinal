@@ -52,17 +52,6 @@ public class Terceto {
         this.resultado = resultado;
     }
 
-    /*public int nroTerceto(int op){
-        if(op == 1) {
-            if (op1.contains("["))
-                return Integer.parseInt(op1.substring(1,op1.lastIndexOf("]")));
-        }
-        else
-            if (op2.contains("["))
-                return Integer.parseInt(op2.substring(1,op2.lastIndexOf("]")));
-        return -1;
-    }*/
-
     public boolean esVariable(int op) {
         if (op == 1)
             return !op1.contains("]");

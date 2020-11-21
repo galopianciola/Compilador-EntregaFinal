@@ -34,8 +34,6 @@ public class TablaSimbolos {
             dt.setId(id);
             dt.setTipo(tipo);
             tSimbolos.put(lexema, dt);
-        } else {
-            // System.out.println("El identificador " + lexema + " ya existe");
         }
     }
 
@@ -46,8 +44,6 @@ public class TablaSimbolos {
             dt.setTipo(tipo);
             dt.setUso(uso);
             tSimbolos.put(lexema, dt);
-        } else {
-            // System.out.println("El identificador " + lexema + " ya existe");
         }
     }
 
@@ -80,9 +76,7 @@ public class TablaSimbolos {
             String lexema = (String) iterador.nextElement();
             if(lexema.contains("@") || (!lexema.contains("@") && tSimbolos.get(lexema).getId() != 257) || lexema.contains("var")) {
                 DatosTabla dt = tSimbolos.get(lexema);
-                System.out.println("Lexema: " + lexema + ", id: " + dt.getId() +
-                        ", tipo: " + dt.getTipo() + ", uso: " + dt.getUso()
-                        + ", referencia " + dt.isParametroRef());
+                System.out.println("Lexema: " + lexema + ", id: " + dt.getId() + ", tipo: " + dt.getTipo() + ", uso: " + dt.getUso());
             }
         }
     }

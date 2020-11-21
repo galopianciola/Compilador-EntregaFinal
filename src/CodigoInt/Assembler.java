@@ -1114,7 +1114,7 @@ public class Assembler {
                         break;
 
                     case "OUT":
-                        String cadena = t.getOp1().substring(1, t.getOp1().length() - 1);
+                        String cadena = t.getOp1().substring(1, t.getOp1().length() - 1).replace(' ', '_');
                         code += "invoke MessageBox, NULL, addr _" + cadena + ", addr _" + cadena + ", MB_OK \n";
                         break;
 

@@ -43,7 +43,6 @@ declaracion : tipo lista_de_variables';'{//System.out.println("[Parser | Linea "
 							DatosTabla dt = Main.tSimbolos.getDatosTabla(nuevoLexema);
 							dt.setUso("variable");
 							dt.setTipo(tipoVar);
-							dt.setDeclarada(true);
 							Main.tSimbolos.setDatosTabla(nuevoLexema, dt);
 						} else {
 							Main.listaErrores.add("Error semántico: Linea " + Lexico.linea+ " la variable " + lexema + " ya fue declarada en este ambito");
@@ -431,13 +430,9 @@ error_if: IF     if_condicion ')' bloque END_IF {Main.listaErrores.add("Error si
 	| IF '(' if_condicion     bloque END_IF {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� un IF mal declarado, falta ')'");}
 	| IF '(' if_condicion ')'        END_IF {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� un IF mal declarado, falta el bloque de sentencias");}
 	| IF '(' if_condicion ')' bloque        {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� un IF mal declarado, falta el END_IF o ELSE");}
-	// el de arriba si falta ELSE no se recuper bien, revisar.
-//	| IF '(' if_condicion ')' bloque      bloque END_IF {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� un IF mal declarado, falta el ELSE");}
 	| IF     if_condicion ')' bloque ELSE bloque END_IF {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� un IF mal declarado, falta '('");}
 	| IF '('              ')' bloque ELSE bloque END_IF {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� un IF mal declarado, falta la condicion");}
 	| IF '(' if_condicion     bloque ELSE bloque END_IF {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� un IF mal declarado, falta ')'");}
-//	| IF '(' if_condicion ')' bloque ELSE        END_IF {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� un IF mal declarado, falta el bloque de sentencias del ELSE");}
-//	| IF '(' if_condicion ')' bloque ELSE bloque        {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� un IF mal declarado, falta el END_IF");}
 	;
 
 salida : OUT'('CADENA')'{//System.out.println("[Parser | Linea " + Lexico.linea + "] se realiz� una sentencia OUT");

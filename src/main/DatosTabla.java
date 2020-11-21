@@ -4,7 +4,6 @@ public class DatosTabla {
     private int id; //A buscar en Palabras Reservadas private String tipo; private String uso;
     private String tipo;
     private String uso;
-    private boolean declarada;
     private boolean parametroRef;
     private int llamadosMax;
     private int llamadosActuales;
@@ -15,19 +14,10 @@ public class DatosTabla {
         this.id = 0;
         this.tipo = null;
         this.uso = null;
-        this.declarada = false;
         this.parametroRef = false;
         this.llamadosMax = 0;
         this.llamadosActuales = 0;
         this.orden = -1;
-    }
-
-    public boolean isDeclarada() {
-        return declarada;
-    }
-
-    public void setDeclarada(boolean declarada) {
-        this.declarada = declarada;
     }
 
     public int getId() {
