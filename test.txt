@@ -1,7 +1,13 @@
 {
+UINT s;
 DOUBLE t;
-DOUBLE s,j;
-s = 2.0;
-t = 3.0;
-j = s + t;
+s = 2_ui;
+t = 2.0;
+PROC f1 (REF UINT b, REF DOUBLE c) NI = 2_ui {
+DOUBLE x,v,y;
+x = 1.0*c;
+IF(x == 2.0) {OUT("igual");} ELSE {OUT("distinto");} END_IF;
+};
+f1(b:s, c:t);
+IF(t == 3.0) {OUT("igual_2_0");} ELSE {OUT("distinto_2_0");} END_IF;
 }

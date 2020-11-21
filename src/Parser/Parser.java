@@ -729,7 +729,7 @@ public boolean verificarParametros(String proc){
 		String parametroFormal = p.getKey() + "@" + proc;
 		String parametroReal = (String)p.getValue();
 		if(!Main.tSimbolos.existeLexema(parametroFormal)){ //el usuario lo escribio mal en la invocacion
-			Main.listaErrores.add("Error semántico: Linea " + Lexico.linea + "no se reconoce el parametro formal "+ p.getKey());
+			Main.listaErrores.add("Error semántico: Linea " + Lexico.linea + " no se reconoce el parametro formal "+ p.getKey());
 			return false;}
 		if(Main.tSimbolos.getDatosTabla(parametroFormal).getOrden() != orden){
 			Main.listaErrores.add("Error semántico: Linea " + Lexico.linea + " los parametros no estan en el orden correcto");
@@ -1534,7 +1534,7 @@ case 116:
 						} else{
 							Main.listaErrores.add("Error semántico: Linea " + Lexico.linea + " los tipos son incompatibles");
 				} else {
-					Main.listaErrores.add("Error semántico: Linea " + Lexico.linea + "La variable " + val_peek(2).sval +" no fue declarada");
+					Main.listaErrores.add("Error semántico: Linea " + Lexico.linea + " la variable " + val_peek(2).sval +" no fue declarada");
 					/* ver si devolver null*/
 					}
 				}}
@@ -1604,7 +1604,7 @@ case 127:
 					lista_param_invocacion.add(new Pair<String,String>(val_peek(2).sval, ambitoVariable));
 					yyval = new ParserVal(lista_param_invocacion);}
 				  else
-					Main.listaErrores.add("Error semántico: Linea " + Lexico.linea+ " la variable "+val_peek(0).sval+ "no se encuentra en el ambito");
+					Main.listaErrores.add("Error semántico: Linea " + Lexico.linea+ " la variable "+val_peek(0).sval+ " no se encuentra en el ambito");
 				  }
 				  }
 break;

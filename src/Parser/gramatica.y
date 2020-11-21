@@ -467,7 +467,7 @@ asignacion : IDE '=' expresion {//System.out.println("[Parser | Linea " + Lexico
 						} else{
 							Main.listaErrores.add("Error semántico: Linea " + Lexico.linea + " los tipos son incompatibles");
 				} else {
-					Main.listaErrores.add("Error semántico: Linea " + Lexico.linea + "La variable " + $1.sval +" no fue declarada");
+					Main.listaErrores.add("Error semántico: Linea " + Lexico.linea + " la variable " + $1.sval +" no fue declarada");
 					// ver si devolver null
 					}
 				}}
@@ -521,7 +521,7 @@ parametros : IDE ':' IDE {//System.out.println("[Parser | Linea " + Lexico.linea
 					lista_param_invocacion.add(new Pair<String,String>($1.sval, ambitoVariable));
 					$$ = new ParserVal(lista_param_invocacion);}
 				  else
-					Main.listaErrores.add("Error semántico: Linea " + Lexico.linea+ " la variable "+$3.sval+ "no se encuentra en el ambito");
+					Main.listaErrores.add("Error semántico: Linea " + Lexico.linea+ " la variable "+$3.sval+ " no se encuentra en el ambito");
 				  }
 				  }
 	   | parametros ',' IDE ':' IDE {//System.out.println("[Parser | Linea " + Lexico.linea + "] se leyeron los par�metros -> " + $3.sval +" y " +$5.sval);
@@ -604,7 +604,7 @@ public boolean verificarParametros(String proc){
 		String parametroFormal = p.getKey() + "@" + proc;
 		String parametroReal = (String)p.getValue();
 		if(!Main.tSimbolos.existeLexema(parametroFormal)){ //el usuario lo escribio mal en la invocacion
-			Main.listaErrores.add("Error semántico: Linea " + Lexico.linea + "no se reconoce el parametro formal "+ p.getKey());
+			Main.listaErrores.add("Error semántico: Linea " + Lexico.linea + " no se reconoce el parametro formal "+ p.getKey());
 			return false;}
 		if(Main.tSimbolos.getDatosTabla(parametroFormal).getOrden() != orden){
 			Main.listaErrores.add("Error semántico: Linea " + Lexico.linea + " los parametros no estan en el orden correcto");
