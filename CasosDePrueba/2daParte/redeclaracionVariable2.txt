@@ -1,0 +1,3 @@
+{UINT a,b,c;
+DOUBLE a;
+}

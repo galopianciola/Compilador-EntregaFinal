@@ -1,0 +1,4 @@
+{UINT a,z;
+DOUBLE d,c;
+IF ( a < z) c=d; END_IF;
+}

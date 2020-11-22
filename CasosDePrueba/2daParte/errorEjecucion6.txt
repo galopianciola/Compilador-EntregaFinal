@@ -1,0 +1,5 @@
+{UINT a,b,c;
+a = 5_ui;
+b = 10_ui;
+c = b-a;
+}

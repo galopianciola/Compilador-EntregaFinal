@@ -1,0 +1,5 @@
+{UINT a,b;
+IF ( a < b )
+a = 1_ui;
+END_IF;
+}

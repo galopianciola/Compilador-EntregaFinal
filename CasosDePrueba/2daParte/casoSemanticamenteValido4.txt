@@ -1,0 +1,6 @@
+{UINT a,b;
+DOUBLE c;
+c = DOUBLE(a+b);
+c = DOUBLE(a);
+c = DOUBLE(a*b);
+}

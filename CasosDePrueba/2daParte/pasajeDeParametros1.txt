@@ -1,0 +1,15 @@
+{PROC f1 (UINT a, REF UINT b) NI = 2_ui 
+{   UINT c; 
+    c = a; 
+    IF(c == 4_ui) OUT("c igual a 4"); END_IF;
+    b = c;
+    a = 1_ui;
+};
+UINT x,y;
+x = 4_ui;
+y = 2_ui;
+f1(a:x, b:y);
+IF(y == 4_ui) OUT("y igual a 4"); END_IF;
+IF(x == 1_ui) OUT("x igual a 1"); END_IF;
+IF(x == 4_ui) OUT("x igual a 4"); END_IF;
+}

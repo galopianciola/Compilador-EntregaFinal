@@ -1,0 +1,4 @@
+{UINT a,b;
+DOUBLE c;
+c = b+a;
+}

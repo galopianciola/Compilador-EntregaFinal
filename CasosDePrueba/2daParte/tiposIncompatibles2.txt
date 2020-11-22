@@ -1,0 +1,5 @@
+{UINT a,b;
+DOUBLE c;
+a = b-a*c;
+c = 3_ui;
+}

@@ -1,0 +1,4 @@
+{UINT x,y;
+DOUBLE z;
+x=w;
+UINT w;}

@@ -1,0 +1,5 @@
+{UINT a,b;
+UINT a;
+DOUBLE c;
+DOUBLE c;
+}

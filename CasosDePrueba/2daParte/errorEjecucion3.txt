@@ -1,0 +1,7 @@
+{
+DOUBLE t;
+DOUBLE s,j;
+s = 1.78d+308;
+t = -1.77d+308;
+j = s + t;
+}

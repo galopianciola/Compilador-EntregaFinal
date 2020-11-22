@@ -1,0 +1,5 @@
+{PROC f1 (UINT a, REF DOUBLE b) NI = 4_ui {DOUBLE d; d = b; };
+UINT x;
+DOUBLE y;
+f1(a:x, b:y);
+}

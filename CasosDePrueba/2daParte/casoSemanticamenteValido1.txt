@@ -1,0 +1,5 @@
+{PROC f1(UINT a, REF UINT b, DOUBLE c) NI = 2_ui {
+    PROC f2 (UINT a, REF UINT b, DOUBLE c) NI = 2_ui {DOUBLE d; d = c;};
+    };
+PROC f2 (UINT a, REF UINT b, DOUBLE c) NI = 2_ui {DOUBLE d; d = c;};
+}

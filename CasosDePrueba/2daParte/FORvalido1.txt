@@ -1,0 +1,6 @@
+{UINT a,b;
+DOUBLE d;
+FOR( a = 2_ui ; a >= b ; DOWN 5_ui) {
+    DOUBLE c; 
+    c = 2.0+d;};
+}

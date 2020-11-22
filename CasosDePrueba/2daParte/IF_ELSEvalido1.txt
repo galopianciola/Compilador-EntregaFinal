@@ -1,0 +1,4 @@
+{UINT a,z,y;
+DOUBLE w;
+IF ( a < z + y ) { DOUBLE c; c = w;} ELSE {DOUBLE d; d = w;} END_IF;
+}

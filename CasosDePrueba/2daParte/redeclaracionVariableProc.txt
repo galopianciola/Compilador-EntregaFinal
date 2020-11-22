@@ -1,0 +1,4 @@
+{UINT x,y;
+DOUBLE z;
+PROC z (UINT a, REF UINT b, DOUBLE c) NI = 2_ui {DOUBLE c;};
+}

@@ -1,0 +1,7 @@
+{UINT a,z,y;
+IF (a < z + y )
+{ DOUBLE c,w;
+  c = w;
+  %%comentario
+  
+;}
