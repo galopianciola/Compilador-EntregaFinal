@@ -1,6 +1,6 @@
 {PROC f1 (UINT a, REF UINT b, DOUBLE c) NI = 2_ui       
    {DOUBLE d; d = c; };
 UINT x;
-{PROC f1 (UINT a) NI = 2_ui     
-   {a = x;};
+PROC f1 (UINT a) NI = 2_ui
+   {UINT d;};
 }

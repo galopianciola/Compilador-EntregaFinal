@@ -68,7 +68,7 @@ public class Assembler {
         data += "_limiteSuperiorDoubleNegativo DQ " + limiteSuperiorDoubleNegativo + '\n';
         data += "_limiteDoubleCero DQ " + limiteDoubleCero + '\n';
         data += "_OverflowSuma DB \"Overflow en suma\", 0 \n";
-        data += "_ResNegativoRestaUint DB \"Resultado negativo en resta entero sin signo\", 0 \n";
+        data += "_ResNegativoRestaUint DB \"Resultado negativo en resta de enteros sin signo\", 0 \n";
         while (iterador.hasMoreElements()) {
             String lexema = (String) iterador.nextElement();
             switch (Main.tSimbolos.getDatosTabla(lexema).getId()) {

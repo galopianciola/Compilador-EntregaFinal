@@ -1,4 +1,4 @@
-{PROC f1 (UINT a , REF UINT a, DOUBLE c) NI = 2_ui {DOUBLE d; d = c; };
+{PROC f1 (UINT a , REF UINT a, DOUBLE c) NI = 2_ui {DOUBLE d; };
 UINT x,y;
 DOUBLE z,h;
 }

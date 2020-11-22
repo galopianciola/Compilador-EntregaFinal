@@ -450,7 +450,6 @@ error_salida : OUT CADENA ')' {Main.listaErrores.add("Error sint�ctico: Linea 
 
 asignacion : IDE '=' expresion {//System.out.println("[Parser | Linea " + Lexico.linea + "] se realiz� una asignaci�n al identificador -> " + $1.sval);
 				String ambitoVariable = Main.tSimbolos.verificarAmbito($1.sval, ambito);
-				System.out.println("var = " + $1.sval + " ambito " + ambitoVariable);
 				if(ambitoVariable != null){
 					String tipoIde = Main.tSimbolos.getDatosTabla(ambitoVariable).getTipo();
 					Operando op = (Operando)$3.obj;
@@ -496,7 +495,7 @@ invocacion : IDE '(' parametros ')'{//System.out.println("[Parser | Linea " + Le
 									Main.listaErrores.add("Error semántico: Linea " + Lexico.linea+ " supero la cantidad maxima de llamados a "+$1.sval);
 							}
 						}else
-							Main.listaErrores.add("Error semántico: Linea " + Lexico.linea + " faltan parametros para invocar al procedimiento "+$1.sval);
+							Main.listaErrores.add("Error semántico: Linea " + Lexico.linea + " la cantidad de parametros para invocar al procedimiento "+$1.sval+ " no es correcta");
 			  	    	}else
 			  	    		Main.listaErrores.add("Error semántico: Linea " + Lexico.linea+ " el procedimiento "+$1.sval+" esta fuera de alcance");
 			  	   }}

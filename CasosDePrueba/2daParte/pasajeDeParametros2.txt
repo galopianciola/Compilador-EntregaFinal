@@ -1,7 +1,7 @@
 {PROC f1 (DOUBLE a, REF DOUBLE b) NI = 2_ui 
 {   DOUBLE c; 
     c = a+b; 
-    IF(c == 4.0) OUT("c igual a 4.0"); END_IF;
+    IF(c == 4.0) OUT("c igual a 4"); END_IF;
     a = c;
     b = c;
 };
@@ -9,7 +9,7 @@ DOUBLE x,y;
 x = 1.0;
 y = 3.0;
 f1(a:x, b:y);
-IF(x == 4.0) OUT("x igual a 4.O"); ELSE OUT("x distinto a 4.0"); END_IF;
-IF(x == 1.0) OUT("x igual a 1.O"); ELSE OUT("x distinto a 4.0"); END_IF;
-IF(y == 4.0) OUT("y igual a 4.0"); ELSE OUT("y distinto a 4.0"); END_IF;
+IF(x == 4.0) OUT("x igual a 4"); ELSE OUT("x distinto a 4"); END_IF;
+IF(x == 1.0) OUT("x igual a 1"); ELSE OUT("x distinto a 4"); END_IF;
+IF(y == 4.0) OUT("y igual a 4"); ELSE OUT("y distinto a 4"); END_IF;
 }

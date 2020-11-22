@@ -74,6 +74,11 @@ public class AdmTercetos {
         codigoIntermedio.set(index, aux);
     }
 
+    public void prinTercetos(){
+        for(Terceto t : tercetos)
+            System.out.println(t.getNumero() + ". (" + t.getOperador() + ", " + t.getOp1() + ", " + t.getOp2() + ")");
+    }
+
     public void generarCodigoIntermedio(){
         this.generarCodigoIntermedio(0, tercetos.size() - 1, "main", 0);
 }
@@ -81,7 +86,7 @@ public class AdmTercetos {
     public void printCodigoIntermedio() {
         for (ArrayList<Terceto> a : codigoIntermedio) {
             for (Terceto t : a) {
-                System.out.println(t.getNumero() + ". (" + t.getOperador() + ", " + t.getOp1() + ", " + t.getOp2() + ")" + t.getResultado());
+                System.out.println(t.getNumero() + ". (" + t.getOperador() + ", " + t.getOp1() + ", " + t.getOp2() + ")");
             }
         }
     }
