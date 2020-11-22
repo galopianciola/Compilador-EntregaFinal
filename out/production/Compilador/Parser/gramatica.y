@@ -450,6 +450,7 @@ error_salida : OUT CADENA ')' {Main.listaErrores.add("Error sint�ctico: Linea 
 
 asignacion : IDE '=' expresion {//System.out.println("[Parser | Linea " + Lexico.linea + "] se realiz� una asignaci�n al identificador -> " + $1.sval);
 				String ambitoVariable = Main.tSimbolos.verificarAmbito($1.sval, ambito);
+				System.out.println("var = " + $1.sval + " ambito " + ambitoVariable);
 				if(ambitoVariable != null){
 					String tipoIde = Main.tSimbolos.getDatosTabla(ambitoVariable).getTipo();
 					Operando op = (Operando)$3.obj;
@@ -459,13 +460,13 @@ asignacion : IDE '=' expresion {//System.out.println("[Parser | Linea " + Lexico
 							t.setTipo(op.getTipo());
 							adminTerceto.agregarTerceto(t);
 							$$ = new ParserVal(new Operando(tipoIde, "[" + t.getNumero()+ "]"));
-						} else{
+						} else
 							Main.listaErrores.add("Error semántico: Linea " + Lexico.linea + " los tipos son incompatibles");
 				} else {
 					Main.listaErrores.add("Error semántico: Linea " + Lexico.linea + " la variable " + $1.sval +" no fue declarada");
 					// ver si devolver null
 					}
-				}}
+				}
 	   | error_asignacion
 	   ;
 

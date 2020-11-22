@@ -667,7 +667,7 @@ final static String yyrule[] = {
 "error_parametros : IDE ':' error",
 };
 
-//#line 541 "gramatica.y"
+//#line 542 "gramatica.y"
 
 private Lexico lexico;
 private ArrayList<String> lista_variables;
@@ -1521,6 +1521,7 @@ case 116:
 //#line 451 "gramatica.y"
 {/*System.out.println("[Parser | Linea " + Lexico.linea + "] se realiz� una asignaci�n al identificador -> " + $1.sval);*/
 				String ambitoVariable = Main.tSimbolos.verificarAmbito(val_peek(2).sval, ambito);
+				System.out.println("var = " + val_peek(2).sval + " ambito " + ambitoVariable);
 				if(ambitoVariable != null){
 					String tipoIde = Main.tSimbolos.getDatosTabla(ambitoVariable).getTipo();
 					Operando op = (Operando)val_peek(0).obj;
@@ -1530,28 +1531,28 @@ case 116:
 							t.setTipo(op.getTipo());
 							adminTerceto.agregarTerceto(t);
 							yyval = new ParserVal(new Operando(tipoIde, "[" + t.getNumero()+ "]"));
-						} else{
+						} else
 							Main.listaErrores.add("Error semántico: Linea " + Lexico.linea + " los tipos son incompatibles");
 				} else {
 					Main.listaErrores.add("Error semántico: Linea " + Lexico.linea + " la variable " + val_peek(2).sval +" no fue declarada");
 					/* ver si devolver null*/
 					}
-				}}
+				}
 break;
 case 118:
-//#line 472 "gramatica.y"
+//#line 473 "gramatica.y"
 {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " falta '=' en la asignaci�n");}
 break;
 case 119:
-//#line 473 "gramatica.y"
+//#line 474 "gramatica.y"
 {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " falta el identificador del lado izquierdo de la asignaci�n");}
 break;
 case 120:
-//#line 474 "gramatica.y"
+//#line 475 "gramatica.y"
 {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " falta una expresi�n aritm�tica del lado derecho de la asignaci�n");}
 break;
 case 121:
-//#line 478 "gramatica.y"
+//#line 479 "gramatica.y"
 {/*System.out.println("[Parser | Linea " + Lexico.linea + "] se realiz� una invocacion al procedimiento -> " + $1.sval );*/
 				   lista_param_invocacion = (ArrayList<Pair<String, String>>)val_peek(1).obj;
 			  	   if(lista_param_invocacion!= null && !lista_param_invocacion.isEmpty()){ /* Hubo un error mas abajo*/
@@ -1578,23 +1579,23 @@ case 121:
 			  	   }}
 break;
 case 123:
-//#line 505 "gramatica.y"
+//#line 506 "gramatica.y"
 {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� una invocaci�n mal declarada, falta el identificador");}
 break;
 case 124:
-//#line 506 "gramatica.y"
+//#line 507 "gramatica.y"
 {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� una invocaci�n mal declarada, falta el '('");}
 break;
 case 125:
-//#line 507 "gramatica.y"
+//#line 508 "gramatica.y"
 {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� una invocaci�n mal declarada, faltan los par�metros");}
 break;
 case 126:
-//#line 508 "gramatica.y"
+//#line 509 "gramatica.y"
 {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detect� una invocaci�n mal declarada, falta el ')'");}
 break;
 case 127:
-//#line 511 "gramatica.y"
+//#line 512 "gramatica.y"
 {/*System.out.println("[Parser | Linea " + Lexico.linea + "] se leyeron los par�metros -> " + $1.sval +" y " +$3.sval);*/
 			  if(lista_param_invocacion!=null){
 				  lista_param_invocacion.clear();
@@ -1608,7 +1609,7 @@ case 127:
 				  }
 break;
 case 128:
-//#line 522 "gramatica.y"
+//#line 523 "gramatica.y"
 {/*System.out.println("[Parser | Linea " + Lexico.linea + "] se leyeron los par�metros -> " + $3.sval +" y " +$5.sval);*/
                                	lista_param_invocacion = (ArrayList<Pair<String, String>>)val_peek(4).obj;
                                	if(lista_param_invocacion != null && !lista_param_invocacion.isEmpty()){
@@ -1621,22 +1622,22 @@ case 128:
                                 }}
 break;
 case 130:
-//#line 535 "gramatica.y"
+//#line 536 "gramatica.y"
 {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detectaron par�metros mal declarados, falta el identificador de la izquierda");}
 break;
 case 131:
-//#line 536 "gramatica.y"
+//#line 537 "gramatica.y"
 {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detectaron par�metros mal declarados, falta ':' entre los identificadores");}
 break;
 case 132:
-//#line 537 "gramatica.y"
+//#line 538 "gramatica.y"
 {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detectaron par�metros mal declarados, falta la ',' que separa los identificadores");}
 break;
 case 133:
-//#line 538 "gramatica.y"
+//#line 539 "gramatica.y"
 {Main.listaErrores.add("Error sint�ctico: Linea " + Lexico.linea + " se detectaron par�metros mal declarados, falta el identificador de la derecha");}
 break;
-//#line 1563 "Parser.java"
+//#line 1564 "Parser.java"
 //########## END OF USER-SUPPLIED ACTIONS ##########
     }//switch
     //#### Now let's reduce... ####
